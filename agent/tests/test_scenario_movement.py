@@ -129,30 +129,78 @@ def test_corridor_mapping():
     assert movement.corridor_for("99999", MACON) is None
 
 
-def test_receiving_sites_rows(session):
+def test_receiving_sites_contract(session):
     session(FakeResponse([
-        {"destinationIndex": 0, "duration": "7200s", "distanceMeters": 150000,
+        {"destinationIndex": 1, "duration": "7200s", "distanceMeters": 150000,
+         "condition": "ROUTE_EXISTS"},
+    ]))
+    county = {"county_fips": "13051", "county_name": "Chatham", "lat": SAVANNAH[0],
+              "lon": SAVANNAH[1]}
+    sites = {
+        "medical_shelters": [
+            {"shelter_id": "S1", "name": "Macon", "county_fips": "13021", "lat": MACON[0],
+             "lon": MACON[1], "seats": 400, "generator": "YES", "in_surge": []},
+            {"shelter_id": "S2", "name": "Coastal", "county_fips": "13051", "lat": 32.0,
+             "lon": -81.1, "seats": 100, "generator": "UNRECORDED", "in_surge": [2, 3, 4, 5]},
+            {"shelter_id": "S3", "name": "Down county", "county_fips": "13029", "lat": 32.0,
+             "lon": -81.4, "seats": 50, "generator": "YES", "in_surge": []},
+        ],
+        "dialysis_centers": [
+            {"ccn": "112233", "name": "Dublin Dialysis", "county_fips": "13175",
+             "lat": DUBLIN[0], "lon": DUBLIN[1], "stations": 20, "generator": "UNRECORDED",
+             "in_surge": []},
+        ],
+    }
+    out = receiving.receiving_sites(county, sites, {"13029"}, 3, "florida_peninsula", "base",
+                                    10, relocation_share=0.2, power_dependent_at_risk=3000)
+    rows = out["sites"]
+    assert {r.get("shelter_id") or r.get("ccn") for r in rows} == {"S1", "112233"}
+    by_id = {r.get("shelter_id") or r.get("ccn"): r for r in rows}
+    assert by_id["112233"]["kind"] == "dialysis_centre"
+    assert by_id["112233"]["drive_minutes"] == {"value": 120, "status": "live"}
+    assert by_id["S1"]["drive_minutes"]["status"] == "straight_line"
+    assert by_id["S1"]["kind"] == "medical_shelter" and by_id["S1"]["seats"] == 400
+    assert set(by_id["S1"]["evacuation_delay_minutes"]) == {"low", "base", "high"}
+    assert all(r["county_fips"] for r in rows)
+    assert [r["drive_minutes"]["value"] for r in rows] == sorted(
+        r["drive_minutes"]["value"] for r in rows)
+    assert by_id["S1"]["arrives_before_ts_winds"] is True
+    assert out["shortfall"] == {"seeking_powered_seat": 600,
+                                "generator_recorded_seats_in_time": 400, "uncovered": 200}
+    assert out["drive_time_source"] == "straight_line"
+
+
+def test_surge_category_none_keeps_coastal_sites(session):
+    session(OSError("offline"))
+    county = {"county_fips": "13051", "lat": SAVANNAH[0], "lon": SAVANNAH[1]}
+    sites = {"medical_shelters": [
+        {"shelter_id": "S2", "name": "Coastal", "county_fips": "13051", "lat": 32.0,
+         "lon": -81.1, "seats": 100, "generator": None, "in_surge": [1]}]}
+    out = receiving.receiving_sites(county, sites, set(), None, "overland_west", "high", None,
+                                    relocation_share=0.2, power_dependent_at_risk=0)
+    assert out["sites"][0]["generator"] == "UNRECORDED"
+    assert out["sites"][0]["arrives_before_ts_winds"] is None
+    assert out["sites"][0]["evacuation_delay_minutes"] == {"low": 0, "base": 0, "high": 0}
+    assert out["shortfall"]["uncovered"] == 0
+
+
+def test_late_arrival_drops_seats_from_shortfall(session):
+    session(FakeResponse([
+        {"destinationIndex": 0, "duration": "7200s", "distanceMeters": 250000,
          "condition": "ROUTE_EXISTS"},
     ]))
     county = {"county_fips": "13051", "lat": SAVANNAH[0], "lon": SAVANNAH[1]}
-    sites = [
+    sites = {"medical_shelters": [
         {"shelter_id": "S1", "name": "Macon", "county_fips": "13021", "lat": MACON[0],
-         "lon": MACON[1], "seats": 400, "generator": True},
-        {"ccn": "112233", "name": "Dublin Dialysis", "county_fips": "13175", "lat": DUBLIN[0],
-         "lon": DUBLIN[1], "stations": 20, "late_shift": None},
-        {"shelter_id": "S2", "name": "In surge", "county_fips": "13051", "lat": 32.0,
-         "lon": -81.1, "seats": 100, "generator": None},
-    ]
-    rows = receiving.receiving_sites(county, sites, [True, True, False], "florida_peninsula",
-                                     ts_arrival_h=10)
-    assert {r.get("shelter_id") or r.get("ccn") for r in rows} == {"S1", "112233"}
-    by_id = {r.get("shelter_id") or r.get("ccn"): r for r in rows}
-    assert by_id["112233"]["drive_minutes"] == {"value": 120, "status": "live"}
-    assert by_id["S1"]["drive_minutes"]["status"] == "straight_line"
-    assert by_id["S1"]["generator"] == "YES"
-    assert by_id["112233"]["late_shift"] == "UNRECORDED"
-    assert set(by_id["S1"]["evacuation_delay_minutes"]) == {"low", "base", "high"}
-    assert all(r["county_fips"] for r in rows)
-    assert by_id["S1"]["arrives_before_ts_winds"] is True
-    gap = receiving.shortfall(1000, rows)
-    assert gap == {"seekers": 1000, "generator_recorded_seats_in_time": 400, "uncovered": 600}
+         "lon": MACON[1], "seats": 400, "generator": "YES", "in_surge": []}]}
+    out = receiving.receiving_sites(county, sites, set(), 3, "florida_peninsula", "high", 2.5,
+                                    relocation_share=0.3, power_dependent_at_risk=1000)
+    row = out["sites"][0]
+    assert row["corridor"] == "I-16"
+    multiplier = movement.delay_multiplier("I-16", "florida_peninsula", "high")
+    assert multiplier == 4.0
+    assert row["evacuation_delay_minutes"]["high"] == round(120 * (multiplier - 1))
+    assert row["arrives_before_ts_winds"] is False
+    assert out["shortfall"] == {"seeking_powered_seat": 300,
+                                "generator_recorded_seats_in_time": 0, "uncovered": 300}
+    assert out["drive_time_source"] == "live"
