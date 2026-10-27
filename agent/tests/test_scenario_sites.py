@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import numpy as np
+
 DATA = Path(__file__).resolve().parents[1] / "readiness_agent" / "scenario" / "data"
 FLAGS = {"YES", "NO", "UNRECORDED"}
 
@@ -51,3 +53,42 @@ def test_facility_beds_cover_every_county():
             "assisted_living_beds",
             "assisted_living_homes",
         }
+
+
+def test_allocate_shares_a_site_pro_rata():
+    from readiness_agent.scenario.build.build_season import allocate
+
+    demand = np.array([[30.0, 10.0, 5.0]])
+    capacity = np.array([[20.0, 100.0]])
+    reach = np.array([[1.0, 0.0], [1.0, 0.0], [0.0, 1.0]])
+    covered = allocate(demand, capacity, reach)
+    np.testing.assert_allclose(covered, [[15.0, 5.0, 5.0]])
+
+
+def test_worst_per_season_takes_the_max_event():
+    from readiness_agent.scenario.build.build_season import worst_per_season
+
+    values = {"x": np.array([[1.0, 0.0], [3.0, 2.0]])}
+    out = worst_per_season(values, np.array([1.0, 1.0]), np.random.default_rng(0), 5000)
+    assert out["x"].shape == (5000, 2)
+    assert set(np.unique(out["x"][:, 0])) <= {0.0, 1.0, 3.0}
+    assert abs((out["x"][:, 0] == 0).mean() - np.exp(-2)) < 0.03
+
+
+def test_poisson_quantile():
+    from readiness_agent.scenario.build.build_season import poisson_quantile
+
+    assert poisson_quantile(0.0, 0.9) == 0
+    assert poisson_quantile(2.0, 0.1) == 0
+    assert poisson_quantile(2.0, 0.9) == 4
+
+
+def test_season_backtest_shape():
+    bt = load("season_backtest.json")
+    assert bt["window"] == [2018, 2025]
+    assert bt["counties"] == len(bt["rows"]) == 159
+    inside = sum(r["inside"] for r in bt["rows"]) / len(bt["rows"])
+    assert abs(inside - bt["share_inside"]) < 1e-3
+    for r in bt["rows"]:
+        assert r["p10"] <= r["p90"]
+        assert r["inside"] == (r["p10"] <= r["observed"] <= r["p90"])
