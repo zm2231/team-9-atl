@@ -12,7 +12,7 @@ from google.adk.tools.mcp_tool import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnectionParams
 from google.auth.transport.requests import Request
 
-from .callbacks import check_wheelchair_callback
+from .callbacks import cap_live_checks_callback, check_wheelchair_callback
 from .evacuation_tools import (
     assess_shelter_accessibility,
     check_shelter_google_maps,
@@ -224,6 +224,7 @@ root_agent = Agent(
     model=os.getenv("MODEL_NAME", "gemini-3-flash-preview"),
     instruction=INSTRUCTION,
     before_agent_callback=[check_wheelchair_callback],
+    before_tool_callback=[cap_live_checks_callback],
     tools=[
         google_maps_grounding,
         bigquery_mcp,

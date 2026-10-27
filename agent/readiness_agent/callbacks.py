@@ -1,4 +1,4 @@
-"""The on-demand Google Maps wheelchair check, served through the agent without an LLM call.
+"""Agent callbacks: the on-demand Google Maps wheelchair check and the per-turn live-check cap.
 
 The frontend sends CHECK_WHEELCHAIR_COMMAND on a dedicated session. Returning Content from a
 before_agent_callback ends the turn with that content, so the root model is never invoked.
@@ -14,6 +14,9 @@ from google.genai import types
 from . import map_data, wheelchair_check
 
 CHECK_WHEELCHAIR_COMMAND = "CHECK_WHEELCHAIR v1"
+LIVE_CHECK_TOOL = "check_shelter_google_maps"
+MAX_LIVE_CHECKS_PER_TURN = 3
+_LIVE_CHECKS_KEY = "temp:live_checks"
 
 
 def _user_text(callback_context) -> str:
@@ -48,3 +51,24 @@ def check_wheelchair_callback(callback_context) -> types.Content | None:
     except Exception as exc:
         body = {"error": f"{type(exc).__name__}: {exc}"}
     return types.Content(role="model", parts=[types.Part(text=json.dumps(body))])
+
+
+def cap_live_checks_callback(tool, args, tool_context) -> dict | None:
+    """Each Places lookup takes seconds, so one turn live-checks at most MAX_LIVE_CHECKS_PER_TURN
+    shelters; later calls in the same turn get a skipped result instead of a lookup."""
+    if tool.name != LIVE_CHECK_TOOL:
+        return None
+    turn = tool_context.invocation_id
+    seen = tool_context.state.get(_LIVE_CHECKS_KEY) or {}
+    count = seen.get("count", 0) if seen.get("turn") == turn else 0
+    if count >= MAX_LIVE_CHECKS_PER_TURN:
+        return {
+            "status": "skipped",
+            "shelter_id": args.get("shelter_id"),
+            "message": f"Live check limit reached: at most {MAX_LIVE_CHECKS_PER_TURN} shelters are "
+                       "checked per question. Report this shelter as not live-checked.",
+            "candidates": [],
+            "source": "Google Maps · Places API (not checked; per-question limit)",
+        }
+    tool_context.state[_LIVE_CHECKS_KEY] = {"turn": turn, "count": count + 1}
+    return None
