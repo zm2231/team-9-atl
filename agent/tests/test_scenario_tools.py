@@ -282,3 +282,11 @@ def test_report_figures_always_carry_a_value_or_a_range():
         {"key": "c", "value": None, "range": {"p10": 1, "p50": 2, "p90": 3}},
     ])
     assert [f["key"] for f in s["figures"]] == ["b", "c"]
+
+
+def test_get_report_unknown_id_names_its_own_source(monkeypatch):
+    from readiness_agent import scenario_tools
+
+    monkeypatch.setattr(scenario_tools, "_run_query", lambda *_a, **_k: [])
+    r = scenario_tools.get_report("absent")
+    assert r["status"] == "unknown_report" and r["source"] == scenario_tools.SOURCES["reports"]

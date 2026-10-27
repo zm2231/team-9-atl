@@ -662,8 +662,9 @@ def get_report(report_id: str | None = None) -> dict[str, Any]:
     except (GoogleAPIError, GoogleAuthError, RuntimeError) as exc:
         return {"status": "error", "message": type(exc).__name__, "source": SOURCES["reports"]}
     if not rows:
-        return _status("unknown_report", "No precomputed report has that id; call get_report() "
-                       "with no id to list them.")
+        return {"status": "unknown_report",
+                "message": "No precomputed report has that id; call get_report() with no id "
+                "to list them.", "source": SOURCES["reports"]}
     row = rows[0]
     return {"report_id": row["report_id"], "title": row["title"], "built_at": str(row["built_at"]),
             "report": json.loads(row["report_json"]), "source": SOURCES["reports"]}
