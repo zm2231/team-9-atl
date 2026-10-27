@@ -1,9 +1,11 @@
 // Frontend ↔ agent service (contracts/agent-interface.md). One origin; the service handles identity (IAP sign-in or a shared password).
-import type { ChatContext, MapData } from "./types";
+import type { ChatContext, MapData, WheelchairCheck } from "./types";
 
 export const APP = "readiness_agent";
 export const LOAD_MAP_DATA_COMMAND = "LOAD_MAP_DATA v1";
+export const CHECK_WHEELCHAIR_COMMAND = "CHECK_WHEELCHAIR v1";
 export const MAP_DATA_TIMEOUT_MS = 20_000; // SC-004a
+export const WHEELCHAIR_TIMEOUT_MS = 60_000;
 export const CHAT_TIMEOUT_MS = 90_000;
 
 const userId = typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `u-${Date.now()}`;
@@ -43,38 +45,63 @@ function withTimeout(ms: number, outer?: AbortSignal): { signal: AbortSignal; do
   };
 }
 
+/** Sends one callback command on a fresh session and returns the agent's JSON reply. */
+async function runCommand<T>(text: string, what: string, signal: AbortSignal): Promise<T> {
+  const sessionId = await createSession(signal);
+  const res = await fetch("/run", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    signal,
+    body: JSON.stringify({
+      app_name: APP,
+      user_id: userId,
+      session_id: sessionId,
+      new_message: { role: "user", parts: [{ text }] },
+    }),
+  });
+  if (!res.ok) throw new Error(`${what} request failed (HTTP ${res.status})`);
+  const events = (await res.json()) as AgentEvent[];
+  const last = [...events].reverse().find((e) => e.author === APP && e.content?.parts?.[0]?.text);
+  if (!last) throw new Error(`The agent returned no ${what.toLowerCase()}`);
+  try {
+    return JSON.parse(last.content!.parts![0].text!) as T;
+  } catch {
+    throw new Error(`The agent's ${what.toLowerCase()} could not be read`);
+  }
+}
+
 /** Session-start data load through the agent; no LLM call is made (contracts §2). */
 export async function loadMapData(outer?: AbortSignal): Promise<MapData> {
   const { signal, done } = withTimeout(MAP_DATA_TIMEOUT_MS, outer);
   try {
-    const sessionId = await createSession(signal);
-    const res = await fetch("/run", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      signal,
-      body: JSON.stringify({
-        app_name: APP,
-        user_id: userId,
-        session_id: sessionId,
-        new_message: { role: "user", parts: [{ text: LOAD_MAP_DATA_COMMAND }] },
-      }),
-    });
-    if (!res.ok) throw new Error(`Map data request failed (HTTP ${res.status})`);
-    const events = (await res.json()) as AgentEvent[];
-    const last = [...events].reverse().find((e) => e.author === APP && e.content?.parts?.[0]?.text);
-    if (!last) throw new Error("The agent returned no map data");
-    let payload: MapData & { error?: string };
-    try {
-      payload = JSON.parse(last.content!.parts![0].text!);
-    } catch {
-      throw new Error("The agent's map data could not be read");
-    }
+    const payload = await runCommand<MapData & { error?: string }>(LOAD_MAP_DATA_COMMAND, "Map data", signal);
     if (payload.error) throw new Error(`The agent could not load map data: ${payload.error}`);
     if (payload.schema !== "map-data/v1") throw new Error(`Unknown map data version: ${String(payload.schema)}`);
     return payload;
   } catch (e) {
     if (signal.aborted && (signal.reason as DOMException)?.name === "TimeoutError") {
       throw new Error("Map data did not arrive within 20 seconds");
+    }
+    throw e;
+  } finally {
+    done();
+  }
+}
+
+/** Live Google Maps lookups for shelters with a blank wheelchair record (at most 10 per call). */
+export async function checkWheelchair(shelterIds: string[], outer?: AbortSignal): Promise<WheelchairCheck[]> {
+  const { signal, done } = withTimeout(WHEELCHAIR_TIMEOUT_MS, outer);
+  try {
+    const body = await runCommand<{ results?: WheelchairCheck[]; error?: string }>(
+      `${CHECK_WHEELCHAIR_COMMAND} ${JSON.stringify(shelterIds)}`,
+      "Wheelchair check",
+      signal,
+    );
+    if (body.error) throw new Error(`The Google Maps check failed: ${body.error}`);
+    return body.results ?? [];
+  } catch (e) {
+    if (signal.aborted && (signal.reason as DOMException)?.name === "TimeoutError") {
+      throw new Error("The Google Maps check did not finish within 60 seconds");
     }
     throw e;
   } finally {

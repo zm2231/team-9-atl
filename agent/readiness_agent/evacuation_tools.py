@@ -4,6 +4,7 @@ import os
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
+from functools import lru_cache
 from typing import Any
 
 from dotenv import load_dotenv
@@ -75,6 +76,45 @@ def _run_query(sql: str, params: list[Any] | None = None) -> list[dict[str, Any]
 
 def _scalar(name: str, type_: str, value: Any):
     return _bigquery().ScalarQueryParameter(name, type_, value)
+
+
+SURGE_FALLBACK_TABLE = "shelter_surge_noaa"
+
+
+@lru_cache(maxsize=1)
+def _surge_fallback_exists() -> bool:
+    try:
+        from google.cloud.exceptions import NotFound
+
+        _bigquery_client().get_table(
+            f"{_project_id()}.{_dataset_name()}.{_table_name(SURGE_FALLBACK_TABLE)}"
+        )
+        return True
+    except NotFound:
+        return False
+
+
+def _shelters_with_surge_fallback() -> str:
+    """Shelters with the surge flag filled from NOAA's surge maps only where the registry is blank.
+
+    A recorded FEMA value always wins. in_surge_source says which one was used, so every answer can
+    name its source. If the fallback table has not been loaded yet, the registry is used unchanged.
+    """
+    shelters = f"`{_project_id()}.{_dataset_name()}.{_table_name('shelters')}`"
+    if not _surge_fallback_exists():
+        return f"(SELECT s.*, 'registry' AS in_surge_source, CAST(NULL AS INT64) AS surge_first_category FROM {shelters} s)"
+    fallback = f"`{_project_id()}.{_dataset_name()}.{_table_name(SURGE_FALLBACK_TABLE)}`"
+    return f"""(
+          SELECT
+            s.* REPLACE (
+              COALESCE(SAFE_CAST(s.in_surge_slosh_area AS BOOL), f.in_surge_fallback) AS in_surge_slosh_area
+            ),
+            IF(SAFE_CAST(s.in_surge_slosh_area AS BOOL) IS NULL AND f.in_surge_fallback IS NOT NULL,
+               'noaa_slosh', 'registry') AS in_surge_source,
+            f.first_category AS surge_first_category
+          FROM {shelters} s
+          LEFT JOIN {fallback} f ON CAST(s.shelter_id AS STRING) = f.shelter_id
+        )"""
 
 
 def _flag_counts(shelters: list[dict[str, Any]], key: str) -> dict[str, int]:
@@ -229,6 +269,19 @@ def check_shelter_google_maps(shelter_id: str) -> dict[str, Any]:
     Google Maps data is fetched on every call and is not cached or persisted. The caller should
     verify the candidate name, address and distance before treating it as the shelter.
     """
+    try:
+        return _check_shelter_google_maps(shelter_id)
+    except (RuntimeError, ValueError) as exc:
+        return {
+            "status": "error",
+            "shelter_id": shelter_id,
+            "message": str(exc),
+            "candidates": [],
+            "source": "Google Maps · Places API (live listing; check failed)",
+        }
+
+
+def _check_shelter_google_maps(shelter_id: str) -> dict[str, Any]:
     api_key = os.getenv("GOOGLE_MAPS_API_KEY")
     if not api_key:
         raise RuntimeError(
@@ -384,6 +437,259 @@ def find_power_dependent_counties(
     return {"counties": _run_query(sql, params=params), "source": SOURCES["power"]}
 
 
+def identify_risky_shelters(
+    state: str | None = "GA",
+    county: str | None = None,
+    county_fips: str | None = None,
+    limit: int = 10,
+) -> dict[str, Any]:
+    """Identify risky shelters vs. non-risky shelters using census tract spatial mapping and FEMA NRI hurricane hazard metrics, and return capacity for each category and shelter.
+
+    Classification criteria (from Shelter_clean.ipynb):
+    - Risky ('High Exposure Risk'): in_surge_slosh_area is TRUE OR tract hurricane annual frequency (HRCN_AFREQ) > 0.1.
+    - Not Risky:
+      - 'Designated Resilient': Not risky AND generator_onsite is TRUE.
+      - 'Standard Shelter': Not risky AND generator_onsite is not TRUE.
+
+    in_surge_slosh_area is FEMA's value where recorded; where it is blank it comes from NOAA's
+    surge maps (table shelter_surge_noaa_clean), and in_surge_source says which ("registry" or
+    "noaa_slosh"). Report how many flags came from NOAA (surge_from_noaa_count).
+    """
+    try:
+        from google.cloud import bigquery
+    except ImportError as exc:  # pragma: no cover
+        raise RuntimeError(
+            "google-cloud-bigquery is required. Install dependencies from agent/requirements.txt."
+        ) from exc
+
+    shelters_table = _shelters_with_surge_fallback()
+    hazard_table = f"`{_project_id()}.{_dataset_name()}.{_table_name('hazard_tracts')}`"
+
+    filters = []
+    if state:
+        filters.append("s.state = @state")
+    if county:
+        filters.append("(LOWER(s.county_name) = LOWER(@county) OR LOWER(s.county_parish) = LOWER(@county))")
+    if county_fips:
+        filters.append("s.county_fips = @county_fips")
+    where_clause = "WHERE " + " AND ".join(filters) if filters else ""
+
+    cte_sql = f"""
+        WITH mapped_shelters AS (
+          SELECT
+            s.shelter_id,
+            s.shelter_name,
+            s.address_1,
+            s.city,
+            s.county_fips,
+            COALESCE(s.county_name, s.county_parish) AS county_name,
+            s.state,
+            s.latitude,
+            s.longitude,
+            s.evacuation_capacity,
+            s.post_impact_capacity,
+            s.wheelchair_accessible,
+            s.generator_onsite,
+            s.in_surge_slosh_area,
+            s.in_surge_source,
+            s.surge_first_category,
+            t.geo_id AS tract_geo_id
+          FROM {shelters_table} s
+          LEFT JOIN `bigquery-public-data.geo_census_tracts.us_census_tracts_national` t
+            ON ST_CONTAINS(t.tract_geom, ST_GEOGPOINT(s.longitude, s.latitude))
+            AND (s.county_fips IS NULL OR t.state_fips_code = SUBSTR(s.county_fips, 1, 2))
+          {where_clause}
+        ),
+        classified_shelters AS (
+          SELECT
+            m.*,
+            h.HRCN_AFREQ,
+            h.HRCN_EXPP,
+            h.HRCN_EALT,
+            h.HRCN_EALP,
+            CASE
+              WHEN m.evacuation_capacity IS NOT NULL
+                   AND (m.evacuation_capacity < 0 OR m.evacuation_capacity > 100000)
+                THEN TRUE
+              ELSE FALSE
+            END AS has_suspect_capacity,
+            CASE
+              WHEN m.evacuation_capacity IS NOT NULL
+                   AND m.evacuation_capacity BETWEEN 0 AND 100000
+                THEN m.evacuation_capacity
+              ELSE NULL
+            END AS clean_evacuation_capacity,
+            CASE
+              WHEN COALESCE(SAFE_CAST(m.in_surge_slosh_area AS BOOL), FALSE) = TRUE
+                   OR COALESCE(h.HRCN_AFREQ, 0.0) > 0.1
+                THEN TRUE
+              ELSE FALSE
+            END AS is_risky,
+            CASE
+              WHEN COALESCE(SAFE_CAST(m.in_surge_slosh_area AS BOOL), FALSE) = TRUE
+                   OR COALESCE(h.HRCN_AFREQ, 0.0) > 0.1
+                THEN 'Risky'
+              ELSE 'Not Risky'
+            END AS risk_status,
+            CASE
+              WHEN COALESCE(SAFE_CAST(m.in_surge_slosh_area AS BOOL), FALSE) = TRUE
+                   OR COALESCE(h.HRCN_AFREQ, 0.0) > 0.1
+                THEN 'High Exposure Risk'
+              WHEN COALESCE(SAFE_CAST(m.generator_onsite AS BOOL), FALSE) = TRUE
+                THEN 'Designated Resilient'
+              ELSE 'Standard Shelter'
+            END AS hurricane_designation,
+            CASE
+              WHEN m.in_surge_slosh_area IS NULL THEN 'unrecorded'
+              WHEN SAFE_CAST(m.in_surge_slosh_area AS BOOL) = TRUE THEN 'yes'
+              ELSE 'no'
+            END AS surge_status,
+            CASE
+              WHEN m.generator_onsite IS NULL THEN 'unrecorded'
+              WHEN SAFE_CAST(m.generator_onsite AS BOOL) = TRUE THEN 'yes'
+              ELSE 'no'
+            END AS generator_status,
+            CASE
+              WHEN m.wheelchair_accessible IS NULL THEN 'unrecorded'
+              WHEN SAFE_CAST(m.wheelchair_accessible AS BOOL) = TRUE THEN 'yes'
+              ELSE 'no'
+            END AS wheelchair_status
+          FROM mapped_shelters m
+          LEFT JOIN {hazard_table} h
+            ON m.tract_geo_id = h.geo_id
+        )
+    """
+
+    risk_summary_sql = f"""
+        {cte_sql}
+        SELECT
+          risk_status,
+          is_risky,
+          COUNT(*) AS total_shelters,
+          COUNTIF(clean_evacuation_capacity IS NOT NULL AND clean_evacuation_capacity > 0) AS shelters_with_evac_capacity,
+          COUNTIF(evacuation_capacity IS NULL OR evacuation_capacity <= 0) AS shelters_missing_or_zero_capacity,
+          COUNTIF(has_suspect_capacity) AS suspect_capacity_shelters,
+          COALESCE(SUM(clean_evacuation_capacity), 0) AS total_evacuation_capacity,
+          COALESCE(SUM(evacuation_capacity), 0) AS raw_evacuation_capacity_incl_suspect,
+          ROUND(AVG(clean_evacuation_capacity), 1) AS avg_evacuation_capacity,
+          COALESCE(SUM(post_impact_capacity), 0) AS total_post_impact_capacity,
+          ROUND(AVG(post_impact_capacity), 1) AS avg_post_impact_capacity,
+          COUNTIF(wheelchair_status = 'yes') AS wheelchair_yes_count,
+          COUNTIF(wheelchair_status = 'no') AS wheelchair_no_count,
+          COUNTIF(wheelchair_status = 'unrecorded') AS wheelchair_unrecorded_count,
+          COUNTIF(generator_status = 'yes') AS generator_yes_count,
+          COUNTIF(generator_status = 'no') AS generator_no_count,
+          COUNTIF(generator_status = 'unrecorded') AS generator_unrecorded_count,
+          COUNTIF(surge_status = 'yes') AS surge_yes_count,
+          COUNTIF(surge_status = 'no') AS surge_no_count,
+          COUNTIF(surge_status = 'unrecorded') AS surge_unrecorded_count,
+          COUNTIF(in_surge_source = 'noaa_slosh') AS surge_from_noaa_count
+        FROM classified_shelters
+        GROUP BY risk_status, is_risky
+        ORDER BY is_risky DESC
+    """
+
+    designation_summary_sql = f"""
+        {cte_sql}
+        SELECT
+          hurricane_designation,
+          is_risky,
+          COUNT(*) AS total_shelters,
+          COUNTIF(has_suspect_capacity) AS suspect_capacity_shelters,
+          COALESCE(SUM(clean_evacuation_capacity), 0) AS total_evacuation_capacity,
+          COALESCE(SUM(evacuation_capacity), 0) AS raw_evacuation_capacity_incl_suspect,
+          ROUND(AVG(clean_evacuation_capacity), 1) AS avg_evacuation_capacity,
+          COALESCE(SUM(post_impact_capacity), 0) AS total_post_impact_capacity,
+          COUNTIF(surge_status = 'yes') AS in_surge_count,
+          COUNTIF(surge_status = 'no') AS not_in_surge_count,
+          COUNTIF(surge_status = 'unrecorded') AS surge_unrecorded_count,
+          COUNTIF(in_surge_source = 'noaa_slosh') AS surge_from_noaa_count,
+          ROUND(AVG(IF(surge_status = 'yes', 1.0, 0.0)) * 100, 2) AS in_surge_percent,
+          COUNTIF(generator_status = 'yes') AS generator_count,
+          COUNTIF(generator_status = 'no') AS generator_no_count,
+          COUNTIF(generator_status = 'unrecorded') AS generator_unrecorded_count,
+          ROUND(AVG(IF(generator_status = 'yes', 1.0, 0.0)) * 100, 2) AS generator_percent,
+          COUNTIF(wheelchair_status = 'yes') AS wheelchair_yes_count,
+          COUNTIF(wheelchair_status = 'no') AS wheelchair_no_count,
+          COUNTIF(wheelchair_status = 'unrecorded') AS wheelchair_unrecorded_count,
+          ROUND(AVG(HRCN_AFREQ), 4) AS hrcn_freq_mean,
+          MIN(HRCN_AFREQ) AS hrcn_freq_min,
+          MAX(HRCN_AFREQ) AS hrcn_freq_max,
+          COUNTIF(HRCN_AFREQ IS NULL) AS hrcn_freq_nulls
+        FROM classified_shelters
+        GROUP BY hurricane_designation, is_risky
+        ORDER BY is_risky DESC, hurricane_designation ASC
+    """
+
+    shelter_list_sql = f"""
+        {cte_sql}
+        SELECT
+          shelter_id,
+          shelter_name,
+          address_1,
+          city,
+          county_fips,
+          county_name,
+          state,
+          clean_evacuation_capacity AS evacuation_capacity,
+          evacuation_capacity AS raw_evacuation_capacity,
+          has_suspect_capacity,
+          post_impact_capacity,
+          is_risky,
+          risk_status,
+          hurricane_designation,
+          in_surge_slosh_area,
+          in_surge_source,
+          surge_first_category,
+          surge_status,
+          generator_onsite,
+          generator_status,
+          wheelchair_accessible,
+          wheelchair_status,
+          tract_geo_id,
+          ROUND(HRCN_AFREQ, 4) AS hrcn_afreq,
+          HRCN_EXPP AS hrcn_expp,
+          HRCN_EALT AS hrcn_ealt,
+          HRCN_EALP AS hrcn_ealp,
+          ST_GEOGPOINT(longitude, latitude) AS geo
+        FROM classified_shelters
+        WHERE is_risky = @is_risky
+        ORDER BY COALESCE(clean_evacuation_capacity, -1) DESC, shelter_name ASC
+        LIMIT @limit
+    """
+
+    base_params: list[Any] = []
+    if state:
+        base_params.append(bigquery.ScalarQueryParameter("state", "STRING", state.upper()))
+    if county:
+        base_params.append(bigquery.ScalarQueryParameter("county", "STRING", county))
+    if county_fips:
+        base_params.append(bigquery.ScalarQueryParameter("county_fips", "STRING", county_fips))
+
+    risky_params = list(base_params) + [
+        bigquery.ScalarQueryParameter("is_risky", "BOOL", True),
+        bigquery.ScalarQueryParameter("limit", "INT64", limit),
+    ]
+    not_risky_params = list(base_params) + [
+        bigquery.ScalarQueryParameter("is_risky", "BOOL", False),
+        bigquery.ScalarQueryParameter("limit", "INT64", limit),
+    ]
+
+    return {
+        "state": state.upper() if state else None,
+        "county": county,
+        "county_fips": county_fips,
+        "capacity_by_risk": _run_query(risk_summary_sql, params=base_params),
+        "capacity_by_designation": _run_query(designation_summary_sql, params=base_params),
+        "risky_shelters": _run_query(shelter_list_sql, params=risky_params),
+        "not_risky_shelters": _run_query(shelter_list_sql, params=not_risky_params),
+        "fema_attribution": (
+            "This product uses the Federal Emergency Management Agency's National Risk Index "
+            "but is not endorsed by FEMA."
+        ),
+    }
+
+
 def record_live_check(shelter_id: str, status: str, place_id: str | None = None) -> dict[str, Any]:
     """Report what Google Maps showed for one shelter you grounded: status is exists, renamed,
     closed or unknown. Call it after grounding a specific shelter. Nothing is stored; only the
@@ -416,6 +722,7 @@ def build_readiness_brief(
     vulnerable = find_vulnerable_tracts(**where, limit=tract_limit)
     shelters = assess_shelter_accessibility(**where, limit=shelter_limit)
     power = find_power_dependent_counties(**where, limit=5)
+    risk = identify_risky_shelters(**where, limit=shelter_limit)
     to_verify = shelters["shelters"]
 
     return {
@@ -425,6 +732,7 @@ def build_readiness_brief(
         "vulnerable_tracts": vulnerable["tracts"],
         "shelters_to_verify": to_verify,
         "medical_dependency": power["counties"],
+        "shelter_risk_and_capacity": risk,
         "sources": {
             "vulnerable_tracts": vulnerable["source"],
             "shelters_to_verify": shelters["source"],

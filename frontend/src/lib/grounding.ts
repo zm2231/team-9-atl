@@ -29,7 +29,16 @@ function toSpan(text: string, bytes: Uint8Array, seg: NonNullable<NonNullable<Gr
   return null;
 }
 
+/** Gemini sometimes writes inline "[INDEX 1]" citation markers; the sources render as links instead. */
+const CITATION_MARKER = /\s*\[INDEX\s+\d+(?:\s*,\s*\d+)*\]/g;
+
 export function segmentAnswer(text: string, gm?: GroundingMetadata): AnswerSegment[] {
+  return splitAnswer(text, gm)
+    .map((s) => ({ ...s, text: s.text.replace(CITATION_MARKER, "") }))
+    .filter((s) => s.text.trim().length > 0);
+}
+
+function splitAnswer(text: string, gm?: GroundingMetadata): AnswerSegment[] {
   const supports = gm?.groundingSupports ?? [];
   const chunks = gm?.groundingChunks ?? [];
   if (!supports.length) return text ? [{ text, kind: "registry" }] : [];

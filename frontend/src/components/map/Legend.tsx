@@ -19,6 +19,9 @@ export default function Legend() {
         {dot("shelter--unknown", <circle cx="6" cy="6" r="5.7" className="shelter-surge" />)} Recorded in surge zone
       </span>
       <span className="legend__item">
+        <span className="kind kind--noaa">NOAA map</span> surge flag filled from NOAA maps (registry was blank)
+      </span>
+      <span className="legend__item">
         <svg width="12" height="12" aria-hidden="true">
           <text x="3" y="10" className="shelter-warn">!</text>
         </svg>

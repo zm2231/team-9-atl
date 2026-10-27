@@ -1,6 +1,9 @@
-import { flagClass, flagLabel, formatNumber } from "../../lib/flags";
+import { flagClass, flagLabel, formatNumber, NOAA_SURGE_SOURCE } from "../../lib/flags";
 import type { Flag } from "../../lib/types";
+import { useEffect } from "react";
+import { useWheelchairChecker } from "../../lib/useWheelchairChecker";
 import { useStore } from "../../state/store";
+import { MapsWheelchair, SurgeFlag } from "../FlagNotes";
 
 function FlagRow({ label, flag }: { label: string; flag: Flag }) {
   return (
@@ -14,9 +17,16 @@ function FlagRow({ label, flag }: { label: string; flag: Flag }) {
 /** One registry record, shown unedited (FR-004, FR-005, FR-008). */
 export default function ShelterDetails() {
   const { state, dispatch, shelterById } = useStore();
+  const { checkOnce, checking } = useWheelchairChecker();
   const s = state.selectedShelterId ? shelterById.get(state.selectedShelterId) : undefined;
+  const needsCheck = s?.wheelchair_accessible === "UNRECORDED";
+  const selectedId = s?.shelter_id;
+  useEffect(() => {
+    if (needsCheck && selectedId) checkOnce([selectedId]);
+  }, [needsCheck, selectedId]);
   if (!s) return null;
   const live = state.liveChecks.get(s.shelter_id);
+  const wheelchairCheck = state.wheelchairChecks.get(s.shelter_id);
   return (
     <div className="card" data-testid="shelter-details">
       <div className="row">
@@ -40,14 +50,31 @@ export default function ShelterDetails() {
         <span>{s.usage ?? "Not recorded"}</span>
       </div>
       <FlagRow label="Wheelchair access" flag={s.wheelchair_accessible} />
+      {needsCheck && (wheelchairCheck || checking) && (
+        <div className="row">
+          <span className="row__label">Google Maps says</span>
+          {wheelchairCheck ? <MapsWheelchair check={wheelchairCheck} /> : <span className="muted">Checking…</span>}
+        </div>
+      )}
       <FlagRow label="Generator on site" flag={s.generator_onsite} />
       <FlagRow label="Medical-needs designation" flag={s.is_medical} />
-      <FlagRow label="In a surge zone" flag={s.in_surge_slosh_area} />
+      <div className="row">
+        <span className="row__label">In a surge zone</span>
+        <SurgeFlag s={s} />
+      </div>
       {s.quality_flags.includes("suspect_capacity") && (
         <div className="note">Capacity looks implausible; FEMA's value shown unedited and left out of totals.</div>
       )}
       {s.quality_flags.includes("location_disagrees") && (
         <div className="note">Coordinates disagree with the recorded state/county; shown under its recorded county.</div>
+      )}
+      {s.quality_flags.includes("surge_disagrees") && (
+        <div className="note">The registry surge flag disagrees with the NOAA surge maps; the registry value is shown.</div>
+      )}
+      {s.surge_noaa && (
+        <div className="small muted">
+          <span className="kind kind--noaa">NOAA map</span> {NOAA_SURGE_SOURCE}, worst case within about 100 m.
+        </div>
       )}
       {live && (
         <div className={live.status === "renamed" || live.status === "closed" ? "note" : "small"} data-testid="live-check">

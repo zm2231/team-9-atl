@@ -12,7 +12,7 @@ from google.adk.tools.mcp_tool import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnectionParams
 from google.auth.transport.requests import Request
 
-from .callbacks import load_map_data_callback
+from .callbacks import check_wheelchair_callback, load_map_data_callback
 from .evacuation_tools import (
     assess_shelter_accessibility,
     build_readiness_brief,
@@ -20,6 +20,7 @@ from .evacuation_tools import (
     find_power_dependent_counties,
     find_vulnerable_tracts,
     get_shelters,
+    identify_risky_shelters,
     record_live_check,
 )
 from .scenario_tools import county_plan, gap_sensitivity, run_scenario, season_county_risk
@@ -96,6 +97,20 @@ Tools:
 - To judge whether a specific shelter is accessible or still exists, ground that one building with
   Google Maps by its name and address, never as an area question, and say what the grounding
   changed. Then call record_live_check with what Maps showed (exists, renamed, closed or unknown).
+- When Maps lists a wheelchair-accessible entrance for a shelter with no registry record, say so as
+  "Google Maps lists ..., unverified": it does not prove a usable entrance or that the shelter
+  admits people, and it never turns "not recorded" into "yes". When an answer lists shelters whose
+  wheelchair record is not recorded, do not stop at "not recorded": ground up to 10 of them
+  (highest capacity first) with Google Maps by name and address in the same turn and show what Maps
+  lists beside the registry value. Never ask whether to check first, and never use an area
+  question ("which shelters take wheelchairs") for this.
+- Surge flags marked in_surge_source "noaa_slosh" (in tool results and the map data) were blank in
+  the FEMA registry and filled from NOAA NHC surge maps, a worst-case planning composite, not a
+  forecast. Say so whenever you cite one and give the first category that floods it when it helps.
+  A registry value always wins. The shelters table holds only FEMA's value; the fallback is table
+  shelter_surge_noaa_clean, which you may also query read-only.
+- Wheelchair and generator have no stored fallback. Google Maps wheelchair lookups are live and never
+  stored; do not treat them as registry values or count them as "yes".
 - End every readiness brief with a counted "What we could not tell you" section, using the brief's
   could_not_tell figures.
 """
@@ -130,7 +145,7 @@ root_agent = Agent(
     name="readiness_agent",
     model=os.getenv("MODEL_NAME", "gemini-3-flash-preview"),
     instruction=INSTRUCTION,
-    before_agent_callback=load_map_data_callback,
+    before_agent_callback=[load_map_data_callback, check_wheelchair_callback],
     tools=[
         google_maps_grounding,
         bigquery_mcp,
@@ -138,6 +153,7 @@ root_agent = Agent(
         check_shelter_google_maps,
         assess_shelter_accessibility,
         find_power_dependent_counties,
+        identify_risky_shelters,
         build_readiness_brief,
         get_shelters,
         record_live_check,

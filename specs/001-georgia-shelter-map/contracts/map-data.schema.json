@@ -61,9 +61,23 @@
         "generator_onsite": { "$ref": "#/$defs/Flag" },
         "is_medical": { "$ref": "#/$defs/Flag" },
         "in_surge_slosh_area": { "$ref": "#/$defs/Flag" },
+        "in_surge_source": {
+          "description": "registry: the FEMA record (or its blank). noaa_slosh: blank record filled from NOAA NHC surge maps.",
+          "enum": ["registry", "noaa_slosh"]
+        },
+        "surge_noaa": {
+          "description": "NOAA NHC SLOSH MOM v4 (high tide), worst class within ~100 m. Shown whatever the registry says.",
+          "type": "object",
+          "required": ["status", "first_category"],
+          "additionalProperties": false,
+          "properties": {
+            "status": { "enum": ["inundated", "dry", "levee"] },
+            "first_category": { "type": ["integer", "null"], "minimum": 1, "maximum": 5 }
+          }
+        },
         "quality_flags": {
           "type": "array",
-          "items": { "enum": ["suspect_capacity", "location_disagrees"] },
+          "items": { "enum": ["suspect_capacity", "location_disagrees", "surge_disagrees"] },
           "uniqueItems": true
         }
       }
@@ -97,6 +111,10 @@
         "generator": { "$ref": "#/$defs/FlagCounts" },
         "medical": { "$ref": "#/$defs/FlagCounts" },
         "in_surge": { "$ref": "#/$defs/FlagCounts" },
+        "in_surge_from_noaa": {
+          "description": "How many of in_surge's yes/no were filled from NOAA surge maps, not the registry.",
+          "type": "integer", "minimum": 0
+        },
         "households_no_vehicle": { "$ref": "#/$defs/SourcedValue" },
         "share_65_plus": { "$ref": "#/$defs/SourcedValue" },
         "share_disability": { "$ref": "#/$defs/SourcedValue" }

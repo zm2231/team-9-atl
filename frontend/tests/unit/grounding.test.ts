@@ -45,6 +45,16 @@ describe("segmentAnswer", () => {
   it("returns one registry segment with no grounding", () => {
     expect(segmentAnswer("Plain answer.")).toEqual([{ text: "Plain answer.", kind: "registry" }]);
   });
+
+  it("drops inline [INDEX n] citation markers and keeps the grounded span's sources", () => {
+    const text = "Shelter A is open [INDEX 1]. Shelter B is unknown [INDEX 2, 3].";
+    const segs = segmentAnswer(text, {
+      groundingChunks: [{ maps: { uri: "https://maps.google.com/?cid=1", title: "Shelter A" } }],
+      groundingSupports: [{ segment: { text: "Shelter A is open [INDEX 1]." }, groundingChunkIndices: [0] }],
+    });
+    expect(segs.map((s) => s.text).join("")).toBe("Shelter A is open. Shelter B is unknown.");
+    expect(segs[0]).toMatchObject({ kind: "live", sources: [{ title: "Shelter A" }] });
+  });
 });
 
 describe("collectReferences", () => {
