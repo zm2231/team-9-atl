@@ -154,6 +154,10 @@ def planner_inputs(rows: list[dict], sites: dict) -> dict[str, Any]:
                     "label": label(row),
                 }
             )
+    for site_id, loc in out["location_override"].items():
+        registry = by_id["medical_shelter"].get(site_id) or by_id["dialysis"].get(site_id) or {}
+        for key in ("lat", "lon"):
+            loc.setdefault(key, float(registry[key]))
     return out
 
 

@@ -135,24 +135,28 @@ def _day_of_year(value: Any) -> int:
     from datetime import date
 
     d = value if isinstance(value, date) else date.fromisoformat(str(value))
-    return date(2001, d.month, d.day).timetuple().tm_yday
+    day = 28 if (d.month, d.day) == (2, 29) else d.day
+    return date(2001, d.month, day).timetuple().tm_yday
 
 
 @cache
 def storm_day_of_year() -> np.ndarray:
+    from datetime import date, timedelta
+
     clat, clon = county_centres()
-    days = []
+    days, seasons = [], []
     for s in data.tracks()["storms"]:
         if s["dmin_ga_km"] >= 250.0 or not YEARS[0] <= s["season"] <= YEARS[1]:
             continue
         pts = np.array(s["points"], float)
         d = _distance_km(clat[None, :], clon[None, :], pts[:, 1:2], pts[:, 2:3]).min(axis=1)
-        genesis = int(s["sid"][4:7])
-        days.append(genesis + pts[int(d.argmin()), 0] / 24.0)
-    out = np.array(days)
-    if len(out) != len(events()["storm_season"]):
+        genesis = date(int(s["sid"][:4]), 1, 1) + timedelta(days=int(s["sid"][4:7]) - 1)
+        closest = genesis + timedelta(hours=float(pts[int(d.argmin()), 0]))
+        days.append(_day_of_year(closest))
+        seasons.append(s["season"])
+    if seasons != [int(x) for x in events()["storm_season"]]:
         raise ValueError("tracks.json and season_events.npz disagree on the storm list")
-    return out
+    return np.array(days, float)
 
 
 def season_remaining_share(as_of_date: Any) -> float:

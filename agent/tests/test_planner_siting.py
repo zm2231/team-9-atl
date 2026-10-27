@@ -181,3 +181,25 @@ def test_as_of_date_keeps_rest_of_season():
     assert np.isclose(
         season.outlook_event_rates("long_run", as_of_date="2026-01-01").sum(), 200 / 76
     )
+
+
+def test_single_coordinate_update_moves_reach():
+    site = next(s for s in data.sites()["medical_shelters"] if s["generator"] == "YES")
+    rows = [row("a", site["shelter_id"], "lat", "34.9", "2026-10-20T00:00:00")]
+    planner = site_updates.planner_inputs(rows, data.sites())
+    assert planner["location_override"][site["shelter_id"]] == {"lat": 34.9, "lon": site["lon"]}
+    ev, ignored, _ = season.site_inputs(
+        season.events(), location_override=planner["location_override"]
+    )
+    assert ignored == []
+    j = [str(x) for x in ev["shelter_id"]].index(site["shelter_id"])
+    assert (ev["shelter_reach"][:, j] == season.reach_of(34.9, site["lon"])).all()
+
+
+def test_as_of_date_handles_leap_years():
+    assert season._day_of_year("2024-02-29") == season._day_of_year("2025-02-28")
+    assert season._day_of_year("2024-03-01") == season._day_of_year("2025-03-01")
+    assert season.season_remaining_share("2024-02-29") == 1.0
+    days = season.storm_day_of_year()
+    cut = season._day_of_year("2026-09-15")
+    assert season.season_remaining_share("2024-09-15") == round(float((days > cut).mean()), 4)
