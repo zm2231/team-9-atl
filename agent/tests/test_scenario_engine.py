@@ -191,3 +191,19 @@ def test_no_vehicle_at_risk_on_real_counties():
     assert (p["no_vehicle"] <= p["power_dependent"] + 1e-9).all()
     share65 = np.array([c["no_vehicle_share_65"] for c in counties])
     assert np.allclose(p["no_vehicle"], p["power_dependent"] * share65)
+
+
+def test_storm_features_from_drawn_track():
+    t = storms.drawn_track([[-85.0, 27.0], [-84.3, 30.0], [-83.5, 33.5]], 4, forward_kmh=25)
+    f = storms.storm_features(t)
+    assert f["storm_peak_kt"] == 124.0
+    assert f["storm_speed_kmh"] == pytest.approx(25.0, rel=0.05)
+
+
+def test_outage_rises_with_category():
+    fips = [c["county_fips"] for c in data.counties()].index("13275")
+    medians = []
+    for cat in (1, 3, 5):
+        t = storms.drawn_track([[-85.0, 27.0], [-84.3, 30.0], [-83.5, 33.5]], cat)
+        medians.append(np.median(engine.run([t], n_draws=400, seed=3).outage[:, fips]))
+    assert medians[0] < medians[1] < medians[2]

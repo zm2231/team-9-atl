@@ -4,7 +4,7 @@ import numpy as np
 
 from . import data
 from .model import FEATURES, OutageModel
-from .storms import support
+from .storms import storm_features, support
 from .windfield import TrackPoint, exposure
 
 DIALYSIS_DOWN_SHARE = 0.5
@@ -40,6 +40,8 @@ def run(tracks: list[list[TrackPoint]], n_draws: int = 400, seed: int = 20261027
     for i, (track, k) in enumerate(zip(tracks, per, strict=True)):
         e = exposure(track, lats, lons)
         e["pop"] = pop
+        for key, value in storm_features(track).items():
+            e[key] = np.full(len(lats), value)
         wind.append(e["peak_wind_kt"])
         h34.append(e["hours_34kt"])
         arrival.append(e["first_34kt_hour"])

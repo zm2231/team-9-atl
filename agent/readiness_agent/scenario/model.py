@@ -5,11 +5,16 @@ import numpy as np
 
 from .data import DATA_DIR
 
-FEATURES = ["peak_wind_kt", "hours_34kt", "hours_50kt", "min_dist_km", "pop"]
+FEATURES = [
+    "peak_wind_kt", "hours_34kt", "hours_50kt", "min_dist_km", "pop",
+    "storm_peak_kt", "storm_speed_kmh",
+]
+N_TERMS = len(FEATURES) + 1
 
 
 def transform(x: np.ndarray) -> np.ndarray:
-    return np.log1p(np.asarray(x, float))
+    logged = np.log1p(np.asarray(x, float))
+    return np.column_stack([logged, logged[:, 0] ** 2])
 
 
 def expit(x: np.ndarray) -> np.ndarray:
@@ -32,7 +37,7 @@ class OutageModel:
 
     def sample(self, features: np.ndarray, rng: np.random.Generator, n_draws: int) -> np.ndarray:
         z = (transform(features) - self.mu) / self.sd
-        k = 1 + len(FEATURES)
+        k = 1 + N_TERMS
         theta = self.mean[None, :] + rng.standard_normal((n_draws, len(self.mean))) @ self.chol.T
         latent = theta[:, :1] + theta[:, 1:k] @ z.T + theta[:, k:]
         latent = latent + rng.normal(0.0, self.tau_storm, size=(n_draws, 1))
