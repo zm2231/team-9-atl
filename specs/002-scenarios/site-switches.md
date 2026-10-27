@@ -31,12 +31,13 @@ Today `receiving.shortfall` and the season table's `uncovered` mix two different
 |---|---|---|
 | `lacking_shelter.no_powered_seat` | Power-dependent residents expected to seek a powered seat who find no generator-recorded seat they can reach before tropical-storm winds | Relocation share × power-dependent at risk, minus seats allocated within reach (`allocate` in `build_season.py`; `shortfall` in `receiving.py`) |
 | `lacking_shelter.no_dialysis_chair` | Dialysis patients displaced (county at 50%+ outage, or centre in the surge zone) who find no chair within reach | As in `build_season.py` today |
-| `needing_transport.no_vehicle` | People at risk who live in households without a vehicle and cannot drive themselves to any site | Power-dependent at risk × the county's no-vehicle share. The share is population-weighted `pct_no_vehicle` from `vulnerability_tracts_clean` (ACS) |
+| `needing_transport.no_vehicle` | People at risk who live in households without a vehicle and cannot drive themselves to any site | Power-dependent at risk × the county's no-vehicle share among households headed by someone 65 or older (ACS 2023 5-year table B25045, by county). The all-household share is the low case |
 | `needing_transport.cannot_arrive_in_time` | Seekers whose drive time plus evacuation delay (base case) to their nearest open powered seat is longer than the time until tropical-storm winds reach their county | `receiving.sites[].arrives_before_ts_winds`, per county |
 
 Rules:
 - The two needs are reported side by side and never added together, because one person can be in both. If a single "people needing help" figure is wanted, it is `max(lacking_shelter, needing_transport)` per county as a lower bound, labelled as such.
-- `no_vehicle` assumes power-dependent Medicare residents lack a vehicle at the same rate as their county. Older and disabled residents are likely less able to drive, so the figure probably understates the need. It is labelled an assumption, and its multiplier is open decision 1.
+- `no_vehicle` uses the 65+ householder rate because emPOWER counts Medicare beneficiaries, who are mostly 65 or older. In Georgia, 8.6% of households headed by someone 65+ have no vehicle, against 5.9% of all households. By county, the 65+ rate is a median 1.31× the all-household rate (10th-90th percentile 0.63× to 1.93×). This replaces a hand-set multiplier.
+- Both rates still undercount people who live in a household with a car but cannot drive (because of disability, or because the car leaves with someone else). ACS has no county table crossing vehicles with disability. National travel data reports a higher zero-vehicle rate for 65+ adults with travel-limiting disabilities; that figure is not verified here, and it is a candidate for a stated high case.
 - Need for ambulance or stretcher transport is not in our data. It goes in "What we could not tell you".
 
 With switches set, every figure above is returned twice: `baseline` (registry values) and `with_switches`, plus `delta`. The operator sees what the change does, not just the new total.
@@ -67,8 +68,25 @@ The season tables are precomputed, so a switch cannot change them directly. Plan
 - `baseline` with no switches equals today's output.
 - The season rerun with no switches reproduces the BigQuery table values.
 
-## 7. Open decisions
+## 7. Prior art
 
-1. The `no_vehicle` multiplier: the county share alone (low), or low / base / high cases, for example 1×, 1.5×, 2×. These multipliers are not from data, so the team needs to choose and label them.
-2. Whether the season view needs switches for the demo, or the single-storm view is enough. Section 4 is the extra work.
-3. Whether a switched site should also drop out of the map's `affected_shelter_ids` highlighting, or stay highlighted with its marker.
+| Practice | What it does | What we take from it |
+|---|---|---|
+| Hurricane Evacuation Studies (USACE, FEMA, NOAA; Georgia's was updated by Dewberry for the USACE Savannah District) | A batch study per state, every few years. It estimates evacuating population, public shelter demand, the transportation-dependent population, and clearance times, from behavioral surveys and Census data | The batch side: the season build plays this role. NHC training gives HES public shelter planning rates of 3-8% of evacuees on the coast and 10% inland, which are a reference point for our 10/20/40% relocation share among power-dependent residents |
+| HURREVAC (FEMA, NHC) | An operational tool that applies the HES numbers to a live forecast, with decision timelines and clearance times | The one-off side: `run_scenario` with switches. We use it for planning only, because Maps terms rule out emergency response |
+| Transit-dependent population estimates (post-Katrina research; GAO-07-44) | Zero-vehicle households from Census/ACS, with errors of up to ±30% at small scales. The GAO found those left behind were largely older, disabled and low-income people without cars | Use ACS by age, and report the need as a range, not a point |
+| HAZUS (FEMA) | Reports displaced households and short-term shelter requirements as separate outputs | Supports reporting "lacking shelter" and "needing transport" separately |
+
+## 8. One-off runs, batch runs, and learning
+
+| Mode | Who runs it | What it does |
+|---|---|---|
+| One-off | The agent, at the operator's request | `run_scenario` with the operator's switches: "what if this shelter is off, or that one has a generator?" Answers in seconds |
+| Batch | The season build, offline | Runs every simulated storm across the whole state and ranks places and unknowns (`scenario_season_county`, `scenario_fix_ranking`). Named switch sets ("all unrecorded generators confirmed", "coastal shelters closed") are precomputed here rather than recomputed live |
+| Learning (later) | After each season | Add the season's storms and EAGLE-I county outages to the labels, refit the hierarchical model (new storms update the storm-effect spread and county effects), rerun the back-test, and publish the change in coverage. Shelter use and live-check results recorded during the season can later calibrate the relocation share. This needs storage of our own outcomes, not of Maps or Routes results |
+
+## 9. Open decisions
+
+1. Vehicle access: proposal is ACS 65+ householder share as base and the all-household share as low, as above. Whether to add a disability high case once its source is verified.
+2. Season view switches: proposal is that the demo uses live switches in the single-storm view only, and the batch precomputes named switch sets (section 8), so section 4's live rerun waits.
+3. Map highlighting: proposal is that a switched-off site shows as "off in this scenario" (its own marker) rather than "affected", since affected means hit by the storm.
