@@ -106,7 +106,7 @@
     }
    ],
    "items": [],
-   "note": null
+   "note": "Season figures are a planning stress test, not a forecast. Back-testing 2018-2025, the model expected 119 county outages of 25%+ statewide against 200 observed, and it under-predicts major storms (Irma 2017: 38% observed, 11% modelled); read the 1-in-10 and 1-in-100 figures as floors for a major storm."
   },
   "people_at_risk": {
    "status": "ok",
@@ -156,7 +156,7 @@
     },
     {
      "key": "lacking_shelter_total",
-     "label": "Lacking shelter: total",
+     "label": "Lacking shelter: seats plus chairs (upper bound; a dialysis patient can be in both)",
      "unit": "people",
      "provenance": "simulated",
      "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
@@ -198,7 +198,7 @@
     }
    ],
    "items": [],
-   "note": "Lacking shelter and needing transport are separate needs and are never added: one person can be in both."
+   "note": "Lacking shelter and needing transport are separate needs and are never added: one person can be in both. These figures are planning arithmetic on county totals and stated assumptions (share seeking a seat, Florida inflow, patients per station), not counts of unique people."
   },
   "where_they_would_go": {
    "status": "not_applicable",

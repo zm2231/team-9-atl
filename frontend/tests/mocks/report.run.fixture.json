@@ -391,7 +391,7 @@
     }
    ],
    "items": [],
-   "note": "Lacking shelter and needing transport are separate needs and are never added: one person can be in both."
+   "note": "Lacking shelter and needing transport are separate needs and are never added: one person can be in both. These figures are planning arithmetic on county totals and stated assumptions (share seeking a seat, Florida inflow, patients per station), not counts of unique people."
   },
   "where_they_would_go": {
    "status": "ok",

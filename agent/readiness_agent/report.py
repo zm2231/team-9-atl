@@ -66,7 +66,9 @@ def _people_season(row: dict, source: str) -> list[dict[str, Any]]:
          ("lacking_shelter", "no_powered_seat")),
         ("no_dialysis_chair", "Lacking shelter: no dialysis chair",
          ("lacking_shelter", "no_dialysis_chair")),
-        ("lacking_shelter_total", "Lacking shelter: total", ("lacking_shelter", "total")),
+        ("lacking_shelter_total",
+         "Lacking shelter: seats plus chairs (upper bound; a dialysis patient can be in both)",
+         ("lacking_shelter", "total")),
         ("needing_transport_no_vehicle", "Needing transport: no vehicle (65+ households)",
          ("needing_transport", "no_vehicle")),
         ("needing_transport_no_vehicle_low", "Needing transport: no vehicle (all households)",
@@ -90,7 +92,13 @@ def _outlook(plan: dict) -> dict[str, Any] | None:
 
 
 PEOPLE_NOTE = ("Lacking shelter and needing transport are separate needs and are never added: "
-               "one person can be in both.")
+               "one person can be in both. These figures are planning arithmetic on county "
+               "totals and stated assumptions (share seeking a seat, Florida inflow, patients per "
+               "station), not counts of unique people.")
+SEASON_NOTE = ("Season figures are a planning stress test, not a forecast. Back-testing 2018-2025, "
+               "the model expected 119 county outages of 25%+ statewide against 200 observed, and "
+               "it under-predicts major storms (Irma 2017: 38% observed, 11% modelled); read the "
+               "1-in-10 and 1-in-100 figures as floors for a major storm.")
 
 
 def county_report(plan: dict, profile: dict | None) -> dict[str, Any]:
@@ -135,7 +143,8 @@ def county_report(plan: dict, profile: dict | None) -> dict[str, Any]:
         p25 = row.get("p_outage25_per_year")
         s["power_outage"] = section(src, figures=[figure(
             "p_outage25_per_year", "Chance per year of a 25%+ customer outage", "share",
-            "simulated", src, value=p25)], note=row.get("note"))
+            "simulated", src, value=p25)], note=" ".join(
+            x for x in (row.get("note"), SEASON_NOTE) if x))
         s["people_at_risk"] = section(src, figures=_people_season(row, src), note=PEOPLE_NOTE)
     else:
         s["power_outage"] = missing(freq.get("reason", "season model unavailable"))
@@ -207,7 +216,7 @@ def state_report(run: dict, worst: list[dict] | None, gaps: dict | None) -> dict
     s["power_outage"] = section(src, figures=[figure(
         "p_any_county_outage25_per_year",
         "Chance per year that any Georgia county has a 25%+ customer outage", "share",
-        "simulated", src, value=sw.get("p_any_county_outage25_per_year"))])
+        "simulated", src, value=sw.get("p_any_county_outage25_per_year"))], note=SEASON_NOTE)
     s["people_at_risk"] = section(src, figures=_people_season(sw, src), note=PEOPLE_NOTE)
     s["where_they_would_go"] = not_applicable(
         "Destinations are matched per county; ask for a county plan.")
