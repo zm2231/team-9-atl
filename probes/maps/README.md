@@ -69,7 +69,9 @@ does not join or roll up county data: production joins must use `county_fips`.
 For a single building, `candidate.grounding_metadata.grounding_chunks[*].maps`
 was populated with a Maps source and usually a `place_id`. The committed
 `results.csv` keeps only source identifiers allowed by Maps terms, plus source
-snapshot fields, short derived labels, timing, and token counts. It never
+snapshot fields, timing, and token counts. Per-shelter existence and accessibility
+labels are not stored; the counts above are the only record, and a runtime check
+re-grounds each shelter. It never
 contains raw model prose, Maps URLs, place details, ratings, hours, route
 duration/distance, or polylines. `supplemental_results.csv` deliberately has
 blank `place_id` values on routes because route chunks do not provide one.
