@@ -7,7 +7,7 @@ import sys
 from collections import defaultdict
 
 import numpy as np
-from google.cloud import bigquery
+from google.cloud import bigquery  # pyright: ignore[reportAttributeAccessIssue]
 
 from .. import data, storms
 from ..model import FEATURES, expit, transform
@@ -50,6 +50,18 @@ def facility_beds() -> dict:
     return json.loads(raw)["counties"]
 
 
+def with_vehicle_access(rows: list[dict]) -> list[dict]:
+    acs = json.loads((DATA / "acs_vehicles.json").read_text())["counties"]
+    return [
+        {
+            **r,
+            "no_vehicle_share_65": float(acs[r["county_fips"]]["no_vehicle_share_65"]),
+            "no_vehicle_share_all": float(acs[r["county_fips"]]["no_vehicle_share_all"]),
+        }
+        for r in rows
+    ]
+
+
 def build_counties(bq: bigquery.Client) -> list[dict]:
     rows = query(bq, f"""
       SELECT t.county_fips, p.county AS county_name,
@@ -66,7 +78,7 @@ def build_counties(bq: bigquery.Client) -> list[dict]:
       WHERE t.total_pop > 0
       GROUP BY 1, 2 ORDER BY 1""")
     beds = facility_beds()
-    return [
+    return with_vehicle_access([
         {
             "county_fips": r.county_fips, "county_name": r.county_name,
             "lat": round(r.lat, 5), "lon": round(r.lon, 5), "pop": int(r.pop),
@@ -80,7 +92,7 @@ def build_counties(bq: bigquery.Client) -> list[dict]:
             ),
         }
         for r in rows
-    ]
+    ])
 
 
 def read_gazetteer(path: str) -> list[dict]:
@@ -236,13 +248,17 @@ def fit(feats, fips, sids, share, cust, county_ids):
     x[rows, k + np.array([ci[f] for f in fips])] = 1.0
     x[rows, k + nc + np.array([si[s] for s in sids])] = 1.0
     y = logit((share * cust + 0.5) / (cust + 1.0))
-    tau_c, tau_s = 0.70, 0.80
-    for _ in range(EM_ITERS):
+    def solve(tau_c: float, tau_s: float) -> tuple[np.ndarray, np.ndarray, float]:
         prior = np.r_[4.0, np.repeat(1.5, len(FEATURES)), np.repeat(tau_c, nc), np.repeat(tau_s, ns)]
         cov_unit = np.linalg.pinv(x.T @ x + np.diag(1 / prior**2))
         coef = cov_unit @ x.T @ y
         sigma = max(float(np.sqrt(np.mean((y - x @ coef) ** 2))), 0.25)
-        cov = sigma**2 * cov_unit
+        return coef, sigma**2 * cov_unit, sigma
+
+    tau_c, tau_s = 0.70, 0.80
+    coef, cov, sigma = solve(tau_c, tau_s)
+    for _ in range(EM_ITERS):
+        coef, cov, sigma = solve(tau_c, tau_s)
         diag = np.diag(cov)
         tau_c = float(np.sqrt(np.mean(coef[k:k + nc] ** 2 + diag[k:k + nc])))
         tau_s = float(np.sqrt(np.mean(coef[k + nc:] ** 2 + diag[k + nc:])))
@@ -313,6 +329,8 @@ def labelled_max_kt(tracks: dict, labelled: set[str]) -> dict[str, float]:
             continue
         track = storm_track(s)
         origin = storms.origin_of(track)
+        if origin is None:
+            continue
         out[origin] = max(out.get(origin, 0.0), storms.peak_near_ga(track))
     return out
 
