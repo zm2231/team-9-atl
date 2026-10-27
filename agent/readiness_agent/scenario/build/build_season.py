@@ -438,7 +438,9 @@ def load(name: str, rows: list[dict], schema: list[tuple], description: str) -> 
             ["bq", "load", "--replace", "--source_format=NEWLINE_DELIMITED_JSON", ref, body, spec],
             check=True,
         )
-    subprocess.run(["bq", "update", "--description", description, ref], check=True)
+    subprocess.run(
+        ["bq", "update", "--description", description, ref], check=True, stdout=subprocess.DEVNULL
+    )
 
 
 def main() -> None:
