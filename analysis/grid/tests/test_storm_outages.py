@@ -58,8 +58,9 @@ def test_gaps_nulls_window_start_and_passage(tmp_path):
     storm_outages.compute(con, outages)
     got = {r[0]: r[1:] for r in con.execute("""
         SELECT fips, n_records_window, null_value_intervals, gap_intervals, customers_out_at_window_start,
-               peak_customers_out, peak_time_utc
+               peak_customers_out, peak_time_utc, hours_above_10pct
         FROM storm_county_metrics""").fetchall()}
-    # t[3] is a statewide gap; the 90 at t[8] is after passage (05:45), so not the peak.
-    assert got["13001"] == (5, 1, 1, 30, 40, t[1])
-    assert got["13003"] == (3, 0, 1, 5, 5, t[0])
+    # t[3] is a statewide gap; 40 carries through the null at t[2] and the gap, so 13001 is >= 10% at
+    # t[0..3], t[5] and t[8] (1.5 h). The 90 at t[8] is after passage (05:45), so not the peak.
+    assert got["13001"] == (5, 1, 1, 30, 40, t[1], 1.5)
+    assert got["13003"] == (3, 0, 1, 5, 5, t[0], 0.75)
