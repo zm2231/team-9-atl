@@ -352,6 +352,7 @@ def test_every_registered_query_tool_returns_the_cap_as_a_result(monkeypatch):
 
 
 def test_site_flags_parse_yes_no_strings():
+    pytest.importorskip("geopandas")
     from readiness_agent.scenario.build.build_sites import flag
 
     assert [flag(v) for v in ("Yes", "NO", "n", "", None, True, False)] == [
