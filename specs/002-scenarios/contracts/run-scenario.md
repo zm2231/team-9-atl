@@ -16,6 +16,8 @@ The drawn track and category come from the `CONTEXT v1` part of the user's messa
 | `category` | int 0-5 | no | `CONTEXT v1` `scenario.category` | For a drawn track, sets the storm's strength. For matched storms, an optional override that rescales them |
 | `county_fips` | string | no | `CONTEXT v1` `county_fips` | The selected county; turns on the receiving-site section |
 | `case` | `low`, `base`, `high` | no | `base` | Traffic and relocation assumptions |
+| `sites_off` | list of `shelter_id` or `ccn` | no | `CONTEXT v1` `scenario.site_overrides.off` | Operator what-if: the site takes nobody |
+| `assume_generator` | list of `shelter_id` | no | `CONTEXT v1` `scenario.site_overrides.assume_generator` | Operator what-if: the shelter's seats count as powered |
 
 A one-off scenario is conditional: it uses only the past storms that were at a similar place, heading, time of year and strength, and reports what share of them went on to reach Georgia. The season view for a county (`season_county_risk`) is unconditional: it uses every storm since 1950 that came within 250 km of Georgia, weighted by how often each kind occurs.
 
@@ -86,7 +88,12 @@ Medical shelters and dialysis centres that stay usable: outside counties at the 
 | `drive_minutes` | Live from Routes, with `status`: `live` or `straight_line` when Routes fails |
 | `evacuation_delay_minutes` | low / base / high, from g-flow's corridor load for this origin, multiplier capped at 4 |
 | `arrives_before_ts_winds` | Whether the base-case trip finishes before tropical-storm winds reach the starting county |
-| `shortfall` | For the selected county: power-dependent residents expected to seek a powered seat versus generator-recorded seats reachable in time |
+| `lacking_shelter` | `seeking_powered_seat`, `powered_seats_reachable` (generator recorded or assumed, regardless of timing), `no_powered_seat` |
+| `needing_transport` | `cannot_arrive_in_time`: seekers who could be seated, but only at sites whose base-case trip ends after tropical-storm winds arrive |
+| `baseline`, `delta` | Present when switches are set: the same two blocks with no switches, and the difference |
+| `ignored_ids` | Switch ids that match no site |
+
+The two needs are never added together: one person can be in both. Per county, `needing_transport.no_vehicle` (p10/p50/p90) is power-dependent residents at risk × the county's no-vehicle share among households headed by someone 65+ (ACS 2023 B25045); `no_vehicle_low` uses all households. `statewide` carries the same sums.
 
 The agent then grounds the top receiving sites with Google Maps and drops or flags any that no longer exist or are not what the record says.
 
@@ -116,3 +123,10 @@ A `CONTEXT v1` part that is not a JSON object, a malformed track, or a category 
 ## Not in the output
 
 Individuals or addresses; restoration time; rain flooding and tornadoes; any stored Routes or Maps result.
+
+## Related tools
+
+| Tool | Returns |
+|---|---|
+| `season_county_risk(county_fips, limit, outlook, sites_off, assume_generator, case)` | Season risk under an outlook: `long_run` (default), `recent`, `la_nina`, `neutral`, `el_nino`, `noaa_aug_2026` (an outside forecast input that cites NOAA). Each result carries `outlook_note` with that outlook's 2018-2025 back-test. With switches or a non-base case it reruns the saved 2,000-event season live (`run: "live"`, about 0.2 s); otherwise it reads `scenario_season_county` |
+| `county_plan(county_fips, outlook)` | One call: `readiness_brief` (from `build_readiness_brief`), `power_outage_frequency` under the outlook and the long run, `generator_switch_effect` (every unrecorded medical-shelter generator assumed), and `audit` (the brief's ranked tracts against the rest of the state, from ACS B03002, audit only). Any section that fails is `{status: "not_determined"}` |

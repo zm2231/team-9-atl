@@ -463,7 +463,7 @@ def _section(source: str, build) -> dict[str, Any]:
 
 def _geo_ids(value: Any) -> list[str]:
     if isinstance(value, dict):
-        own = [value["geo_id"]] if isinstance(value.get("geo_id"), str) else []
+        own = [value[k] for k in ("geo_id", "tract_id") if isinstance(value.get(k), str)]
         return own + [g for v in value.values() for g in _geo_ids(v)]
     if isinstance(value, list):
         return [g for v in value for g in _geo_ids(v)]
