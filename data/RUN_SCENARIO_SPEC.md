@@ -29,9 +29,9 @@ These reuse the names of the scenario object the frontend already sends, so the 
 
 | Field | Meaning |
 |---|---|
-| `affected_county_fips` | Counties whose median outage is at least 10% |
+| `affected_county_fips` | Counties at or above 10% outage in at least half of the simulated draws |
 | `affected_shelter_ids` | Medical shelters in those counties or inside the chosen category's surge zone |
-| `receiving_top` | `shelter_id` or `ccn` of the receiving sites in rank order (selected county only) |
+| `receiving_top` | `shelter_id` of the receiving medical shelters in rank order (selected county only), for `get_shelters`. Dialysis centres appear only in `receiving.sites`, identified by `ccn` |
 
 
 ### `scenario` (one object)
@@ -51,7 +51,8 @@ These reuse the names of the scenario object the frontend already sends, so the 
 
 | Field | Definition |
 |---|---|
-| `counties_affected` | Counties with median outage at least 10% |
+| `counties_affected` | In each simulated draw, the number of counties at or above 10% outage; reported as p10 / p50 / p90 across draws |
+| `counties_affected_in_most_draws` | A single count: counties at or above 10% outage in at least half of the draws. Equals the length of `affected_county_fips` |
 | `power_dependent_at_risk` | Sum over counties of Medicare residents on electricity-dependent equipment × outage share |
 | `oxygen_users_at_risk` | Same, for oxygen services |
 | `dialysis_patients_at_risk` | Dialysis patients in counties where outage reaches the dialysis-down threshold, or whose county's centres sit in the surge zone |
@@ -68,10 +69,10 @@ These reuse the names of the scenario object the frontend already sends, so the 
 | `power_dependent` | Residents on electricity-dependent equipment, and p10 / p50 / p90 at risk | HHS emPOWER |
 | `oxygen_users` | Oxygen users, and at risk | HHS emPOWER |
 | `home_health_users` | Home-health users, and at risk | HHS emPOWER |
-| `dialysis_patients` | Patients, centres and stations in the county, and whether the centres count as down | emPOWER, CMS |
+| `dialysis_patients` | `patients`, `centres`, `stations` in the county, and `centres_down` (median outage at or above the dialysis-down threshold) | emPOWER, CMS |
 | `nursing_home_beds`, `assisted_living_beds` | Beds in the county; generator recorded / not recorded | CMS, GaMap2Care (aggregated) |
-| `in_surge_zone` | Medical shelters and dialysis centres in the county inside the category's surge zone | NOAA SLOSH |
-| `status` | `modelled`, plus `outside_labeled_support` or `censored_count` where emPOWER suppresses small counts | |
+| `in_surge_zone` | `shelter_ids` and `dialysis_ccns` in the county inside the chosen category's surge zone (empty when no category) | NOAA SLOSH |
+| `status` | List: `modelled`, plus `outside_labeled_support` when the scenario is, and `censored_count` where emPOWER suppresses small counts | |
 
 ### `receiving` (only when a county is selected)
 
@@ -99,6 +100,18 @@ From `evac_prod.power_dependent_counties_clean` (HHS emPOWER, Medicare beneficia
 | Oxygen services | 26,090 |
 | Dialysis (ESRD) | 18,026 |
 | Home health services | 15,648 |
+
+## Status results
+
+When the tool cannot run a scenario it returns `{status, message, source}` instead, with no numbers:
+
+| `status` | When |
+|---|---|
+| `needs_track_or_position` | No drawn track with two or more valid points, and no `lat`/`lon` |
+| `bad_date` | `date` is not `YYYY-MM-DD` |
+| `no_matching_past_storms` | No storm since 1950 matches the position, heading and month |
+
+A `CONTEXT v1` part that is not a JSON object, a malformed track, or a category outside 0-5 is ignored rather than raising.
 
 ## Not in the output
 
