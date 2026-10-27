@@ -398,3 +398,23 @@ def test_site_flags_parse_yes_no_strings():
 
     assert [flag(v) for v in ("Yes", "NO", "n", "", None, True, False)] == [
         "YES", "NO", "NO", "UNRECORDED", "UNRECORDED", "YES", "NO"]
+
+
+def test_replay_report_uses_observed_outage_and_fills_every_section():
+    from readiness_agent import report
+
+    storm = {"name": "Irma 2017", "sid": "x", "counties": 3, "observed_mean": 0.38,
+             "predicted_mean": 0.11}
+    people = {k: 10.4 for k in ("power_dependent_at_risk", "oxygen_users_at_risk",
+                                "dialysis_patients_at_risk", "facility_beds_exposed",
+                                "needing_transport_no_vehicle")}
+    rows = [{"county_fips": "13051", "county_name": "Chatham", "outage_share": 0.4},
+            {"county_fips": "13001", "county_name": "Appling", "outage_share": 0.1}]
+    r = report.replay_report(storm, people, rows, 2, "src")
+    assert r["scope"] == "run" and r["subject"]["replay"] is True
+    assert list(r["sections"]) == list(report.SECTIONS)
+    out = r["sections"]["power_outage"]
+    assert out["figures"][0]["value"] == 1 and out["items"][0]["county_fips"] == "13051"
+    assert "2 counties" in out["note"]
+    assert all(f["provenance"] == "registry" and f["value"] == 10
+               for f in r["sections"]["people_at_risk"]["figures"])
