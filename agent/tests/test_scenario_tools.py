@@ -114,8 +114,28 @@ def test_switches_merge_context_and_arguments():
 
     s = _switches({"site_overrides": {"off": ["a", 3], "assume_generator": "b"}}, ["c"], None)
     assert s["sites_off"] == frozenset({"a", "c"})
-    assert s["assume_generator"] == frozenset({"b"})
-    assert _switches({"site_overrides": "x"}, None, None)["sites_off"] == frozenset()
+    assert s["assume_generator"] == frozenset()
+    assert set(s["invalid"]) == {"3", "'b'"}
+    bad = _switches({"site_overrides": "x"}, None, None)
+    assert bad["sites_off"] == frozenset() and bad["invalid"] == ["'x'"]
+
+
+def test_malformed_switches_leave_baseline_and_are_reported():
+    track = {"type": "LineString", "coordinates": [[-86.5, 27.0], [-85.2, 30.5], [-84.3, 31.6], [-82.0, 34.0]]}
+    base = run_scenario(tool_context=ctx({"county_fips": "13095", "scenario": {"track": track, "category": 4}}))
+    for off in ["140058", [123], {"x": 1}]:
+        r = run_scenario(tool_context=ctx({"county_fips": "13095", "scenario": {
+            "track": track, "category": 4, "site_overrides": {"off": off}}}))
+        assert r["receiving"]["lacking_shelter"] == base["receiving"]["lacking_shelter"]
+        assert r["receiving"]["ignored_ids"]
+        assert "delta" not in r["receiving"]
+
+
+def test_season_malformed_switch_reported():
+    from readiness_agent.scenario_tools import season_county_risk
+
+    r = season_county_risk(county_fips="13127", sites_off="140058")
+    assert "'140058'" in r["ignored_ids"]
 
 
 def test_season_rejects_unknown_outlook_with_source():

@@ -74,23 +74,32 @@ def _category(value: Any) -> int | None:
     return category if 0 <= category <= 5 else None
 
 
-def _ids(value: Any) -> set[str]:
-    if isinstance(value, str):
-        value = [value]
+def _ids(value: Any) -> tuple[set[str], list[str]]:
+    if value is None:
+        return set(), []
     if not isinstance(value, list):
-        return set()
-    return {v for v in value if isinstance(v, str) and v}
+        return set(), [repr(value)]
+    valid = {v for v in value if isinstance(v, str) and v}
+    invalid = [repr(v) for v in value if not (isinstance(v, str) and v)]
+    return valid, invalid
 
 
 def _switches(scenario_ctx: dict[str, Any], sites_off: Any, assume_generator: Any) -> dict:
     overrides = scenario_ctx.get("site_overrides")
-    overrides = overrides if isinstance(overrides, dict) else {}
-    return {
-        "sites_off": frozenset(_ids(sites_off) | _ids(overrides.get("off"))),
-        "assume_generator": frozenset(
-            _ids(assume_generator) | _ids(overrides.get("assume_generator"))
-        ),
-    }
+    invalid: list[str] = []
+    if overrides is not None and not isinstance(overrides, dict):
+        invalid.append(repr(overrides))
+        overrides = {}
+    overrides = overrides or {}
+    out: dict[str, Any] = {}
+    for key, arg, ctx_key in (("sites_off", sites_off, "off"),
+                              ("assume_generator", assume_generator, "assume_generator")):
+        a_valid, a_bad = _ids(arg)
+        c_valid, c_bad = _ids(overrides.get(ctx_key))
+        out[key] = frozenset(a_valid | c_valid)
+        invalid += a_bad + c_bad
+    out["invalid"] = invalid
+    return out
 
 
 def _status(status: str, message: str, **extra: Any) -> dict[str, Any]:
@@ -272,6 +281,7 @@ def run_scenario(
             )
 
         receiving = receive(switches["sites_off"], switches["assume_generator"])
+        receiving["ignored_ids"] = [*receiving.get("ignored_ids", []), *switches["invalid"]]
         if switches["sites_off"] or switches["assume_generator"]:
             baseline = receive(frozenset(), frozenset())
             receiving["baseline"] = {
@@ -327,6 +337,7 @@ def run_scenario(
                 "vehicle (ACS 2023 B25045); low case uses all households",
                 "sites_off": sorted(switches["sites_off"]),
                 "assume_generator": sorted(switches["assume_generator"]),
+                "ignored_switch_values": switches["invalid"],
                 "case": case,
             },
         },
@@ -376,10 +387,11 @@ def season_county_risk(
         }
     case = case if case in CASES else "base"
     note = season_outlook_note(outlook)
+    switches = _switches({}, sites_off, assume_generator)
     if sites_off or assume_generator or case != "base":
         run = season.run_season(
-            outlook, sites_off=list(_ids(sites_off)),
-            assume_generator=list(_ids(assume_generator)), case=case,
+            outlook, sites_off=sorted(switches["sites_off"]),
+            assume_generator=sorted(switches["assume_generator"]), case=case,
         )
         rows = run["counties"]
         if county_fips:
@@ -392,7 +404,8 @@ def season_county_risk(
             "outlook": outlook, "label": run["label"], "outlook_note": note,
             "storms_per_year": run["storms_per_year"], "case": case,
             "sites_off": run["sites_off"], "assume_generator": run["assume_generator"],
-            "ignored_ids": run["ignored_ids"], "statewide": run["statewide"],
+            "ignored_ids": [*run["ignored_ids"], *switches["invalid"]],
+            "statewide": run["statewide"],
             "counties": rows, "run": "live",
             "source": SOURCES["season"],
         }
