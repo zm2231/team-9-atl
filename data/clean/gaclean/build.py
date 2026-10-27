@@ -372,7 +372,6 @@ def build_assisted_living(con) -> None:
         FROM g
         LEFT JOIN hazard_tracts h ON h.geo_id = g.nearest_tract_geo_id
         LEFT JOIN {zone_join("g", "FACID", "pub_lon", "pub_lat")} z ON z.FACID = g.FACID
-        ORDER BY 1
     """)
     expect(con, "assisted_living", count(con, "SELECT * FROM raw_gamap2care"))
     assert count(con, "SELECT DISTINCT FACID FROM assisted_living") == count(con, "SELECT * FROM assisted_living")
@@ -442,18 +441,13 @@ def build_storm_events(con) -> None:
     unmatched(con, "storm events without a storm", "SELECT event_id FROM storm_events WHERE storm_atcf_id IS NULL")
 
 
-TABLES = {
-    "care_facilities": "SELECT * FROM care_facilities",
-    "hazard_tracts": "SELECT * FROM hazard_tracts",
-    "power_dependent_counties": "SELECT * FROM power_dependent_counties",
-    "dialysis_centers": "SELECT * FROM dialysis_centers",
-    "assisted_living": "SELECT * FROM assisted_living",
-    "contraflow_intersections": "SELECT * FROM contraflow_intersections",
-    "gema_shelter_feed": "SELECT * FROM gema_shelter_feed",
-    "storm_events": "SELECT * FROM storm_events",
-    "storm_history": "SELECT * FROM storm_history",
+KEYS = {
+    "care_facilities": "cms_certification_number_ccn", "hazard_tracts": "geo_id", "power_dependent_counties": "fips_code",
+    "dialysis_centers": "ccn", "assisted_living": "FACID", "contraflow_intersections": "OBJECTID",
+    "gema_shelter_feed": "GlobalID", "storm_events": "event_id", "storm_history": "storm_atcf_id, state",
 }
-HELD = {"overture_places": "SELECT * FROM overture_places"}
+TABLES = {name: f"SELECT * FROM {name} ORDER BY {key}" for name, key in KEYS.items()}
+HELD = {"overture_places": "SELECT * FROM overture_places ORDER BY id"}
 
 
 def build_all(con) -> None:
