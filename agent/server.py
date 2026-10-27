@@ -22,7 +22,7 @@ def _export_traces_to_cloud() -> None:
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-    provider = TracerProvider(resource=Resource.create({"service.name": "evac-readiness-agent"}))
+    provider = TracerProvider(resource=Resource.create({"service.name": "georgia-shelter-readiness"}))
     provider.add_span_processor(
         BatchSpanProcessor(CloudTraceSpanExporter(project_id=os.environ["GOOGLE_CLOUD_PROJECT"]))
     )

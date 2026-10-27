@@ -1,8 +1,8 @@
 # Deploying the agent
 
-The ADK agent in `agent/` runs on Cloud Run as `evac-readiness-agent` (project `qwiklabs-gcp-04-edc952746633`, region `us-east1`).
+The ADK agent in `agent/` runs on Cloud Run as `georgia-shelter-readiness` (project `qwiklabs-gcp-04-edc952746633`, region `us-east1`).
 
-- Live URL: https://evac-readiness-agent-hcodkdjhka-ue.a.run.app
+- Live URL: https://georgia-shelter-readiness-256576640429.us-east1.run.app (shared password: any username, password in secret `access-password`)
 - It serves the shelter map at `/` and the ADK REST API at `/apps`, `/run` and `/run_sse` (app `readiness_agent`).
 - Every push to `main` that touches `agent/`, `frontend/`, `deploy/`, `Dockerfile` or the workflow redeploys through `.github/workflows/deploy-agent.yml`. It can also be run by hand from the Actions tab.
 

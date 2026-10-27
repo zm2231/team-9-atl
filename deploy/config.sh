@@ -1,7 +1,7 @@
 # shellcheck shell=bash disable=SC2034
 PROJECT_ID=qwiklabs-gcp-04-edc952746633
 REGION=us-east1
-SERVICE=evac-readiness-agent
+SERVICE=georgia-shelter-readiness
 AR_REPO=team9
 RUNTIME_SA=evac-agent-run@${PROJECT_ID}.iam.gserviceaccount.com
 DEPLOY_SA=github-deployer@${PROJECT_ID}.iam.gserviceaccount.com
