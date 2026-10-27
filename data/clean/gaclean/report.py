@@ -60,8 +60,7 @@ def checks(con) -> dict[str, list[tuple]]:
     a = _q(con, """SELECT COUNT(*), COUNT(*) FILTER (WHERE facility_identity_status = 'aggregated_small_home'),
                           SUM(licensed_beds), median(km_nearest_medical_shelter)
                    FROM assisted_living""")
-    a_disagree = _q(con, """SELECT COUNT(*) FROM assisted_living a JOIN raw_power p ON p.fips_code = a.county_fips
-                            WHERE lower(replace(a.COUNTY, ' ', '')) <> lower(replace(p.name, ' ', ''))""")[0]
+    a_disagree = _q(con, """SELECT COUNT(*) FROM assisted_living_pre a JOIN assisted_living_nearest n USING (FACID) JOIN raw_power p ON p.fips_code = n.nearest_tract_county_fips WHERE lower(replace(a.COUNTY, ' ', '')) <> lower(replace(p.name, ' ', ''))""")[0]
     cf = _q(con, "SELECT COUNT(*), COUNT(*) FILTER (WHERE evac_zone IS NOT NULL) FROM contraflow_intersections")
     se = {k: n for k, n in con.execute("SELECT storm_match_status, COUNT(*) FROM storm_events GROUP BY 1 ORDER BY 1").fetchall()}
     sh = _q(con, "SELECT COUNT(*) FROM storm_history")[0]
@@ -103,9 +102,9 @@ def checks(con) -> dict[str, list[tuple]]:
         ],
         "assisted_living (GaMap2Care)": [
             ("gamap2care_facility", a[0], "GaMap2Care facility fields", f"one row per FACID; {_fmt(a[2])} licensed beds"),
-            ("small_home_aggregated", a[1], "FACID, name, address, city, ZIP, dates and point of homes with 6 or fewer beds",
-             ("opaque `FACID` (pch_small_<county>_<n>); identifying fields null; `Latitude`/`Longitude` = tract "
-              "centroid; status aggregated_small_home")),
+            ("small_home_aggregated", a[1], "every GaMap2Care field of homes with 6 or fewer beds",
+             ("opaque `FACID` (pch_small_<county>_<n>); only `facility_type` and `licensed_beds` kept; "
+              "`Latitude`/`Longitude` = tract centroid; status aggregated_small_home")),
             ("nearest_tract_centroid", a[0], "GaMap2Care `COUNTY` text",
              f"`county_fips` (imputed); {a_disagree} disagree with the county text, both kept"),
             ("gema_zone", z[2], "no evacuation zone", "`evac_zone`, `evac_zone_county`"),

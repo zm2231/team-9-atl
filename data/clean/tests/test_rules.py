@@ -196,9 +196,10 @@ def test_small_personal_care_homes_lose_name_address_and_point(con):
         "evac_zone FROM assisted_living").fetchall()}
     assert "PCH1" not in rows
     assert rows["pch_small_13001_001"] == (None, None, 33.0, -84.0, "aggregated_small_home", 6, "13001", None)
-    small = con.execute(f"SELECT {', '.join(B.SMALL_HOME_REMOVED)} FROM assisted_living "
+    hidden = [c.split()[0] for c in GAMAP if c.split()[0] not in (*B.SMALL_HOME_KEPT, "FACID", "Latitude", "Longitude")]
+    small = con.execute(f"SELECT {', '.join(hidden)} FROM assisted_living "
                         "WHERE facility_identity_status = 'aggregated_small_home'").fetchall()
-    assert small == [(None,) * len(B.SMALL_HOME_REMOVED)]
+    assert small == [(None,) * len(hidden)]
     assert rows["PCH2"][:5] == ("Home PCH2", "PCH2 Oak St", 33.01, -84.02, "recorded")
     assert rows["ALC1"][4:] == ("recorded", 6, "13003", "A")
     assert B.unprovenanced(con, "assisted_living") == []
@@ -267,6 +268,14 @@ def test_real_inputs_canonical_numbers():
             OR EXISTS (SELECT 1 FROM raw_gamap2care g WHERE g.Latitude = a.Latitude AND g.Longitude = a.Longitude))
     """).fetchall()[0][0]
     assert small == 0
+    published = con.execute("""
+        SELECT COUNT(*) FROM (
+            SELECT nearest_tract_geo_id, licensed_beds FROM assisted_living
+            WHERE facility_identity_status = 'aggregated_small_home'
+            GROUP BY ALL HAVING COUNT(DISTINCT (FACTYPE, FAC_ST, OPERSTDESC, SUBTYPE, COUNTY, FAC_CITY, FAC_ZIP,
+                                               OPEN_DATE, Accuracy, Latitude, Longitude, county_fips, evac_zone,
+                                               km_nearest_medical_shelter)) > 1)""").fetchall()[0][0]
+    assert published == 0
     assert nums["evacuation_zones"]["tracts_in_zone"] == 198
     p = nums["power_dependent_counties"]
     assert (p["dialysis_live"], p["dialysis_stations"], p["facility_esrd_dialysis_any_dme_snapshot"]) == (18026, 5956, 6009)

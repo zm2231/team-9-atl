@@ -42,7 +42,7 @@ its published value; cleaned values go in appended columns with `_status` and `_
 | Rule | Rows | Before | After |
 |---|---:|---|---|
 | `gamap2care_facility` | 1,894 | GaMap2Care facility fields | one row per FACID; 46,567 licensed beds |
-| `small_home_aggregated` | 1,044 | FACID, name, address, city, ZIP, dates and point of homes with 6 or fewer beds | opaque `FACID` (pch_small_<county>_<n>); identifying fields null; `Latitude`/`Longitude` = tract centroid; status aggregated_small_home |
+| `small_home_aggregated` | 1,044 | every GaMap2Care field of homes with 6 or fewer beds | opaque `FACID` (pch_small_<county>_<n>); only `facility_type` and `licensed_beds` kept; `Latitude`/`Longitude` = tract centroid; status aggregated_small_home |
 | `nearest_tract_centroid` | 1,894 | GaMap2Care `COUNTY` text | `county_fips` (imputed); 59 disagree with the county text, both kept |
 | `gema_zone` | 78 | no evacuation zone | `evac_zone`, `evac_zone_county` |
 | `medical_shelter_distance_pending` | 1,894 | none | `km_nearest_medical_shelter` median 45.2 (pending teammate shelters_clean) |

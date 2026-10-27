@@ -71,9 +71,9 @@ Status values: `recorded` (the source has a value), `unrecorded` (the source has
   assisted living or personal care homes.
 - **Small personal care homes.** 1,044 of the 1,568 personal care homes have 6 or fewer licensed beds.
   In every output their `FACID` is an opaque key (`pch_small_<county>_<n>`, numbered by tract and
-  beds); name, address, city, ZIP, license and operating dates and geocode accuracy are null; their
+  beds); every other GaMap2Care field except `facility_type` and `licensed_beds` is null; their
   `Latitude`/`Longitude` is the tract centroid, and their distances and evacuation zone are taken
-  from it. Beds, type and status stay. Status `aggregated_small_home`.
+  from it. Status `aggregated_small_home`.
 - **County of an assisted living home.** Imputed from the nearest tract centroid; 59 disagree with
   the GaMap2Care county text, and both are kept.
 - **Shelter feed.** The WebEOC feed had no rows when fetched. `gema_shelter_feed` fixes its 16

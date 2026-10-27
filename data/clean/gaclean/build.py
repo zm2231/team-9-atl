@@ -49,7 +49,7 @@ SHELTER_FEED_FIELDS = [
     "shelter_closing_datetime", "shelter_closing_qualifier",
 ]
 SOURCE_COLUMNS["gema_shelter_feed"] = SHELTER_FEED_FIELDS
-SMALL_HOME_REMOVED = ["FAC_CITY", "FAC_ZIP", "OPERSTATDT", "OPEN_DATE", "EFFECTIVE_DATE_OF_LICENSE", "Accuracy"]
+SMALL_HOME_KEPT = ("facility_type", "licensed_beds")
 RAW_SOURCE = {"assisted_living": "raw_gamap2care", "contraflow_intersections": "raw_contraflow",
               "storm_events": "raw_ncei"}
 STORM_AGGREGATES = ["storm_name", "year", "events", "tropical_type_events", "counties", "deaths_direct",
@@ -337,6 +337,16 @@ def build_assisted_living(con) -> None:
     small = f"g.facility_type = 'PERSONAL CARE HOME' AND g.licensed_beds <= {R.SMALL_HOME_BEDS}"
     con.execute("CREATE TABLE assisted_living_pre AS SELECT * FROM raw_gamap2care")
     nearest_tract(con, "assisted_living", "FACID", "Longitude", "Latitude")
+    key = ("printf('pch_small_%s_%03d', g.nearest_tract_county_fips, ROW_NUMBER() OVER ("
+           "PARTITION BY is_small_home, g.nearest_tract_county_fips "
+           "ORDER BY g.nearest_tract_geo_id, g.licensed_beds, g.FACID))")
+    published = {"FACID": f"CASE WHEN is_small_home THEN {key} ELSE g.FACID END",
+                 "Latitude": "g.pub_lat", "Longitude": "g.pub_lon"}
+    cols = ", ".join(
+        f"{published[c]} AS {c}" if c in published
+        else f"g.{c}" if c in SMALL_HOME_KEPT
+        else f"CASE WHEN is_small_home THEN NULL ELSE g.{c} END AS {c}"
+        for c in source_columns(con, "assisted_living"))
     con.execute(f"""
         CREATE TABLE assisted_living AS
         WITH g AS (
@@ -347,16 +357,7 @@ def build_assisted_living(con) -> None:
             LEFT JOIN assisted_living_nearest n USING (FACID)
             LEFT JOIN raw_tracts t ON t.geo_id = n.nearest_tract_geo_id
         ), med AS (SELECT {R.point('longitude', 'latitude')} AS geom FROM raw_shelters WHERE is_medical)
-        SELECT CASE WHEN is_small_home THEN printf('pch_small_%s_%03d', g.nearest_tract_county_fips,
-                        ROW_NUMBER() OVER (PARTITION BY is_small_home, g.nearest_tract_county_fips
-                                           ORDER BY g.nearest_tract_geo_id, g.licensed_beds, g.FACID))
-                    ELSE g.FACID END AS FACID,
-               g.* EXCLUDE (FACID, NAME, ADDRESS, Latitude, Longitude, {', '.join(SMALL_HOME_REMOVED)},
-                            is_small_home, nearest_tract_geo_id, nearest_tract_county_fips, pub_lon, pub_lat),
-               {', '.join(f"CASE WHEN is_small_home THEN NULL ELSE g.{c} END AS {c}" for c in SMALL_HOME_REMOVED)},
-               CASE WHEN is_small_home THEN NULL ELSE g.NAME END AS NAME,
-               CASE WHEN is_small_home THEN NULL ELSE g.ADDRESS END AS ADDRESS,
-               g.pub_lat AS Latitude, g.pub_lon AS Longitude,
+        SELECT {cols},
                CASE WHEN is_small_home THEN 'aggregated_small_home' ELSE 'recorded' END AS facility_identity_status,
                CASE WHEN is_small_home THEN 'small_home_aggregated' ELSE 'gamap2care_facility' END AS facility_identity_rule,
                {R.tag("g.nearest_tract_geo_id", "nearest_tract_geo_id", "'imputed'", "nearest_tract_centroid")},
@@ -380,8 +381,8 @@ def build_assisted_living(con) -> None:
               """SELECT a.FACID, a.COUNTY, p.name FROM assisted_living a JOIN raw_power p ON p.fips_code = a.county_fips
                  WHERE lower(replace(a.COUNTY, ' ', '')) <> lower(replace(p.name, ' ', ''))""")
     leaked = count(con, f"""SELECT * FROM assisted_living a WHERE facility_identity_status = 'aggregated_small_home'
-                            AND (NAME IS NOT NULL OR ADDRESS IS NOT NULL
-                                 OR {' OR '.join(f'{c} IS NOT NULL' for c in SMALL_HOME_REMOVED)}
+                            AND ({' OR '.join(f'{c} IS NOT NULL' for c in source_columns(con, "assisted_living")
+                                              if c not in (*SMALL_HOME_KEPT, "FACID", "Latitude", "Longitude"))}
                                  OR FACID IN (SELECT FACID FROM raw_gamap2care))""")
     assert leaked == 0, f"{leaked} small homes carry an identifying field"
 
@@ -529,8 +530,7 @@ def numbers(con) -> dict:
                        COALESCE(SUM(licensed_beds) FILTER (WHERE facility_identity_status = 'aggregated_small_home'), 0)
                 FROM assisted_living GROUP BY 1 ORDER BY 1""").fetchall()
         } | {"county_text_disagrees_with_imputed_fips": q("""
-                SELECT COUNT(*) FROM assisted_living a JOIN raw_power p ON p.fips_code = a.county_fips
-                WHERE lower(replace(a.COUNTY, ' ', '')) <> lower(replace(p.name, ' ', ''))""")[0],
+                SELECT COUNT(*) FROM assisted_living_pre a JOIN assisted_living_nearest n USING (FACID) JOIN raw_power p ON p.fips_code = n.nearest_tract_county_fips WHERE lower(replace(a.COUNTY, ' ', '')) <> lower(replace(p.name, ' ', ''))""")[0],
              "median_km_nearest_medical_shelter_pending": q(
                 "SELECT median(km_nearest_medical_shelter) FROM assisted_living")[0]},
         "contraflow_intersections": {
