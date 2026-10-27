@@ -582,6 +582,8 @@ def _section(source: str, build) -> dict[str, Any]:
 
     try:
         return {**build(), "source": source}
+    except QueryTooLargeError:
+        raise
     except (GoogleAPIError, GoogleAuthError, RuntimeError, KeyError, ValueError) as exc:
         return {"status": NOT_DETERMINED, "reason": type(exc).__name__, "source": source}
 
