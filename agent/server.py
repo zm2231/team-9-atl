@@ -33,7 +33,7 @@ if os.environ.get("TRACE_TO_CLOUD") == "true":
 app = get_fast_api_app(
     agents_dir=str(AGENTS_DIR),
     web=False,
-    session_service_uri=None,  # in-memory sessions; nothing is persisted
+    session_service_uri=os.environ.get("SESSION_SERVICE_URI"),
     use_local_storage=False,
     max_llm_calls=16,
 )
