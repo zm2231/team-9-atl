@@ -1,21 +1,30 @@
 import json
 from datetime import UTC, datetime
 from datetime import date as Date
+from pathlib import Path
 from typing import Any
 
 from .evacuation_tools import _dataset_name, _project_id, _run_query
 
 CONTEXT_PREFIX = "CONTEXT v1 "
-RANGE_LABEL = "scenario range from 27 past storms"
+_MODEL = json.loads(
+    (Path(__file__).parent / "scenario" / "data" / "outage_model_metrics.json").read_text()
+)
+_YEARS = sorted(int(p["storm"].rsplit(" ", 1)[-1]) for p in _MODEL["per_storm"])
+MODEL_FACTS = (
+    f"{_MODEL['storms']} storms {_YEARS[0]}-{_YEARS[-1]}, {_MODEL['rows']:,} county-storm rows; "
+    f"held-out storms: {_MODEL['inside_10_90']:.0%} of counties inside the 10-90 range"
+)
+RANGE_LABEL = f"scenario range from {_MODEL['storms']} past storms"
 SOURCES = {
     "scenario": (
-        "Simulated · outage model fitted on DOE EAGLE-I county outages for 27 storms 2018-2025 "
-        "(county_storm_outages) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER "
+        f"Simulated · outage model fitted on DOE EAGLE-I county outages ({MODEL_FACTS}; "
+        f"{_MODEL['label_table']}) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER "
         "(power_dependent_counties_clean)"
     ),
     "season": (
         "Simulated · storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on "
-        "2018-2025 EAGLE-I labels (scenario_season_county)"
+        f"EAGLE-I labels ({MODEL_FACTS}) (scenario_season_county)"
     ),
     "gaps": "Simulated · season model rerun with each unknown set low and high (scenario_fix_ranking)",
     "audit": "Survey · ACS 2020-2024 B03002, audit only, never a model input (ext_ga_acs_race_tract)",
@@ -132,7 +141,7 @@ def run_scenario(
 ) -> dict[str, Any]:
     """Model a hurricane scenario for Georgia counties: outage share ranges, power-dependent residents, oxygen, home-health and dialysis patients at risk, and, for a selected county, reachable medical shelters and dialysis centres with live drive times and evacuation delay.
 
-    Uses the track drawn on the map (sent in CONTEXT v1) when there is one; otherwise matches past storms that passed near (lat, lon) with a similar heading, time of year and intensity. Call it whenever the user asks what a storm would do, who is at risk, or where people could go. All numbers come from this tool; report them as a scenario range from 27 past storms.
+    Uses the track drawn on the map (sent in CONTEXT v1) when there is one; otherwise matches past storms that passed near (lat, lon) with a similar heading, time of year and intensity. Call it whenever the user asks what a storm would do, who is at risk, or where people could go. All numbers come from this tool; report them with the range_label the tool returns.
 
     sites_off (shelter_id or ccn) and assume_generator (shelter_id) are operator what-ifs (assume_generator on a shelter recorded NO means adding a generator there; on UNRECORDED it means confirming one; each site's generator_assumption says which), merged with CONTEXT v1 scenario.site_overrides; the result then carries baseline, with_switches and delta for people lacking shelter and needing transport.
     """

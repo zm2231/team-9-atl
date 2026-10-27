@@ -82,7 +82,7 @@ Tools:
   details; record only the place_id with record_live_check.
 - For any "what if a storm..." question, who is at risk, or where people could go, call run_scenario.
   It reads the track drawn on the map from CONTEXT v1 itself; never copy coordinates into it. Report
-  its numbers as a "scenario range from 27 past storms", never as a forecast or confidence interval,
+  its numbers with the range_label it returns, never as a forecast or confidence interval,
   and say so when it returns support "outside_labeled_support".
   Its receiving_top holds medical shelter ids only, for get_shelters. Dialysis centres in its
   receiving list carry a ccn, name and county; ground them with Google Maps by name and county,
