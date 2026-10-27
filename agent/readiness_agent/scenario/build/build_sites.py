@@ -37,7 +37,9 @@ def surge_rasters(slosh_dir: Path) -> dict[int, Path]:
     return {c: slosh_dir / f"ga_coast_cat{c}_mom_inundation_high.tif" for c in CATEGORIES}
 
 
-def surge_categories(rasters: dict[int, Path], lats: np.ndarray, lons: np.ndarray) -> list[list[int]]:
+def surge_categories(
+    rasters: dict[int, Path], lats: np.ndarray, lons: np.ndarray
+) -> list[list[int]]:
     hits: list[list[int]] = [[] for _ in lats]
     for cat, path in rasters.items():
         with rasterio.open(path) as r:
@@ -61,14 +63,23 @@ def surge_zones(rasters: dict[int, Path]) -> dict:
             band = r.read(1, out_shape=(h, w), resampling=Resampling.nearest)
             transform = r.transform * r.transform.scale(r.width / w, r.height / h)
         mask = (band != NODATA) & (band >= 1) & (band <= 21)
-        polys = [shape(g) for g, v in features.shapes(mask.astype(np.uint8), mask=mask, transform=transform) if v == 1]
+        polys = [
+            shape(g)
+            for g, v in features.shapes(mask.astype(np.uint8), mask=mask, transform=transform)
+            if v == 1
+        ]
         merged = unary_union(polys).simplify(SIMPLIFY_DEG, preserve_topology=True)
-        out.append({
-            "type": "Feature",
-            "properties": {"category": cat, "source": "NOAA NHC SLOSH MOM v4, high tide, worst case across storms",
-                           "resolution_m": round(MAP_FACTOR * 9.3)},
-            "geometry": json.loads(json.dumps(mapping(merged), default=float)),
-        })
+        out.append(
+            {
+                "type": "Feature",
+                "properties": {
+                    "category": cat,
+                    "source": "NOAA NHC SLOSH MOM v4, high tide, worst case across storms",
+                    "resolution_m": round(MAP_FACTOR * 9.3),
+                },
+                "geometry": json.loads(json.dumps(mapping(merged), default=float)),
+            }
+        )
     return {"type": "FeatureCollection", "features": out}
 
 
@@ -84,26 +95,46 @@ def round_coords(obj, nd=4):
 
 def build_sites(bq: bigquery.Client, rasters: dict[int, Path]) -> dict:
     shelters = bq.query(f"""
-      SELECT shelter_id, shelter_name, county_fips, latitude, longitude, evacuation_capacity, generator_onsite
-      FROM {table('shelters_clean')}
-      WHERE is_medical AND latitude IS NOT NULL AND evacuation_capacity > 0 ORDER BY shelter_id""").to_dataframe()
+      SELECT shelter_id, shelter_name, county_fips, latitude, longitude, evacuation_capacity,
+        generator_onsite
+      FROM {table("shelters_clean")}
+      WHERE is_medical AND latitude IS NOT NULL AND evacuation_capacity > 0
+      ORDER BY shelter_id""").to_dataframe()
     dialysis = bq.query(f"""
       SELECT ccn, facility_name, county_fips, latitude, longitude, stations, late_shift
-      FROM {table('dialysis_centers_flow_staging')}
+      FROM {table("dialysis_centers_flow_staging")}
       WHERE latitude IS NOT NULL AND stations > 0 ORDER BY ccn""").to_dataframe()
-    s_surge = surge_categories(rasters, shelters.latitude.to_numpy(float), shelters.longitude.to_numpy(float))
-    d_surge = surge_categories(rasters, dialysis.latitude.to_numpy(float), dialysis.longitude.to_numpy(float))
+    s_surge = surge_categories(
+        rasters, shelters.latitude.to_numpy(float), shelters.longitude.to_numpy(float)
+    )
+    d_surge = surge_categories(
+        rasters, dialysis.latitude.to_numpy(float), dialysis.longitude.to_numpy(float)
+    )
     return {
         "medical_shelters": [
-            {"shelter_id": str(r.shelter_id), "name": r.shelter_name, "county_fips": r.county_fips,
-             "lat": round(float(r.latitude), 5), "lon": round(float(r.longitude), 5),
-             "seats": int(r.evacuation_capacity), "generator": flag(r.generator_onsite), "in_surge": s}
+            {
+                "shelter_id": str(r.shelter_id),
+                "name": r.shelter_name,
+                "county_fips": r.county_fips,
+                "lat": round(float(r.latitude), 5),
+                "lon": round(float(r.longitude), 5),
+                "seats": int(r.evacuation_capacity),
+                "generator": flag(r.generator_onsite),
+                "in_surge": s,
+            }
             for r, s in zip(shelters.itertuples(), s_surge, strict=True)
         ],
         "dialysis_centers": [
-            {"ccn": str(r.ccn), "name": r.facility_name, "county_fips": r.county_fips,
-             "lat": round(float(r.latitude), 5), "lon": round(float(r.longitude), 5),
-             "stations": int(r.stations), "late_shift": flag(r.late_shift), "in_surge": s}
+            {
+                "ccn": str(r.ccn),
+                "name": r.facility_name,
+                "county_fips": r.county_fips,
+                "lat": round(float(r.latitude), 5),
+                "lon": round(float(r.longitude), 5),
+                "stations": int(r.stations),
+                "late_shift": flag(r.late_shift),
+                "in_surge": s,
+            }
             for r, s in zip(dialysis.itertuples(), d_surge, strict=True)
         ],
     }
@@ -111,35 +142,47 @@ def build_sites(bq: bigquery.Client, rasters: dict[int, Path]) -> dict:
 
 def build_facility_beds(bq: bigquery.Client, county_zip: Path) -> dict:
     nursing = bq.query(f"""
-      SELECT cms_certification_number_ccn AS ccn, latitude, longitude, number_of_certified_beds AS beds
-      FROM {table('care_facilities_clean')} WHERE latitude IS NOT NULL""").to_dataframe()
+      SELECT cms_certification_number_ccn AS ccn, latitude, longitude,
+        number_of_certified_beds AS beds
+      FROM {table("care_facilities_clean")} WHERE latitude IS NOT NULL""").to_dataframe()
     assisted = bq.query(f"""
       SELECT county_fips, SUM(licensed_beds) AS beds, COUNT(*) AS homes
-      FROM {table('ext_ga_assisted_living')}
-      WHERE county_fips IS NOT NULL AND (operstdesc IS NULL OR UPPER(operstdesc) = 'ACTIVE') AND closeddate IS NULL GROUP BY 1""").to_dataframe()
+      FROM {table("ext_ga_assisted_living")}
+      WHERE county_fips IS NOT NULL AND (operstdesc IS NULL OR UPPER(operstdesc) = 'ACTIVE')
+        AND closeddate IS NULL
+      GROUP BY 1""").to_dataframe()
     with zipfile.ZipFile(county_zip) as z:
         shp = next(n for n in z.namelist() if n.endswith(".shp"))
     counties = gpd.read_file(f"zip://{county_zip}!{shp}")
     counties = counties[counties.STATEFP == "13"][["GEOID", "geometry"]].to_crs("EPSG:4326")
-    pts = gpd.GeoDataFrame(nursing, geometry=gpd.points_from_xy(nursing.longitude, nursing.latitude), crs="EPSG:4326")
+    pts = gpd.GeoDataFrame(
+        nursing, geometry=gpd.points_from_xy(nursing.longitude, nursing.latitude), crs="EPSG:4326"
+    )
     joined = gpd.sjoin(pts, counties, how="left", predicate="within")
     missing = joined.GEOID.isna()
     if missing.any():
-        near = gpd.sjoin_nearest(pts[missing].to_crs("EPSG:5070"), counties.to_crs("EPSG:5070"), how="left")
+        near = gpd.sjoin_nearest(
+            pts[missing].to_crs("EPSG:5070"), counties.to_crs("EPSG:5070"), how="left"
+        )
         joined.loc[missing, "GEOID"] = near.GEOID.to_numpy()
     nh = joined.groupby("GEOID").agg(beds=("beds", "sum"), homes=("ccn", "count"))
     rows = {}
     for fips in sorted(counties.GEOID):
         a = assisted[assisted.county_fips == fips]
         rows[fips] = {
-            "nursing_home_beds": int(nh.beds.get(fips, 0) or 0), "nursing_homes": int(nh.homes.get(fips, 0) or 0),
+            "nursing_home_beds": int(nh.beds.get(fips, 0) or 0),
+            "nursing_homes": int(nh.homes.get(fips, 0) or 0),
             "assisted_living_beds": int(a.beds.sum()) if len(a) else 0,
             "assisted_living_homes": int(a.homes.sum()) if len(a) else 0,
         }
-    return {"source": "CMS nursing homes (care_facilities_clean, joined to Census 2023 county boundaries); "
-                      "GaMap2Care assisted living and personal care homes (ext_ga_assisted_living, active or unstated status, not closed)",
-            "generator": "not recorded for any facility", "counties": rows,
-            "unjoined_nursing_homes": int(missing.sum())}
+    return {
+        "source": "CMS nursing homes (care_facilities_clean, joined to Census 2023 county "
+        "boundaries); GaMap2Care assisted living and personal care homes "
+        "(ext_ga_assisted_living, active or unstated status, not closed)",
+        "generator": "not recorded for any facility",
+        "counties": rows,
+        "unjoined_nursing_homes": int(missing.sum()),
+    }
 
 
 def main() -> None:
@@ -156,9 +199,14 @@ def main() -> None:
     beds = build_facility_beds(bq, a.county_zip)
     (DATA / "facility_beds.json").write_text(json.dumps(beds, separators=(",", ":")))
     summary = {
-        "medical_shelters": len(sites["medical_shelters"]), "dialysis_centers": len(sites["dialysis_centers"]),
-        "shelters_in_surge_by_cat": {c: sum(c in s["in_surge"] for s in sites["medical_shelters"]) for c in CATEGORIES},
-        "dialysis_in_surge_by_cat": {c: sum(c in s["in_surge"] for s in sites["dialysis_centers"]) for c in CATEGORIES},
+        "medical_shelters": len(sites["medical_shelters"]),
+        "dialysis_centers": len(sites["dialysis_centers"]),
+        "shelters_in_surge_by_cat": {
+            c: sum(c in s["in_surge"] for s in sites["medical_shelters"]) for c in CATEGORIES
+        },
+        "dialysis_in_surge_by_cat": {
+            c: sum(c in s["in_surge"] for s in sites["dialysis_centers"]) for c in CATEGORIES
+        },
         "surge_zones_kb": round((DATA / "surge_zones.geojson").stat().st_size / 1024),
         "nursing_home_beds": sum(v["nursing_home_beds"] for v in beds["counties"].values()),
         "assisted_living_beds": sum(v["assisted_living_beds"] for v in beds["counties"].values()),

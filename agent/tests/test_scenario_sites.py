@@ -45,4 +45,9 @@ def test_facility_beds_cover_every_county():
     assert beds["unjoined_nursing_homes"] == 0
     assert sum(v["nursing_home_beds"] for v in beds["counties"].values()) > 0
     for row in beds["counties"].values():
-        assert set(row) == {"nursing_home_beds", "nursing_homes", "assisted_living_beds", "assisted_living_homes"}
+        assert set(row) == {
+            "nursing_home_beds",
+            "nursing_homes",
+            "assisted_living_beds",
+            "assisted_living_homes",
+        }
