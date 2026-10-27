@@ -243,7 +243,7 @@ def synthetic_check(ctx: dict, observed: dict[str, int]) -> dict:
     ev = ctx["ev"]
     syn = ev["event_synthetic"]
     out = {
-        "events": int(len(syn)),
+        "events": len(syn),
         "historical_events": int((~syn).sum()),
         "synthetic_events": int(syn.sum()),
         "synthetic_outside_support": int((syn & ev["event_outside_support"]).sum()),
@@ -505,7 +505,7 @@ def season_rows(ev: dict, outlook: str) -> list[dict]:
     d = worst_per_season(
         {"d": ev["displaced"]}, rate, np.random.default_rng(SEED), N_SEASONS_TABLE
     )["d"]
-    displaced = np.quantile(d, 0.9, axis=0)
+    displaced, displaced_100 = np.quantile(d, (0.9, 0.99), axis=0)
     rows = []
     for i, c in enumerate(r["counties"]):
         ls = c["lacking_shelter"]
@@ -524,6 +524,12 @@ def season_rows(ev: dict, outlook: str) -> list[dict]:
                 "no_dialysis_chair_1in10": ls["no_dialysis_chair"]["one_in_10"],
                 "no_vehicle_1in10": c["needing_transport"]["no_vehicle"]["one_in_10"],
                 "storms_per_year": r["storms_per_year"],
+                "power_dependent_affected_1in100": c["power_dependent_affected"]["one_in_100"],
+                "dialysis_displaced_1in100": round(float(displaced_100[i])),
+                "uncovered_1in100": ls["total"]["one_in_100"],
+                "no_powered_seat_1in100": ls["no_powered_seat"]["one_in_100"],
+                "no_dialysis_chair_1in100": ls["no_dialysis_chair"]["one_in_100"],
+                "no_vehicle_1in100": c["needing_transport"]["no_vehicle"]["one_in_100"],
             }
         )
     return rows
@@ -575,6 +581,7 @@ NOTE = (
 )
 TYPICAL = "median season (worst storm of the season)"
 ONE_IN_10 = "90th percentile season"
+ONE_IN_100 = "99th percentile season"
 OUTLOOK_FIELD = ("outlook", "STRING", "Season outlook used to weight storms")
 STORMS_FIELD = ("storms_per_year", "FLOAT", "Storms per year near Georgia under this outlook")
 SEASON_SCHEMA = [
@@ -610,6 +617,12 @@ SEASON_SCHEMA = [
         "households (ACS B25045), " + ONE_IN_10 + "; never added to uncovered",
     ),
     STORMS_FIELD,
+    ("power_dependent_affected_1in100", "INTEGER", "Same as the 1in10 column, " + ONE_IN_100),
+    ("dialysis_displaced_1in100", "INTEGER", "Same as the 1in10 column, " + ONE_IN_100),
+    ("uncovered_1in100", "INTEGER", "Same as the 1in10 column, " + ONE_IN_100),
+    ("no_powered_seat_1in100", "INTEGER", "Same as the 1in10 column, " + ONE_IN_100),
+    ("no_dialysis_chair_1in100", "INTEGER", "Same as the 1in10 column, " + ONE_IN_100),
+    ("no_vehicle_1in100", "INTEGER", "Same as the 1in10 column, " + ONE_IN_100),
 ]
 FIX_SCHEMA = [
     ("gap", "STRING", "Unknown or assumption"),

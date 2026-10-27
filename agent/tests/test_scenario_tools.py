@@ -1,6 +1,8 @@
 import json
 from types import SimpleNamespace
 
+import pytest
+
 from readiness_agent.scenario_tools import _context, _track_lonlats, run_scenario
 
 
@@ -218,3 +220,38 @@ def test_assumed_generator_reports_what_it_overrides():
     run = season.run_season("long_run", assume_generator=[no, unrec])
     assert run["generator_assumptions"][no].startswith("adds a generator")
     assert run["generator_assumptions"][unrec].startswith("confirms a generator")
+
+
+def test_run_query_caps_bytes_and_reports_the_cap(monkeypatch):
+    from google.api_core.exceptions import BadRequest
+
+    from readiness_agent import evacuation_tools, scenario_tools
+    from readiness_agent.scenario.build.limits import MAX_BYTES_BILLED
+
+    seen = {}
+
+    class Client:
+        def query(self, sql, job_config):
+            seen["cap"] = job_config.maximum_bytes_billed
+            raise BadRequest("too big", errors=[{"reason": "bytesBilledLimitExceeded"}])
+
+    monkeypatch.setattr(evacuation_tools, "_bigquery_client", lambda: Client())
+    with pytest.raises(evacuation_tools.QueryTooLargeError):
+        evacuation_tools._run_query("SELECT 1")
+    assert seen["cap"] == MAX_BYTES_BILLED
+    risk = scenario_tools.season_county_risk("13051")
+    assert risk["status"] == "query_too_large" and risk["counties"] == []
+    assert f"{MAX_BYTES_BILLED:,}" in risk["message"] and risk["source"]
+
+
+def test_county_storm_profile_returns_sourced_error(monkeypatch):
+    from readiness_agent import scenario_tools
+    from readiness_agent.scenario import profile
+
+    def broken(*_a, **_k):
+        raise OSError("missing artifact")
+
+    monkeypatch.setattr(profile, "county_storm_profile", broken)
+    r = scenario_tools.county_storm_profile("13275")
+    assert r["status"] == "error" and r["source"]
+    assert scenario_tools.county_storm_profile("01001")["status"] == "needs_county"
