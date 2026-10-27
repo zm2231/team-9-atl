@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 from . import evacuation_tools as tools
-from .map_data import shelter_record
+from .map_data import shelter_record, to_flag
 
 REACH_KM = 16.0
 REACH_BASIS = (
@@ -16,18 +16,21 @@ REACH_BASIS = (
 FACILITY_COUNTY_BASIS = "Facility county assigned from the nearest tract centre (straight-line)."
 PRE_LANDFALL = ("EVAC", "BOTH")
 FACILITIES_SOURCE = "CMS nursing homes · care_facilities_clean"
+FLOOD_SOURCE = "FEMA NRI coastal flood, joined by tract · care_facilities_flow_staging"
+MODELED_SOURCE = "CDC PLACES modeled estimates · vulnerability_tracts_clean"
 
 
 def build_readiness_brief(county_fips: str, tract_limit: int = 8, destination_limit: int = 10) -> dict[str, Any]:
     """Build the county readiness brief.
 
     who_cannot_leave: tracts ranked by households without a vehicle, each with its reasons, and
-    the county's nursing homes. where_they_would_go: pre-landfall shelters within reach of the
+    the county's nursing homes, each saying whether its tract is coastal-flood exposed.
+    where_they_would_go: pre-landfall shelters within reach of the
     ranked tracts, with capacity, recorded flags and surge exposure; confirm each one live with
     Google Maps before relying on it. what_to_fix: tracts with no recorded wheelchair-accessible
     shelter within reach (each says whether none is in reach, the ones in reach are unrecorded, or
     they are recorded not accessible), nursing homes with no recorded generator in a county with power-dependent
-    residents, and shelters in a surge or flood zone. could_not_tell: counts over the whole county.
+    residents, nursing homes in a coastal-flood-exposed tract, and shelters in a surge or flood zone. could_not_tell: counts over the whole county.
     """
     if not county_fips:
         raise ValueError("county_fips is required.")
@@ -64,19 +67,16 @@ def build_readiness_brief(county_fips: str, tract_limit: int = 8, destination_li
         for s in shelters
         if s["in_surge_slosh_area"] == "YES" or s.get("in_100_yr_floodplain") is True
     ]
+    facility_entries = [_facility_entry(f) for f in facilities]
 
     return {
         "county_fips": county_fips,
         "who_cannot_leave": {
             "tracts": [_tract_entry(t) for t in top],
-            "facilities": [
-                {"ccn": f["ccn"], "name": f["name"], "city": f["city"], "certified_beds": _count(f["beds"]),
-                 "reasons": [f"{_count(f['beds']) or 'unknown number of'} certified nursing-home beds",
-                             "generator, fuel and evacuation-agreement status not recorded in any source"]}
-                for f in facilities
-            ],
+            "facilities": facility_entries,
             "power_dependent_residents": power_dependent,
-            "sources": [tools.SOURCES["tracts"], FACILITIES_SOURCE, tools.SOURCES["power"]],
+            "sources": [tools.SOURCES["tracts"], MODELED_SOURCE, FACILITIES_SOURCE, FLOOD_SOURCE,
+                        tools.SOURCES["power"]],
             "basis": FACILITY_COUNTY_BASIS,
         },
         "where_they_would_go": {
@@ -91,6 +91,12 @@ def build_readiness_brief(county_fips: str, tract_limit: int = 8, destination_li
                 "count": len(facilities),
                 "power_dependent_residents_in_county": power_dependent,
                 "note": "No source records nursing-home generators; every facility listed above is unknown.",
+            },
+            "facilities_in_coastal_flood_tract": {
+                "facilities": [{"ccn": f["ccn"], "name": f["name"], "certified_beds": f["certified_beds"]}
+                               for f in facility_entries if f["coastal_flood_exposed"] == "YES"],
+                "note": "Exposure of the facility's census tract, not of the building; not a storm forecast.",
+                "source": FLOOD_SOURCE,
             },
             "shelters_in_surge_or_flood_zone": flood,
             "reachable": REACH_BASIS,
@@ -115,6 +121,17 @@ def _accessibility_gap(t: dict[str, Any], reach: dict[str, Any]) -> dict[str, An
             "nearest_shelter_km": reach.get("nearest_km")}
 
 
+def _facility_entry(f: dict[str, Any]) -> dict[str, Any]:
+    beds = _count(f["beds"])
+    flood = to_flag(f.get("coastal_flood_exposed"))
+    reasons = [f"{beds or 'unknown number of'} certified nursing-home beds"]
+    if flood == "YES":
+        reasons.append("in a coastal-flood-exposed tract")
+    reasons.append("generator, fuel and evacuation-agreement status not recorded in any source")
+    return {"ccn": f["ccn"], "name": f["name"], "city": f["city"], "certified_beds": beds,
+            "coastal_flood_exposed": flood, "reasons": reasons}
+
+
 def _count(value: Any) -> int | None:
     return None if value is None else round(float(value))
 
@@ -126,6 +143,10 @@ def _tract_entry(t: dict[str, Any]) -> dict[str, Any]:
         reasons.append(f"{no_vehicle} households without a vehicle")
     if t.get("pct_disability") is not None:
         reasons.append(f"{t['pct_disability']:.0f}% with a disability")
+    if t.get("pct_mobility") is not None:
+        reasons.append(f"{t['pct_mobility']:.0f}% with a mobility difficulty (modeled)")
+    if t.get("pct_selfcare") is not None:
+        reasons.append(f"{t['pct_selfcare']:.0f}% with a self-care difficulty (modeled)")
     if older:
         reasons.append(f"{older} residents aged 65+")
     if group:
@@ -142,9 +163,11 @@ def _could_not_tell(shelters: list[dict[str, Any]], facilities: list[dict[str, A
         "shelters_in_county": len(shelters),
         "wheelchair_unrecorded": unrecorded("wheelchair_accessible"),
         "generator_unrecorded": unrecorded("generator_onsite"),
+        "medical_unrecorded": unrecorded("is_medical"),
         "surge_unrecorded": unrecorded("in_surge_slosh_area"),
         "hurricane_rating_unrecorded": len(shelters),
         "nursing_home_generator_unrecorded": len(facilities),
+        "nursing_home_coastal_flood_unrecorded": sum(1 for f in facilities if f.get("coastal_flood_exposed") is None),
         "notes": [
             "No source records whether a shelter building is rated for hurricane winds.",
             "No source records nursing-home generators, fuel or evacuation agreements.",
@@ -159,12 +182,13 @@ def _could_not_tell(shelters: list[dict[str, Any]], facilities: list[dict[str, A
 def _county_tracts(county_fips: str) -> list[dict[str, Any]]:
     sql = f"""
         SELECT geo_id, total_pop, households_no_vehicle, pop_65_plus, group_quarters_pop,
-               pct_disability, lat, lon
+               pct_disability, pct_mobility, pct_selfcare, lat, lon
         FROM {tools._table('vulnerability_tracts')}
         WHERE county_fips = @county_fips
     """
     rows = tools._run_query(sql, [tools._scalar("county_fips", "STRING", county_fips)])
-    return [r | {"pct_disability": tools._survey(r.get("pct_disability"))} for r in rows]
+    return [r | {k: tools._survey(r.get(k)) for k in ("pct_disability", "pct_mobility", "pct_selfcare")}
+            for r in rows]
 
 
 def _tract_reach(county_fips: str) -> list[dict[str, Any]]:
@@ -245,21 +269,27 @@ def _county_shelters(county_fips: str) -> list[dict[str, Any]]:
 
 def _county_facilities(county_fips: str) -> list[dict[str, Any]]:
     sql = f"""
-        WITH f AS (
+        WITH f0 AS (
           SELECT cms_certification_number_ccn AS ccn, provider_name AS name, citytown AS city,
                  number_of_certified_beds AS beds, ST_GEOGPOINT(longitude, latitude) AS pt
           FROM {tools._table('care_facilities')}
           WHERE latitude IS NOT NULL
         ),
+        f AS (
+          SELECT f0.*, x.coastal_flood_exposed
+          FROM f0
+          LEFT JOIN `{tools._project_id()}.{tools._dataset_name()}.care_facilities_flow_staging` x
+            ON x.cms_certification_number_ccn = f0.ccn
+        ),
         nearest AS (
-          SELECT f.ccn, f.name, f.city, f.beds,
+          SELECT f.ccn, f.name, f.city, f.beds, f.coastal_flood_exposed,
                  ARRAY_AGG(t.county_fips ORDER BY ST_DISTANCE(f.pt, ST_GEOGPOINT(t.lon, t.lat)) LIMIT 1)[OFFSET(0)]
                    AS county_fips
           FROM f CROSS JOIN {tools._table('vulnerability_tracts')} t
           WHERE t.lat IS NOT NULL
-          GROUP BY f.ccn, f.name, f.city, f.beds
+          GROUP BY f.ccn, f.name, f.city, f.beds, f.coastal_flood_exposed
         )
-        SELECT ccn, name, city, beds FROM nearest
+        SELECT ccn, name, city, beds, coastal_flood_exposed FROM nearest
         WHERE county_fips = @county_fips
         ORDER BY beds DESC
     """
