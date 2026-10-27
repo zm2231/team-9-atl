@@ -1,3 +1,5 @@
+from typing import Any
+
 import numpy as np
 import pytest
 
@@ -71,11 +73,13 @@ def test_bigquery_failure_falls_back_to_registry(monkeypatch):
 
 
 def test_malformed_overrides_go_to_ignored_ids():
+    stations: Any = "many"
+    sites: Any = [{"lat": 99, "lon": -83, "seats": 50, "generator": "YES"}, "x"]
     r = scenario_tools.season_county_risk(
         county_fips="13051",
         seats_override={"nope": 5, UNRECORDED: -3},
-        stations_override="many",
-        add_sites=[{"lat": 99, "lon": -83, "seats": 50, "generator": "YES"}, "x"],
+        stations_override=stations,
+        add_sites=sites,
     )
     ignored = " ".join(r["ignored_ids"])
     for bad in ("nope=5", f"{UNRECORDED}=-3", "'many'", "'lat': 99", "'x'"):
@@ -109,12 +113,13 @@ def test_added_site_reduces_lacking_shelter_where_it_reaches():
 
 def test_greedy_accounts_for_overlap():
     base = season.siting_base()
-    cands = siting.upgrade_candidates(base["ev"]) + siting.county_candidates()
-    scored = season.evaluate_candidates(base, cands)
-    combo = season.greedy(base, scored[:20])
-    assert combo[0]["candidate_id"] == scored[0]["candidate_id"]
-    assert [c["candidate_id"] for c in combo[1:]] != [c["candidate_id"] for c in scored[1:3]]
-    assert combo[1]["added_reduction_1in10"] <= scored[1]["lacking_shelter_1in10_reduction"]
+    scored = season.evaluate_candidates(base, siting.county_candidates())
+    a = next(c for c in scored if c["lacking_shelter_1in10_reduction"] > 0)
+    twin = {**a, "candidate_id": "twin"}
+    single = season.evaluate_candidates(base, [twin])[0]["lacking_shelter_1in10_reduction"]
+    combo = season.greedy(base, [a, twin])
+    assert combo[0]["candidate_id"] == a["candidate_id"]
+    assert len(combo) == 1 or combo[1]["added_reduction_1in10"] < single
 
 
 def test_p_helps_is_paired():
@@ -177,3 +182,64 @@ def test_as_of_date_keeps_rest_of_season():
     assert np.isclose(
         season.outlook_event_rates("long_run", as_of_date="2026-01-01").sum(), 200 / 76
     )
+
+
+def test_single_coordinate_update_moves_reach():
+    site = next(s for s in data.sites()["medical_shelters"] if s["generator"] == "YES")
+    rows = [row("a", site["shelter_id"], "lat", "34.9", "2026-10-20T00:00:00")]
+    planner = site_updates.planner_inputs(rows, data.sites())
+    assert planner["location_override"][site["shelter_id"]] == {"lat": 34.9, "lon": site["lon"]}
+    ev, ignored, _ = season.site_inputs(
+        season.events(), location_override=planner["location_override"]
+    )
+    assert ignored == []
+    j = [str(x) for x in ev["shelter_id"]].index(site["shelter_id"])
+    assert (ev["shelter_reach"][:, j] == season.reach_of(34.9, site["lon"])).all()
+
+
+def test_as_of_date_handles_leap_years():
+    assert season._day_of_year("2024-02-29") == season._day_of_year("2025-02-28")
+    assert season._day_of_year("2024-03-01") == season._day_of_year("2025-03-01")
+    assert season.season_remaining_share("2024-02-29") == 1.0
+    days = season.storm_day_of_year()
+    cut = season._day_of_year("2026-09-15")
+    assert season.season_remaining_share("2024-09-15") == round(float((days > cut).mean()), 4)
+
+
+def _subset(ev: dict, keep: np.ndarray) -> dict:
+    n = len(ev["category"])
+    return {k: v[keep] if getattr(v, "shape", (0,))[:1] == (n,) else v for k, v in ev.items()}
+
+
+def test_builder_rates_follow_the_event_subset_given():
+    from readiness_agent.scenario.build import build_season
+
+    ev = season.events()
+    hist = _subset(ev, ~ev["event_synthetic"])
+    observed = {str(f): 1 for f in ev["county_fips"]}
+    for part in (hist, ev):
+        lam = build_season.county_lambda(part, "long_run")
+        assert lam.shape == (159,)
+        bt = build_season.severity_backtest(part, observed, 0.7)
+        assert 0 <= bt["severity_share_inside"] <= 1
+
+
+def test_severity_backtest_ignores_event_order():
+    from readiness_agent.scenario.build import build_season
+
+    ev = season.events()
+    observed = {str(f): 1 for f in ev["county_fips"]}
+    order = np.random.default_rng(1).permutation(len(ev["category"]))
+    shuffled = _subset(ev, order)
+    a = build_season.severity_backtest(ev, observed, 0.7)
+    b = build_season.severity_backtest(shuffled, observed, 0.7)
+    assert a["severity_share_inside"] == b["severity_share_inside"]
+    assert a["severity_statewide"] == b["severity_statewide"]
+
+
+def test_as_of_after_last_storm_gives_an_empty_season():
+    r = season.run_season(as_of_date="2026-12-31")
+    assert r["storms_per_year"] == 0 and r["as_of"]["share_of_season_remaining"] == 0
+    assert r["statewide"]["lacking_shelter"]["total"]["one_in_10"] == 0
+    assert r["statewide"]["probability"]["p_lacking_shelter_any"] == 0
+    assert season.siting_base(as_of_date="2026-12-31")["before"]["state_1in10"] == 0

@@ -10,7 +10,7 @@ import numpy as np
 from google.cloud import bigquery  # pyright: ignore[reportAttributeAccessIssue]
 
 from .. import data, storms
-from ..model import FEATURES, expit, transform
+from ..model import FEATURES, N_TERMS, expit, transform
 from ..windfield import NM_KM, TrackPoint, exposure, interpolate_hourly
 from .limits import job_config
 
@@ -26,6 +26,13 @@ EM_ITERS = 8
 LOSO_DRAWS = 1000
 SEED = 20261027
 BIG_STORM_SHARE = 0.10
+LABEL_TABLE = os.getenv("OUTAGE_LABEL_TABLE", "ext_eaglei_county_storm_2014_2025")
+MIN_COVERAGE = 0.5
+BASELINE = {
+    "model": "five exposure inputs, county and storm effects, county_storm_outages (27 storms, 6,075 rows)",
+    "mae": 0.0419, "median_mae": 0.0359, "inside_10_90": 0.7789, "big_storm_mae": 0.1374,
+    "big_storm_inside_10_90": 0.7523, "big_storm_bias": -0.0801,
+}
 FACILITY_BEDS_REF = "origin/scenario-season:agent/readiness_agent/scenario/data/facility_beds.json"
 
 
@@ -192,13 +199,25 @@ def storm_track(storm: dict) -> list[TrackPoint]:
     return interpolate_hourly([TrackPoint(*p[:6]) for p in storm["points"]])
 
 
+def label_query(bq: bigquery.Client) -> list:
+    if LABEL_TABLE == "county_storm_outages":
+        return query(bq, f"""
+          SELECT fips_code, sid, peak_share, eaglei_total_customers_2024 AS customers
+          FROM {table('county_storm_outages')}
+          WHERE peak_share_status != 'suspect' AND peak_share IS NOT NULL
+            AND eaglei_total_customers_2024 > 0
+          ORDER BY sid, fips_code""")
+    return query(bq, f"""
+      SELECT fips_code, sid, peak_share_total AS peak_share, total_customers AS customers
+      FROM {table(LABEL_TABLE)}
+      WHERE peak_share_status != 'suspect' AND peak_share_total IS NOT NULL
+        AND total_customers > 0 AND (coverage IS NULL OR coverage >= @min_coverage)
+      ORDER BY sid, fips_code""",
+      bigquery.ScalarQueryParameter("min_coverage", "FLOAT64", MIN_COVERAGE))
+
+
 def label_rows(bq: bigquery.Client, counties: list[dict], gazetteer: list[dict], tracks: dict):
-    labels = query(bq, f"""
-      SELECT fips_code, sid, peak_share, eaglei_total_customers_2024 AS customers
-      FROM {table('county_storm_outages')}
-      WHERE peak_share_status != 'suspect' AND peak_share IS NOT NULL
-        AND eaglei_total_customers_2024 > 0
-      ORDER BY sid, fips_code""")
+    labels = label_query(bq)
     place = {c["county_fips"]: (c["lat"], c["lon"], float(c["pop"])) for c in counties}
     gaz = {r["GEOID"]: (float(r["INTPTLAT"]), float(r["INTPTLONG"])) for r in gazetteer}
     for r in labels:
@@ -215,8 +234,11 @@ def label_rows(bq: bigquery.Client, counties: list[dict], gazetteer: list[dict],
         group = out[sid]
         lat = np.array([place[r.fips_code][0] for r in group])
         lon = np.array([place[r.fips_code][1] for r in group])
-        e = exposure(storm_track(by_sid[sid]), lat, lon)
+        track = storm_track(by_sid[sid])
+        e = exposure(track, lat, lon)
         e["pop"] = np.array([place[r.fips_code][2] for r in group])
+        for key, value in storms.storm_features(track).items():
+            e[key] = np.full(len(group), value)
         feats.append(np.column_stack([e[f] for f in FEATURES]))
         for r in group:
             fips.append(r.fips_code)
@@ -239,17 +261,19 @@ def fit(feats, fips, sids, share, cust, county_ids):
     storm_ids = sorted(set(sids))
     ci = {c: i for i, c in enumerate(county_ids)}
     si = {s: i for i, s in enumerate(storm_ids)}
-    k = 1 + len(FEATURES)
+    k = 1 + N_TERMS
     nc, ns = len(county_ids), len(storm_ids)
-    x = np.zeros((len(z), k + nc + ns))
+    s0 = k + nc
+    x = np.zeros((len(z), s0 + ns))
     x[:, 0] = 1.0
     x[:, 1:k] = z
     rows = np.arange(len(z))
     x[rows, k + np.array([ci[f] for f in fips])] = 1.0
-    x[rows, k + nc + np.array([si[s] for s in sids])] = 1.0
+    x[rows, s0 + np.array([si[s] for s in sids])] = 1.0
     y = logit((share * cust + 0.5) / (cust + 1.0))
+
     def solve(tau_c: float, tau_s: float) -> tuple[np.ndarray, np.ndarray, float]:
-        prior = np.r_[4.0, np.repeat(1.5, len(FEATURES)), np.repeat(tau_c, nc), np.repeat(tau_s, ns)]
+        prior = np.r_[4.0, np.repeat(1.5, N_TERMS), np.repeat(tau_c, nc), np.repeat(tau_s, ns)]
         cov_unit = np.linalg.pinv(x.T @ x + np.diag(1 / prior**2))
         coef = cov_unit @ x.T @ y
         sigma = max(float(np.sqrt(np.mean((y - x @ coef) ** 2))), 0.25)
@@ -260,18 +284,19 @@ def fit(feats, fips, sids, share, cust, county_ids):
     for _ in range(EM_ITERS):
         coef, cov, sigma = solve(tau_c, tau_s)
         diag = np.diag(cov)
-        tau_c = float(np.sqrt(np.mean(coef[k:k + nc] ** 2 + diag[k:k + nc])))
-        tau_s = float(np.sqrt(np.mean(coef[k + nc:] ** 2 + diag[k + nc:])))
-    keep = np.arange(k + nc)
+        tau_c = float(np.sqrt(np.mean(coef[k:s0] ** 2 + diag[k:s0])))
+        tau_s = float(np.sqrt(np.mean(coef[s0:] ** 2 + diag[s0:])))
+    keep = np.arange(s0)
     return {
         "mu": mu, "sd": sd, "mean": coef[keep], "cov": cov[np.ix_(keep, keep)],
-        "tau_storm": tau_s, "tau_county": tau_c, "sigma": sigma, "county_ids": county_ids,
+        "tau_storm": tau_s, "tau_county": tau_c, "sigma": sigma,
+        "county_ids": county_ids,
     }
 
 
 def predict(m: dict, feats, fips, rng, n_draws) -> np.ndarray:
     z = (transform(feats) - m["mu"]) / m["sd"]
-    k = 1 + len(FEATURES)
+    k = 1 + N_TERMS
     ci = {c: i for i, c in enumerate(m["county_ids"])}
     x = np.zeros((len(z), len(m["mean"])))
     x[:, 0] = 1.0
@@ -285,40 +310,59 @@ def predict(m: dict, feats, fips, rng, n_draws) -> np.ndarray:
     return expit(latent)
 
 
-def loso(feats, fips, sids, share, cust, county_ids) -> dict:
-    per_storm, err, const_err, inside, big_err, big_inside = [], [], [], [], [], []
+def loso(feats, fips, sids, share, cust, county_ids, names: dict[str, str]) -> dict:
+    per_storm, err, med_err, const_err, inside = [], [], [], [], []
+    big_err, big_inside, big_bias = [], [], []
+    held_out: dict[str, list] = defaultdict(list)
     for fold, sid in enumerate(sorted(set(sids))):
         tr, te = sids != sid, sids == sid
         m = fit(feats[tr], fips[tr], sids[tr], share[tr], cust[tr], county_ids)
         pred = predict(m, feats[te], fips[te], np.random.default_rng(SEED + fold), LOSO_DRAWS)
-        lo, hi = np.quantile(pred, [0.1, 0.9], axis=0)
+        lo, mid, hi = np.quantile(pred, [0.1, 0.5, 0.9], axis=0)
         y = share[te]
+        for j, f in enumerate(fips[te]):
+            if f.startswith("13"):
+                held_out[str(f)].append([
+                    str(sid), round(float(y[j]), 4), round(float(lo[j]), 4),
+                    round(float(mid[j]), 4), round(float(hi[j]), 4),
+                    round(float(feats[te][j, 0]), 1),
+                ])
         e = np.abs(y - pred.mean(0))
         ins = (y >= lo) & (y <= hi)
         err.append(e)
+        med_err.append(np.abs(y - np.median(pred, axis=0)))
         const_err.append(np.abs(y - share[tr].mean()))
         inside.append(ins)
         if y.mean() >= BIG_STORM_SHARE:
             big_err.append(e)
             big_inside.append(ins)
+            big_bias.append(float(pred.mean() - y.mean()))
         per_storm.append({
-            "sid": sid, "counties": int(te.sum()), "observed_mean": round(float(y.mean()), 4),
+            "sid": sid, "storm": names.get(sid, sid), "counties": int(te.sum()), "observed_mean": round(float(y.mean()), 4),
             "predicted_mean": round(float(pred.mean()), 4), "mae": round(float(e.mean()), 4),
             "inside_10_90": round(float(ins.mean()), 4),
         })
         print(per_storm[-1], flush=True)
     cat = np.concatenate
     return {
-        "method": "leave one storm out; logit-normal hierarchical model, EM variances",
+        "method": (
+            "leave one storm out; logit-normal hierarchical model with county and storm "
+            "effects, a quadratic wind term and storm-level landfall intensity and forward "
+            "speed; EM variances"
+        ),
+        "label_table": LABEL_TABLE,
         "rows": len(share), "storms": len(per_storm),
         "mae": round(float(cat(err).mean()), 4),
+        "median_mae": round(float(cat(med_err).mean()), 4),
         "inside_10_90": round(float(cat(inside).mean()), 4),
         "constant_mae": round(float(cat(const_err).mean()), 4),
         "big_storm_threshold": BIG_STORM_SHARE,
         "big_storms": [p["sid"] for p in per_storm if p["observed_mean"] >= BIG_STORM_SHARE],
         "big_storm_mae": round(float(cat(big_err).mean()), 4) if big_err else None,
         "big_storm_inside_10_90": round(float(cat(big_inside).mean()), 4) if big_inside else None,
+        "big_storm_bias": round(float(np.mean(big_bias)), 4) if big_bias else None,
         "per_storm": per_storm,
+        "held_out": held_out,
     }
 
 
@@ -358,19 +402,25 @@ def main(gazetteer_path: str) -> None:
     data.clear_cache()
 
     m = fit(feats, fips, sids, share, cust, county_ids)
-    k = 1 + len(FEATURES)
+    k = 1 + N_TERMS
     keep = np.arange(k + len(ga))
     chol = np.linalg.cholesky(m["cov"][np.ix_(keep, keep)] + 1e-10 * np.eye(len(keep)))
     np.savez_compressed(
         DATA / "outage_model.npz", mu=m["mu"], sd=m["sd"], mean=m["mean"][keep], chol=chol,
-        county_fips=np.array(ga), tau_storm=m["tau_storm"], tau_county=m["tau_county"],
-        sigma=m["sigma"],
+        county_fips=np.array(ga), tau_storm=m["tau_storm"], tau_county=m["tau_county"], sigma=m["sigma"],
     )
-    metrics = loso(feats, fips, sids, share, cust, county_ids)
+    names = {s["sid"]: f"{s['name']} {s['season']}" for s in tracks["storms"]}
+    metrics = loso(feats, fips, sids, share, cust, county_ids, names)
     metrics["full_fit"] = {
-        "tau_storm": round(m["tau_storm"], 4), "tau_county": round(m["tau_county"], 4),
-        "sigma": round(m["sigma"], 4),
+        "tau_storm": round(m["tau_storm"], 4), "tau_county": round(m["tau_county"], 4), "sigma": round(m["sigma"], 4),
     }
+    metrics["baseline"] = BASELINE
+    write_json("county_storm_fit.json", {
+        "label_table": LABEL_TABLE,
+        "columns": ["sid", "observed", "p10", "p50", "p90", "peak_wind_kt"],
+        "storms": {sid: names.get(sid, sid) for sid in sorted(set(sids))},
+        "counties": metrics.pop("held_out"),
+    })
     (DATA / "outage_model_metrics.json").write_text(json.dumps(metrics, indent=1) + "\n")
     summary = {k: v for k, v in metrics.items() if k != "per_storm"}
     summary.update(

@@ -7,6 +7,7 @@ import Legend from "./components/map/Legend";
 import ScenarioControls from "./components/scenario/ScenarioControls";
 import DetailsPanel from "./components/summary/DetailsPanel";
 import ChatPanel from "./components/chat/ChatPanel";
+import { useHistoryPersistence } from "./state/useHistoryPersistence";
 
 function DataBanner({ onRetry }: { onRetry: () => void }) {
   const { state } = useStore();
@@ -30,6 +31,7 @@ function DataBanner({ onRetry }: { onRetry: () => void }) {
 
 export default function App() {
   const { dispatch } = useStore();
+  useHistoryPersistence();
 
   const load = useCallback(() => {
     const ctrl = new AbortController();

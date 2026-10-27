@@ -1,21 +1,30 @@
 import json
 from datetime import UTC, datetime
 from datetime import date as Date
+from pathlib import Path
 from typing import Any
 
 from .evacuation_tools import _dataset_name, _project_id, _run_query
 
 CONTEXT_PREFIX = "CONTEXT v1 "
-RANGE_LABEL = "scenario range from 27 past storms"
+_MODEL = json.loads(
+    (Path(__file__).parent / "scenario" / "data" / "outage_model_metrics.json").read_text()
+)
+_YEARS = sorted(int(p["storm"].rsplit(" ", 1)[-1]) for p in _MODEL["per_storm"])
+MODEL_FACTS = (
+    f"{_MODEL['storms']} storms {_YEARS[0]}-{_YEARS[-1]}, {_MODEL['rows']:,} county-storm rows; "
+    f"held-out storms: {_MODEL['inside_10_90']:.0%} of counties inside the 10-90 range"
+)
+RANGE_LABEL = f"scenario range from {_MODEL['storms']} past storms"
 SOURCES = {
     "scenario": (
-        "Simulated · outage model fitted on DOE EAGLE-I county outages for 27 storms 2018-2025 "
-        "(county_storm_outages) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER "
+        f"Simulated · outage model fitted on DOE EAGLE-I county outages ({MODEL_FACTS}; "
+        f"{_MODEL['label_table']}) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER "
         "(power_dependent_counties_clean)"
     ),
     "season": (
         "Simulated · storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on "
-        "2018-2025 EAGLE-I labels (scenario_season_county)"
+        f"EAGLE-I labels ({MODEL_FACTS}) (scenario_season_county)"
     ),
     "gaps": "Simulated · season model rerun with each unknown set low and high (scenario_fix_ranking)",
     "audit": "Survey · ACS 2020-2024 B03002, audit only, never a model input (ext_ga_acs_race_tract)",
@@ -211,7 +220,7 @@ def run_scenario(
 ) -> dict[str, Any]:
     """Model a hurricane scenario for Georgia counties: outage share ranges, power-dependent residents, oxygen, home-health and dialysis patients at risk, and, for a selected county, reachable medical shelters and dialysis centres with live drive times and evacuation delay.
 
-    Uses the track drawn on the map (sent in CONTEXT v1) when there is one; otherwise matches past storms that passed near (lat, lon) with a similar heading, time of year and intensity. Call it whenever the user asks what a storm would do, who is at risk, or where people could go. All numbers come from this tool; report them as a scenario range from 27 past storms.
+    Uses the track drawn on the map (sent in CONTEXT v1) when there is one; otherwise matches past storms that passed near (lat, lon) with a similar heading, time of year and intensity. Call it whenever the user asks what a storm would do, who is at risk, or where people could go. All numbers come from this tool; report them with the range_label the tool returns.
 
     sites_off (shelter_id or ccn) and assume_generator (shelter_id) are operator what-ifs (assume_generator on a shelter recorded NO means adding a generator there; on UNRECORDED it means confirming one; each site's generator_assumption says which), merged with CONTEXT v1 scenario.site_overrides; the result then carries baseline, with_switches and delta for people lacking shelter and needing transport. seats_override {shelter_id: seats}, stations_override {ccn: stations} and add_sites [{lat, lon, seats, generator}] are further what-ifs; invalid values land in ignored_ids. Planner-reported site updates (record_site_update) are always applied and listed under planner_updates next to the registry values.
     """
@@ -571,7 +580,7 @@ def season_county_risk(
     add_sites: list[dict[str, Any]] | None = None,
     as_of_date: str | None = None,
 ) -> dict[str, Any]:
-    """Season-long hurricane risk per Georgia county from 2,000 simulated storms built on every storm since 1950 near Georgia: chance per year of losing power to at least 25% of customers, power-dependent residents affected, people lacking shelter (no powered seat, no dialysis chair) and people needing transport (no vehicle), each in a typical and a 1-in-10 season.
+    """Season-long hurricane risk per Georgia county from 3,200 simulated events built on every storm since 1950 near Georgia (800 replays of the historical tracks and 2,400 synthetic variants shifted, re-intensified, re-timed and resized): chance per year of losing power to at least 25% of customers, power-dependent residents affected, people lacking shelter (no powered seat, no dialysis chair) and people needing transport (no vehicle), each in a typical, a 1-in-10 and a 1-in-100 season.
 
     outlook picks the storm rate: auto (default) works it out from current conditions (season_conditions): the rest of the current season after as_of_date (default today) when more than half of it remains, otherwise the next full season with the rest of the current season in auto.rest_of_current_season; long_run (1950-2025), recent (2000-2025), la_nina, neutral, el_nino (seasons with that ENSO state), or noaa_aug_2026 (scaled to NOAA's August 2026 outlook, an outside forecast input). sites_off and assume_generator rerun the season with shelters or dialysis centres switched off, or generators assumed. seats_override, stations_override and add_sites [{lat, lon, seats, generator}] are further what-ifs. Planner-reported site updates are always applied. Each result carries probability: the share of simulated seasons with anyone lacking shelter, with 50 or more, and with anyone lacking a dialysis chair. Without county_fips, returns the counties with the most people lacking shelter.
     """
@@ -970,3 +979,21 @@ def recommend_sites(
     result["planner_updates"] = _planner_report(planner)
     result["source"] = SOURCES["siting"]
     return result
+
+
+def county_storm_profile(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
+    """How storms have hit one Georgia county and how the outage model treats it: every labelled storm with the observed outage against the model's held-out prediction, the county's learned outage-proneness ranked against the state, the yearly chance of 25% and 50% outages from the season engine, the strongest historical wind with its modelled outage, and whether the county is inside the model's data support.
+
+    county_fips: a Georgia county FIPS code, for example 13275.
+    outlook: long_run (default), recent, la_nina, neutral, el_nino or noaa_aug_2026.
+    """
+    from .scenario import profile, season
+
+    if not isinstance(county_fips, str) or not county_fips.startswith("13"):
+        return _status("needs_county", "Give a Georgia county_fips, for example 13275.")
+    if outlook not in season.OUTLOOKS:
+        outlook = "long_run"
+    result = profile.county_storm_profile(county_fips, outlook)
+    if result["status"] != "ok":
+        return _status("unknown_county", "No Georgia county has that FIPS code.")
+    return {**result, "source": SOURCES["scenario"]}

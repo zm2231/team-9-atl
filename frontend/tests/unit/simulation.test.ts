@@ -110,3 +110,21 @@ describe("capacitySummary (Constitution VI)", () => {
     expect(cap.totalInclSuspect).toBe(600 + 270135 + 225112);
   });
 });
+
+describe("countiesAlongTrack (feature 002, T008)", () => {
+  it("lists the GA counties the track crosses, coast to inland, without consecutive repeats", async () => {
+    const { countiesAlongTrack } = await import("../../src/lib/simulation");
+    const out = countiesAlongTrack(glynnTrack);
+    expect(out.length).toBeGreaterThan(0);
+    expect(out).toContain("13127");
+    out.forEach((f, i) => expect(f).not.toBe(out[i - 1]));
+    const reversed = countiesAlongTrack({ type: "LineString", coordinates: [...glynnTrack.coordinates].reverse() });
+    expect(reversed).toEqual([...out].reverse());
+  });
+
+  it("handles a point and an offshore track", async () => {
+    const { countiesAlongTrack } = await import("../../src/lib/simulation");
+    expect(countiesAlongTrack({ type: "Point", coordinates: [-84.548, 33.952] })).toEqual(["13067"]);
+    expect(countiesAlongTrack({ type: "LineString", coordinates: [[-75.0, 28.0], [-75.5, 28.3]] })).toEqual([]);
+  });
+});

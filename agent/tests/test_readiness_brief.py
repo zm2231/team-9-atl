@@ -18,7 +18,8 @@ def fake(monkeypatch):
     data = {
         "tracts": [
             {"geo_id": "t1", "total_pop": 3000.0, "households_no_vehicle": 400.0, "pop_65_plus": 300.0,
-             "group_quarters_pop": 0.0, "pct_disability": 21.4, "lat": 32.0, "lon": -81.1},
+             "group_quarters_pop": 0.0, "pct_disability": 21.4, "pct_mobility": 30.2, "pct_selfcare": -999,
+             "lat": 32.0, "lon": -81.1},
             {"geo_id": "t2", "total_pop": 2500.0, "households_no_vehicle": 50.0, "pop_65_plus": None,
              "group_quarters_pop": 12.0, "pct_disability": -999, "lat": 32.1, "lon": -81.2},
             {"geo_id": "t3", "total_pop": 900.0, "households_no_vehicle": 0.0, "pop_65_plus": 10.0,
@@ -31,7 +32,10 @@ def fake(monkeypatch):
              "wheelchair_no_within_reach": 0, "wheelchair_unrecorded_within_reach": 1, "nearest_km": 9.5},
         ],
         "shelters": [shelter("a", wc=True, surge=True), shelter("b", flood=True), shelter("c", wc=False, gen=True)],
-        "facilities": [{"ccn": "115641", "name": "Riverview", "city": "Savannah", "beds": 284.0}],
+        "facilities": [{"ccn": "115641", "name": "Riverview", "city": "Savannah", "beds": 284.0,
+                        "coastal_flood_exposed": True, "cfld_share": 0.0020497},
+                       {"ccn": "115339", "name": "Pruitt", "city": "Savannah", "beds": 140.0,
+                        "coastal_flood_exposed": None}],
         "destinations": [shelter("a", wc=True) | {"serves_tracts": ["t1", "t2"], "nearest_km": 1.2}],
     }
 
@@ -64,10 +68,15 @@ def test_who_cannot_leave_ranks_tracts_with_reasons_and_lists_facilities(fake):
     who = readiness_brief.build_readiness_brief("13051")["who_cannot_leave"]
     assert [t["geo_id"] for t in who["tracts"]] == ["t1", "t2", "t3"]
     assert who["tracts"][0]["reasons"] == ["400 households without a vehicle", "21% with a disability",
-                                           "300 residents aged 65+"]
+                                           "30% with a mobility difficulty (modeled)", "300 residents aged 65+"]
     assert who["tracts"][1]["reasons"] == ["50 households without a vehicle", "12 in group quarters"]
     assert who["facilities"][0]["certified_beds"] == 284
-    assert "not recorded" in who["facilities"][0]["reasons"][1]
+    assert who["facilities"][0]["coastal_flood_exposed"] == "YES"
+    assert who["facilities"][0]["tract_coastal_flood_share_pct"] == 0.2
+    assert "0.2% of residents exposed to coastal flooding" in who["facilities"][0]["reasons"][1]
+    assert "not recorded" in who["facilities"][0]["reasons"][2]
+    assert who["facilities"][1]["coastal_flood_exposed"] == "UNRECORDED"
+    assert len(who["facilities"][1]["reasons"]) == 2
     assert who["power_dependent_residents"] == 2328
 
 
@@ -84,7 +93,10 @@ def test_what_to_fix_lists_the_three_gaps(fake):
     assert [t["geo_id"] for t in gaps] == ["t2"]
     assert "unknown, not no" in gaps[0]["gap"] and gaps[0]["wheelchair_unrecorded_within_reach"] == 1
     assert {s["shelter_id"] for s in fix["shelters_in_surge_or_flood_zone"]} == {"a", "b"}
-    assert fix["facilities_without_recorded_generator"]["count"] == 1
+    assert fix["facilities_without_recorded_generator"]["count"] == 2
+    flood = fix["facilities_in_coastal_flood_tract"]
+    assert [f["ccn"] for f in flood["facilities"]] == ["115641"]
+    assert "care_facilities_flow_staging" in flood["source"]
 
 
 def test_could_not_tell_counts_the_whole_county(fake):
@@ -93,7 +105,9 @@ def test_could_not_tell_counts_the_whole_county(fake):
     assert cnt["wheelchair_unrecorded"] == 1
     assert cnt["generator_unrecorded"] == 2
     assert cnt["hurricane_rating_unrecorded"] == 3
-    assert cnt["nursing_home_generator_unrecorded"] == 1
+    assert cnt["nursing_home_generator_unrecorded"] == 2
+    assert cnt["nursing_home_coastal_flood_unrecorded"] == 1
+    assert cnt["medical_unrecorded"] == 3
 
 
 def test_county_is_required():

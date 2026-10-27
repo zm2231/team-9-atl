@@ -191,3 +191,49 @@ def test_no_vehicle_at_risk_on_real_counties():
     assert (p["no_vehicle"] <= p["power_dependent"] + 1e-9).all()
     share65 = np.array([c["no_vehicle_share_65"] for c in counties])
     assert np.allclose(p["no_vehicle"], p["power_dependent"] * share65)
+
+
+def test_storm_features_from_drawn_track():
+    t = storms.drawn_track([[-85.0, 27.0], [-84.3, 30.0], [-83.5, 33.5]], 4, forward_kmh=25)
+    f = storms.storm_features(t)
+    assert f["storm_peak_kt"] == 124.0
+    assert f["storm_speed_kmh"] == pytest.approx(25.0, rel=0.05)
+
+
+def test_outage_rises_with_category():
+    fips = [c["county_fips"] for c in data.counties()].index("13275")
+    medians = []
+    for cat in (1, 3, 5):
+        t = storms.drawn_track([[-85.0, 27.0], [-84.3, 30.0], [-83.5, 33.5]], cat)
+        medians.append(np.median(engine.run([t], n_draws=400, seed=3).outage[:, fips]))
+    assert medians[0] < medians[1] < medians[2]
+
+
+def test_county_storm_profile():
+    from readiness_agent.scenario import profile
+
+    p = profile.county_storm_profile("13275")
+    assert p["status"] == "ok" and p["county_name"] == "Thomas"
+    assert p["labelled_storms"]
+    first = p["labelled_storms"][0]
+    assert first["modelled"]["p10"] <= first["modelled"]["p50"] <= first["modelled"]["p90"]
+    assert 1 <= p["fragility"]["rank_most_fragile"] <= 159
+    y = p["yearly_chance"]
+    assert y["outage_50pct"]["per_year"] <= y["outage_25pct"]["per_year"]
+    assert p["worst_historical_wind"]["peak_wind_kt"] > 0
+    assert p["support"]["inside"] is True
+    assert profile.county_storm_profile("99999")["status"] == "unknown_county"
+
+
+def test_synthetic_perturbation_rules():
+    from readiness_agent.scenario.build import synthetic
+
+    a = storms.analog_tracks(29.0, -85.5, 20.0, 9)[0]
+    rng = np.random.default_rng(5)
+    lifetime = max(p.vmax_kt for p in a.track)
+    for _ in range(20):
+        v = synthetic.perturb(a.track, rng)
+        assert abs(v.shift_km) <= synthetic.SHIFT_MAX_KM
+        assert synthetic.SPEED_RANGE[0] <= v.speed_factor <= synthetic.SPEED_RANGE[1]
+        assert len(v.track) == len(a.track)
+        assert max(p.vmax_kt for p in v.track) <= max(lifetime, 124.0) + 1e-6

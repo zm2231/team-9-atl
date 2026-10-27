@@ -114,10 +114,7 @@ def reweight(
 
 
 def _check_custom(custom: Any) -> dict[str, Any]:
-    if not isinstance(custom, dict):
-        raise ValueError(
-            "custom must be a dict with storms_per_year, hurricane_share, major_share and source"
-        )
+    custom = custom if isinstance(custom, dict) else {}
     try:
         n = float(custom["storms_per_year"])
         h = float(custom["hurricane_share"])
@@ -138,24 +135,28 @@ def _day_of_year(value: Any) -> int:
     from datetime import date
 
     d = value if isinstance(value, date) else date.fromisoformat(str(value))
-    return date(2001, d.month, d.day).timetuple().tm_yday
+    day = 28 if (d.month, d.day) == (2, 29) else d.day
+    return date(2001, d.month, day).timetuple().tm_yday
 
 
 @cache
 def storm_day_of_year() -> np.ndarray:
+    from datetime import date, timedelta
+
     clat, clon = county_centres()
-    days = []
+    days, seasons = [], []
     for s in data.tracks()["storms"]:
         if s["dmin_ga_km"] >= 250.0 or not YEARS[0] <= s["season"] <= YEARS[1]:
             continue
         pts = np.array(s["points"], float)
         d = _distance_km(clat[None, :], clon[None, :], pts[:, 1:2], pts[:, 2:3]).min(axis=1)
-        genesis = int(s["sid"][4:7])
-        days.append(genesis + pts[int(d.argmin()), 0] / 24.0)
-    out = np.array(days)
-    if len(out) != len(events()["storm_season"]):
+        genesis = date(int(s["sid"][:4]), 1, 1) + timedelta(days=int(s["sid"][4:7]) - 1)
+        closest = genesis + timedelta(hours=float(pts[int(d.argmin()), 0]))
+        days.append(_day_of_year(closest))
+        seasons.append(s["season"])
+    if seasons != [int(x) for x in events()["storm_season"]]:
         raise ValueError("tracks.json and season_events.npz disagree on the storm list")
-    return out
+    return np.array(days, float)
 
 
 def season_remaining_share(as_of_date: Any) -> float:
@@ -163,8 +164,13 @@ def season_remaining_share(as_of_date: Any) -> float:
     return round(float((days > _day_of_year(as_of_date)).mean()), 4)
 
 
-def outlook_event_rates(outlook: str, custom: Any = None, as_of_date: Any = None) -> np.ndarray:
-    ev = events()
+def outlook_event_rates(
+    outlook: str,
+    custom: Any = None,
+    as_of_date: Any = None,
+    ev: dict[str, np.ndarray] | None = None,
+) -> np.ndarray:
+    ev = events() if ev is None else ev
     if outlook == CUSTOM:
         c = _check_custom(custom)
         rate = event_rates("long_run", ev["storm_season"], ev["storm_of_event"])
@@ -199,6 +205,8 @@ def allocate(demand: np.ndarray, capacity: np.ndarray, reach: np.ndarray) -> np.
 
 def season_draws(rate: np.ndarray, rng: np.random.Generator, n: int) -> dict[str, np.ndarray]:
     lam = float(rate.sum())
+    if lam <= 0:
+        return {"k": np.zeros(n, int), "picks": np.zeros(0, int), "starts": np.zeros(0, int)}
     k = rng.poisson(lam, size=n)
     picks = rng.choice(len(rate), size=int(k.sum()), p=rate / lam)
     return {"k": k, "picks": picks, "starts": (np.cumsum(k) - k)[k > 0]}
@@ -285,12 +293,10 @@ def summarize(
     any_lam = float(rate @ out25.any(axis=1))
 
     def pair(x: np.ndarray, axis=0):
-        typical = np.median(x, axis=axis)
-        one_in_10 = np.quantile(x, 0.9, axis=axis)
-        return typical, one_in_10
+        return tuple(np.quantile(x, (0.5, 0.9, 0.99), axis=axis))
 
-    county = {k: pair(v) for k, v in seasons.items()}
-    state = {k: pair(v.sum(axis=1)) for k, v in seasons.items()}
+    county: dict[str, Any] = {k: pair(v) for k, v in seasons.items()}
+    state: dict[str, Any] = {k: pair(v.sum(axis=1)) for k, v in seasons.items()}
     county["p"] = exceedance(seasons["lacking_shelter"], seasons["no_dialysis_chair"])
     state["p"] = exceedance(
         seasons["lacking_shelter"].sum(axis=1), seasons["no_dialysis_chair"].sum(axis=1)
@@ -312,10 +318,12 @@ def exceedance(lacking: np.ndarray, no_chair: np.ndarray) -> dict[str, np.ndarra
 
 
 def _block(t, i=None) -> dict:
-    typical, one_in_10 = t
-    if i is not None:
-        typical, one_in_10 = typical[i], one_in_10[i]
-    return {"typical": round(float(typical)), "one_in_10": round(float(one_in_10))}
+    typical, one_in_10, one_in_100 = (x if i is None else x[i] for x in t)
+    return {
+        "typical": round(float(typical)),
+        "one_in_10": round(float(one_in_10)),
+        "one_in_100": round(float(one_in_100)),
+    }
 
 
 def _shape(s: dict, i=None) -> dict:
@@ -584,7 +592,13 @@ def run_season(
             "add_sites": add_sites,
         },
     )
-    values = per_event(ev, relocation_share=RELOCATION_SHARE[case], **masks)
+    values = per_event(
+        ev,
+        relocation_share=RELOCATION_SHARE[case],
+        shelter_open=masks["shelter_open"],
+        shelter_powered=masks["shelter_powered"],
+        dialysis_open=masks["dialysis_open"],
+    )
     s = summarize(values, rate, ev["out25"], n_seasons, seed)
     fips, names = ev["county_fips"], ev["county_name"]
     return {
@@ -634,7 +648,13 @@ def siting_base(
 ) -> dict:
     rate = outlook_event_rates(outlook, custom, as_of_date)
     ev, masks, meta = _prepare(sites_off, assume_generator, case, site_kwargs)
-    values = per_event(ev, relocation_share=RELOCATION_SHARE[case], **masks)
+    values = per_event(
+        ev,
+        relocation_share=RELOCATION_SHARE[case],
+        shelter_open=masks["shelter_open"],
+        shelter_powered=masks["shelter_powered"],
+        dialysis_open=masks["dialysis_open"],
+    )
     keep = 1.0 - FLORIDA_INFLOW
     cats = ev["category"][:, None]
     seats = ev["shelter_seats"] * masks["shelter_powered"] * masks["shelter_open"] * keep

@@ -1,6 +1,7 @@
 import math
 from dataclasses import dataclass
 from functools import cache
+from itertools import pairwise
 
 import numpy as np
 
@@ -17,6 +18,7 @@ DECAY_BASE_KT = 26.7
 DECAY_RATE_PER_H = 0.095
 LANDFALL_FACTOR = 0.9
 PATTERN_TRACK_KM = 150.0
+DEFAULT_SPEED_KMH = 20.0
 PATTERN_RANGE_Q = (0.1, 0.9)
 EXAMPLE_STORMS = 5
 
@@ -72,6 +74,23 @@ def peak_near_ga(track: list[TrackPoint]) -> float:
     return max(near) if near else max((p.vmax_kt for p in track), default=0.0)
 
 
+def speed_near_ga(track: list[TrackPoint]) -> float:
+    lats, lons = _ga_centroids()
+    near = [p for p in track if _dist_km(p.lat, p.lon, lats, lons).min() < NEAR_GA_KM]
+    if len(near) < 2:
+        near = track
+    speeds = [
+        float(_dist_km(a.lat, a.lon, np.array([b.lat]), np.array([b.lon]))[0]) / (b.hour - a.hour)
+        for a, b in pairwise(near)
+        if b.hour > a.hour
+    ]
+    return float(np.median(speeds)) if speeds else DEFAULT_SPEED_KMH
+
+
+def storm_features(track: list[TrackPoint]) -> dict[str, float]:
+    return {"storm_peak_kt": peak_near_ga(track), "storm_speed_kmh": speed_near_ga(track)}
+
+
 def near_ga_km(lat: float, lon: float) -> float:
     lats, lons = _ga_centroids()
     return float(_dist_km(lat, lon, lats, lons).min())
@@ -105,6 +124,8 @@ def origin_of(track: list[TrackPoint]) -> str | None:
             return classify_origin(p.lat, p.lon)
         if best is None or d < best[0]:
             best = (d, p)
+    if best is None:
+        return None
     return classify_origin(best[1].lat, best[1].lon)
 
 

@@ -9,3 +9,4 @@ GITHUB_REPO=zm2231/team-9-atl
 WIF_POOL=github
 WIF_PROVIDER=team-9-atl
 IMAGE_BASE=${REGION}-docker.pkg.dev/${PROJECT_ID}/${AR_REPO}/${SERVICE}
+SESSION_ENGINE="projects/${PROJECT_ID}/locations/${REGION}/reasoningEngines/1590957041508155392"
