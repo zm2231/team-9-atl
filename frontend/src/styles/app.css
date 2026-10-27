@@ -339,6 +339,18 @@ button {
   color: #fff;
   margin-bottom: 6px;
 }
+.table-scroll {
+  overflow-x: auto;
+}
+.kind--noaa {
+  border-color: var(--surge);
+  color: var(--surge);
+}
+.maps-check {
+  margin-top: 3px;
+  font-size: 10px;
+  white-space: normal;
+}
 table.receiving {
   width: 100%;
   border-collapse: collapse;

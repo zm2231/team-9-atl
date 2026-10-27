@@ -11,7 +11,7 @@ POOL_ID="projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${WIF
 gcloud services enable --project "${PROJECT_ID}" \
   run.googleapis.com artifactregistry.googleapis.com aiplatform.googleapis.com \
   bigquery.googleapis.com places.googleapis.com iamcredentials.googleapis.com sts.googleapis.com \
-  secretmanager.googleapis.com routes.googleapis.com
+  secretmanager.googleapis.com routes.googleapis.com cloudtrace.googleapis.com
 
 gcloud artifacts repositories describe "${AR_REPO}" --project "${PROJECT_ID}" --location "${REGION}" >/dev/null 2>&1 ||
   gcloud artifacts repositories create "${AR_REPO}" --project "${PROJECT_ID}" --location "${REGION}" \
@@ -22,7 +22,7 @@ for sa in "${RUNTIME_SA}" "${DEPLOY_SA}"; do
     gcloud iam service-accounts create "${sa%%@*}" --project "${PROJECT_ID}"
 done
 
-for role in roles/bigquery.dataViewer roles/bigquery.jobUser roles/aiplatform.user roles/mcp.toolUser roles/serviceusage.serviceUsageConsumer; do
+for role in roles/bigquery.dataViewer roles/bigquery.jobUser roles/aiplatform.user roles/mcp.toolUser roles/serviceusage.serviceUsageConsumer roles/cloudtrace.agent; do
   gcloud projects add-iam-policy-binding "${PROJECT_ID}" --member "serviceAccount:${RUNTIME_SA}" \
     --role "${role}" --condition None --quiet >/dev/null
 done
@@ -59,19 +59,7 @@ echo "WIF provider: ${POOL_ID}/providers/${WIF_PROVIDER}"
 echo "Deploy service account: ${DEPLOY_SA}"
 
 if gcloud run services describe "${SERVICE}" --project "${PROJECT_ID}" --region "${REGION}" >/dev/null 2>&1; then
-  gcloud beta run services update "${SERVICE}" --project "${PROJECT_ID}" --region "${REGION}" --iap --quiet >/dev/null
-  gcloud run services add-iam-policy-binding "${SERVICE}" --project "${PROJECT_ID}" --region "${REGION}" \
-    --member "serviceAccount:service-${PROJECT_NUMBER}@gcp-sa-iap.iam.gserviceaccount.com" \
-    --role roles/run.invoker --quiet >/dev/null
-  gcloud run services remove-iam-policy-binding "${SERVICE}" --project "${PROJECT_ID}" --region "${REGION}" \
-    --member allUsers --role roles/run.invoker --quiet >/dev/null 2>&1 || true
-  while read -r member; do
-    [[ -z "${member}" ]] && continue
-    gcloud beta iap web add-iam-policy-binding --resource-type cloud-run --service "${SERVICE}" \
-      --region "${REGION}" --project "${PROJECT_ID}" --member "${member}" \
-      --role roles/iap.httpsResourceAccessor --condition None --quiet >/dev/null
-  done < deploy/iap_members.txt
-  echo "IAP on ${SERVICE} for $(grep -c . deploy/iap_members.txt) members"
+  deploy/access.sh team
 else
-  echo "Run deploy/deploy.sh once, then rerun this script to put the service behind IAP."
+  echo "Run deploy/deploy.sh once, then deploy/access.sh team to put the service behind IAP."
 fi

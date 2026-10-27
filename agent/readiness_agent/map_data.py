@@ -6,8 +6,11 @@ a blank record is "nobody wrote it down", never "no" (Constitution I).
 
 from __future__ import annotations
 
+import csv
 import time
 from datetime import datetime, timezone
+from functools import cache
+from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 SCHEMA = "map-data/v1"
@@ -20,6 +23,10 @@ SUSPECT_LOW, SUSPECT_HIGH = 0, 100_000
 SRC_SHELTERS = "FEMA NSS registry · shelters_clean"
 SRC_ACS = "ACS 5-yr · vulnerability_tracts_clean"
 SRC_SVI = "ACS survey estimate via CDC SVI · vulnerability_tracts_clean"
+SRC_SLOSH = "NOAA NHC storm-surge maps (SLOSH MOM v4, high tide)"
+
+# Built by scripts/derive_shelter_surge.py: worst-case surge class within ~100 m of each shelter.
+SURGE_CSV = Path(__file__).resolve().parent / "data" / "shelter_surge_slosh.csv"
 
 # One column list for the map load and the agent's shelter tools; verified against
 # evac_prod.shelters_clean by the schema check in tasks T061.
@@ -68,15 +75,58 @@ def _sourced(value: float | None, source: str, kind: str, coverage: str | None =
     return out
 
 
-def shelter_record(row: Row) -> dict:
+SurgeLookup = Mapping[str, Row]
+
+
+@cache
+def load_surge_lookup(path: Path = SURGE_CSV) -> dict[str, dict]:
+    if not path.exists():
+        return {}
+    with path.open(newline="") as f:
+        return {row["shelter_id"]: row for row in csv.DictReader(f)}
+
+
+def _surge(registry: str, noaa: Row | None) -> tuple[str, str, dict | None, bool]:
+    """Registry flag wins when recorded; a blank one is filled from the NOAA surge maps.
+
+    Returns (flag, source, noaa detail, disagrees). Levee areas stay unrecorded: NOAA says to
+    consult local officials there, so neither yes nor no is ours to fill in.
+    """
+    if noaa is None:
+        return registry, "registry", None, False
+    status = noaa["status"]
+    first = int(noaa["first_category"]) if noaa.get("first_category") else None
+    detail = {"status": status, "first_category": first}
+    noaa_flag = {"inundated": "YES", "dry": "NO"}.get(status, "UNRECORDED")
+    if registry != "UNRECORDED":
+        disagrees = noaa_flag != "UNRECORDED" and noaa_flag != registry
+        return registry, "registry", detail, disagrees
+    if noaa_flag == "UNRECORDED":
+        return registry, "registry", detail, False
+    return noaa_flag, "noaa_slosh", detail, False
+
+
+def shelter_record(row: Row, surge_lookup: SurgeLookup | None = None) -> dict:
     """The single place a shelter row becomes a frontend/agent record. Optional columns are read
-    with .get, so a column aliased to NULL degrades to "Not recorded" rather than raising."""
+    with .get, so a column aliased to NULL degrades to "Not recorded" rather than raising.
+
+    The one fill: a blank registry surge flag takes the NOAA surge-map value from surge_lookup
+    (default: the committed CSV), marked in_surge_source "noaa_slosh" so it is never shown as a
+    registry record.
+    """
+    if surge_lookup is None:
+        surge_lookup = load_surge_lookup()
     fips = row.get("county_fips")
+    surge, surge_source, surge_noaa, surge_disagrees = _surge(
+        to_flag(row.get("in_surge_slosh_area")), surge_lookup.get(str(row["shelter_id"]))
+    )
     quality = []
     if _is_suspect(row.get("evacuation_capacity")):
         quality.append("suspect_capacity")
     if not fips or not str(fips).startswith(STATE_FIPS):
         quality.append("location_disagrees")
+    if surge_disagrees:
+        quality.append("surge_disagrees")
     address = ", ".join(str(p) for p in (row.get("address_1"), row.get("city"), row.get("zip")) if p)
     return {
         "shelter_id": str(row["shelter_id"]),
@@ -94,7 +144,9 @@ def shelter_record(row: Row) -> dict:
         # is_medical is derived from population_code; with no population_code we do not know.
         "is_medical": "UNRECORDED" if row.get("population_code") is None
         else to_flag(row.get("is_medical")),
-        "in_surge_slosh_area": to_flag(row.get("in_surge_slosh_area")),
+        "in_surge_slosh_area": surge,
+        "in_surge_source": surge_source,
+        **({"surge_noaa": surge_noaa} if surge_noaa else {}),
         "quality_flags": quality,
     }
 
@@ -138,9 +190,13 @@ def build_payload(
     tract_rows: Iterable[Row],
     counties: Iterable[tuple[str, str]],
     generated_at: datetime | None = None,
+    surge_lookup: SurgeLookup | None = None,
 ) -> dict:
-    """Pure transform from query rows to the map-data/v1 payload. Never edits or drops a row."""
-    shelters = [shelter_record(r) for r in shelter_rows]
+    """Pure transform from query rows to the map-data/v1 payload. Never edits or drops a row.
+
+    surge_lookup defaults to the committed NOAA CSV; pass {} to see registry values only.
+    """
+    shelters = [shelter_record(r, surge_lookup) for r in shelter_rows]
     tracts_by_county: dict[str, list[Row]] = {}
     for t in tract_rows:
         tracts_by_county.setdefault(str(t["geo_id"])[:5], []).append(t)
@@ -164,6 +220,7 @@ def build_payload(
         }
         for key, out_name in COUNTY_FLAG_NAMES.items():
             record[out_name] = _flag_counts(mine, key)
+        record["in_surge_from_noaa"] = sum(1 for s in mine if s["in_surge_source"] == "noaa_slosh")
         record.update(_people(tracts_by_county.get(fips, [])))
         county_records.append(record)
 
@@ -183,10 +240,24 @@ def _notes(shelters: list[dict]) -> list[str]:
     gen = sum(1 for s in shelters if s["generator_onsite"] == "UNRECORDED")
     suspect = [s["name"] for s in shelters if "suspect_capacity" in s["quality_flags"]]
     misplaced = sum(1 for s in shelters if "location_disagrees" in s["quality_flags"])
+    filled = [s for s in shelters if s["in_surge_source"] == "noaa_slosh"]
+    surge_conflicts = sum(1 for s in shelters if "surge_disagrees" in s["quality_flags"])
     notes = [
         f"{wc} of {n} shelters have no wheelchair-access record.",
         f"{gen} of {n} shelters have no generator record.",
     ]
+    if filled:
+        wet = sum(1 for s in filled if s["in_surge_slosh_area"] == "YES")
+        notes.append(
+            f"{len(filled)} of {n} shelters had no surge record and were filled from {SRC_SLOSH}: "
+            f"{wet} flood within about 100 m in at least one category, {len(filled) - wet} do not. "
+            "These maps are a worst-case planning composite, not a forecast."
+        )
+    if surge_conflicts:
+        notes.append(
+            f"{surge_conflicts} shelter(s) have a registry surge flag that the NOAA surge maps "
+            "contradict; the registry value is shown."
+        )
     if suspect:
         notes.append(
             f"{len(suspect)} shelter(s) have a suspect capacity and are excluded from totals: "

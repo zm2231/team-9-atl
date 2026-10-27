@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useReducer, type Dispatch, type ReactNode } from "react";
-import type { Category, ChatExchange, County, LiveCheckStatus, MapData, Shelter } from "../lib/types";
+import type { Category, ChatExchange, County, LiveCheckStatus, MapData, Shelter, WheelchairCheck } from "../lib/types";
 import type { LineString, Point } from "geojson";
 import { countyNames } from "../lib/geo";
 import {
@@ -30,6 +30,8 @@ export interface State {
   detailsOpen: boolean;
   /** Session memory only: status and place ids per shelter, never titles/URIs/text (FR-022). */
   liveChecks: Map<string, { status: LiveCheckStatus; placeIds: string[]; checked_at: string }>;
+  /** Google Maps wheelchair lookups, shown with attribution and kept only while the page is open. */
+  wheelchairChecks: Map<string, WheelchairCheck>;
   chat: ChatExchange[];
   /** Scenario history (feature 002): user inputs only, mirrored to this browser's storage. */
   history: SavedScenario[];
@@ -55,6 +57,7 @@ export const initialState: State = {
   drawing: false,
   detailsOpen: false,
   liveChecks: new Map(),
+  wheelchairChecks: new Map(),
   chat: [],
   history: [],
   historyLoaded: false,
@@ -86,7 +89,8 @@ export type Action =
   | { type: "setDetailsOpen"; open: boolean }
   | { type: "chatStart"; exchange: ChatExchange; now?: string }
   | { type: "chatUpdate"; id: string; patch: Partial<ChatExchange> }
-  | { type: "liveCheck"; shelterId: string; status: LiveCheckStatus; placeIds: string[] };
+  | { type: "liveCheck"; shelterId: string; status: LiveCheckStatus; placeIds: string[] }
+  | { type: "wheelchairChecked"; results: WheelchairCheck[] };
 
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -236,6 +240,11 @@ export function reducer(state: State, action: Action): State {
         checked_at: new Date().toISOString(),
       });
       return { ...state, liveChecks };
+    }
+    case "wheelchairChecked": {
+      const wheelchairChecks = new Map(state.wheelchairChecks);
+      for (const r of action.results) wheelchairChecks.set(r.shelter_id, r);
+      return { ...state, wheelchairChecks };
     }
   }
 }

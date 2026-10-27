@@ -64,6 +64,12 @@ export function CountySummaryView({ county }: { county: County }) {
             <span className="row__label">In a surge zone</span>
             <span>{flagCountsLine(county.in_surge)}</span>
           </div>
+          {!!county.in_surge_from_noaa && (
+            <div className="small muted" data-testid="surge-noaa-count">
+              <span className="kind kind--noaa">NOAA map</span> {county.in_surge_from_noaa} of these come from NOAA
+              surge maps, not the registry.
+            </div>
+          )}
         </>
       )}
       <h3>Who may struggle to leave</h3>

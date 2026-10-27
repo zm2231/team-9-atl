@@ -1,4 +1,4 @@
-import type { ExcludedShelter, Flag, FlagCounts, FlagKey, Shelter, SourcedValue } from "./types";
+import type { ExcludedShelter, Flag, FlagCounts, FlagKey, Shelter, SourcedValue, WheelchairCheck } from "./types";
 
 const LABELS: Record<Flag, string> = { YES: "Yes", NO: "No", UNRECORDED: "Not recorded" };
 
@@ -54,4 +54,28 @@ export function formatNumber(v: number | null, opts: { percent?: boolean } = {})
   if (v === null || Number.isNaN(v)) return "no data";
   if (opts.percent) return `${(v * 100).toFixed(1)}%`;
   return Math.round(v).toLocaleString("en-US");
+}
+
+/** Short NOAA surge-map reading for a shelter, whatever the registry says. */
+export function surgeNoaaLabel(s: Pick<Shelter, "surge_noaa">): string {
+  const n = s.surge_noaa;
+  if (!n) return "";
+  if (n.status === "levee") return "Levee area: consult local officials";
+  if (n.status === "dry") return "Dry in Cat 1–5";
+  return n.first_category === 5 ? "Floods in Cat 5" : `Floods from Cat ${n.first_category}`;
+}
+
+export const NOAA_SURGE_SOURCE = "NOAA NHC storm-surge maps (SLOSH MOM v4, high tide)";
+
+const WHEELCHAIR_CHECK_LABELS: Record<WheelchairCheck["status"], string> = {
+  listed_accessible: "Maps lists accessible entrance",
+  listed_not_accessible: "Maps lists no accessible entrance",
+  no_info: "Maps: no accessibility info",
+  not_found: "Not found on Maps",
+  error: "Maps check failed",
+};
+
+export function wheelchairCheckLabel(c: WheelchairCheck): string {
+  if (c.place === "gone") return "Maps: place appears closed";
+  return WHEELCHAIR_CHECK_LABELS[c.status];
 }

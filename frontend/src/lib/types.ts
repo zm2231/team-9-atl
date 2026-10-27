@@ -20,7 +20,13 @@ export interface SourcedValue {
   coverage?: string;
 }
 
-export type QualityFlag = "suspect_capacity" | "location_disagrees";
+export type QualityFlag = "suspect_capacity" | "location_disagrees" | "surge_disagrees";
+
+/** NOAA NHC SLOSH MOM v4 (high tide), worst class within ~100 m of the shelter point. */
+export interface SurgeNoaa {
+  status: "inundated" | "dry" | "levee";
+  first_category: number | null;
+}
 
 export interface Shelter {
   shelter_id: string;
@@ -37,6 +43,9 @@ export interface Shelter {
   generator_onsite: Flag;
   is_medical: Flag;
   in_surge_slosh_area: Flag;
+  /** "noaa_slosh": the registry was blank and the flag comes from NOAA surge maps. */
+  in_surge_source?: "registry" | "noaa_slosh";
+  surge_noaa?: SurgeNoaa;
   quality_flags: QualityFlag[];
 }
 
@@ -58,6 +67,7 @@ export interface County {
   generator: FlagCounts;
   medical: FlagCounts;
   in_surge: FlagCounts;
+  in_surge_from_noaa?: number;
   households_no_vehicle: SourcedValue;
   share_65_plus: SourcedValue;
   share_disability: SourcedValue;
@@ -100,6 +110,17 @@ export interface LiveCheckReport {
   shelter_id: string;
   status: LiveCheckStatus;
   place_id?: string;
+}
+
+/** A live Google Maps lookup for a blank wheelchair record. Unverified; never a registry value. */
+export interface WheelchairCheck {
+  shelter_id: string;
+  status: "listed_accessible" | "listed_not_accessible" | "no_info" | "not_found" | "error";
+  place: "same" | "renamed" | "gone" | "not_found";
+  evidence: string;
+  sources: GroundingSource[];
+  checked_at: string;
+  error?: string;
 }
 
 export interface GroundingSource {

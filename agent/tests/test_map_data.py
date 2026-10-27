@@ -132,3 +132,70 @@ def test_payload_validates_against_contract(payload):
 def test_no_personal_data_columns_selected():
     # FR-021: contact columns must never be queried.
     assert "org_poc" not in SHELTERS_SQL.lower()
+
+
+SURGE = {
+    "c": {"status": "inundated", "first_category": "3"},
+    "d": {"status": "dry", "first_category": ""},
+    "b": {"status": "dry", "first_category": ""},
+}
+
+
+@pytest.fixture
+def surge_payload():
+    shelters = [
+        shelter("b", cap=300),                             # blank registry, NOAA dry
+        shelter("c", cap=300),                             # blank registry, NOAA inundated
+        shelter("d", fips="13127", cap=150, surge=True),   # registry yes, NOAA dry
+        shelter("f", cap=100),                             # blank, not in the NOAA lookup
+    ]
+    return build_payload(shelters, [], COUNTIES, surge_lookup=SURGE,
+                         generated_at=datetime(2026, 10, 27, tzinfo=timezone.utc))
+
+
+def by_id(payload, sid):
+    return next(s for s in payload["shelters"] if s["shelter_id"] == sid)
+
+
+def test_blank_surge_filled_from_noaa_and_marked(surge_payload):
+    c = by_id(surge_payload, "c")
+    assert (c["in_surge_slosh_area"], c["in_surge_source"]) == ("YES", "noaa_slosh")
+    assert c["surge_noaa"] == {"status": "inundated", "first_category": 3}
+    b = by_id(surge_payload, "b")
+    assert (b["in_surge_slosh_area"], b["in_surge_source"]) == ("NO", "noaa_slosh")
+    f = by_id(surge_payload, "f")
+    assert (f["in_surge_slosh_area"], f["in_surge_source"]) == ("UNRECORDED", "registry")
+    assert "surge_noaa" not in f
+
+
+def test_registry_surge_wins_and_disagreement_is_flagged(surge_payload):
+    d = by_id(surge_payload, "d")
+    assert (d["in_surge_slosh_area"], d["in_surge_source"]) == ("YES", "registry")
+    assert "surge_disagrees" in d["quality_flags"]
+    assert any("contradict" in n for n in surge_payload["notes"])
+
+
+def test_levee_area_is_never_filled():
+    payload = build_payload([shelter("x")], [], COUNTIES,
+                            surge_lookup={"x": {"status": "levee", "first_category": ""}})
+    x = by_id(payload, "x")
+    assert (x["in_surge_slosh_area"], x["in_surge_source"]) == ("UNRECORDED", "registry")
+
+
+def test_county_counts_say_how_many_came_from_noaa(surge_payload):
+    jackson = county(surge_payload, "13157")
+    assert jackson["in_surge"] == {"yes": 1, "no": 1, "unrecorded": 1}
+    assert jackson["in_surge_from_noaa"] == 2
+    assert any("2 of 4 shelters had no surge record" in n for n in surge_payload["notes"])
+
+
+def test_surge_payload_validates_against_contract(surge_payload):
+    schema = json.loads(SCHEMA_PATH.read_text())
+    jsonschema.validate(json.loads(json.dumps(surge_payload)), schema)
+
+
+def test_committed_surge_csv_covers_every_shelter():
+    from readiness_agent.map_data import load_surge_lookup
+    lookup = load_surge_lookup()
+    assert len(lookup) == 1792
+    assert {r["status"] for r in lookup.values()} <= {"inundated", "dry", "levee"}

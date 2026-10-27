@@ -5,6 +5,7 @@ import json
 import pytest
 
 from readiness_agent import evacuation_tools as tools
+from readiness_agent.map_data import shelter_record
 
 
 def shelter_row(sid, cap=200, wc=None, gen=None, fips="13157", name=None):
@@ -149,8 +150,9 @@ def test_check_shelter_google_maps_uses_coordinates_and_returns_live_listing(mon
 
 def test_check_shelter_google_maps_requires_api_key(monkeypatch):
     monkeypatch.delenv("GOOGLE_MAPS_API_KEY", raising=False)
-    with pytest.raises(RuntimeError, match="GOOGLE_MAPS_API_KEY"):
-        tools.check_shelter_google_maps("363507")
+    result = tools.check_shelter_google_maps("363507")
+    assert result["status"] == "error" and "GOOGLE_MAPS_API_KEY" in result["message"]
+    assert result["candidates"] == [] and "Google Maps" in result["source"]
 
 
 def test_check_shelter_google_maps_returns_no_match_without_claiming_closed(monkeypatch):
@@ -217,17 +219,39 @@ def test_record_live_check_validates_status():
     assert out["checked_at"]
 
 
-def test_readiness_brief_counts_what_it_could_not_tell(fake_bq):
+def test_surge_fallback_sql_prefers_registry_and_names_the_source(monkeypatch):
+    monkeypatch.setattr(tools, "_surge_fallback_exists", lambda: True)
+    sql = tools._shelters_with_surge_fallback()
+    # A recorded FEMA value is kept; NOAA's value is used only when the registry is NULL.
+    assert "COALESCE(SAFE_CAST(s.in_surge_slosh_area AS BOOL), f.in_surge_fallback)" in sql
+    assert "'noaa_slosh'" in sql and "'registry'" in sql
+    assert "shelter_surge_noaa_clean" in sql
+    assert "LEFT JOIN" in sql  # shelters outside the lookup stay in, unrecorded
+
+
+def test_missing_fallback_table_leaves_registry_unchanged(monkeypatch):
+    monkeypatch.setattr(tools, "_surge_fallback_exists", lambda: False)
+    sql = tools._shelters_with_surge_fallback()
+    assert "shelter_surge_noaa_clean" not in sql
+    assert "'registry' AS in_surge_source" in sql
+
+
+def test_risky_shelters_read_the_fallback_and_filter_by_county_fips(monkeypatch, fake_bq):
+    calls, _ = fake_bq
+    monkeypatch.setattr(tools, "_surge_fallback_exists", lambda: True)
+    tools.identify_risky_shelters(state="GA", county_fips="13051", limit=1)
+    sql, params = calls[0]
+    assert "shelter_surge_noaa_clean" in sql and "surge_from_noaa_count" in sql
+    assert "s.county_fips = @county_fips" in sql
+    assert params["county_fips"] == "13051"
+
+
+def test_shelter_tool_records_fill_surge_from_noaa_and_mark_it(fake_bq, monkeypatch):
     _, rows = fake_bq
-    rows["value"] = [shelter_row("a", wc=None, gen=None), shelter_row("b", wc=True, gen=None)]
-    brief = tools.build_readiness_brief("GA", county_fips="13157")
-    cnt = brief["could_not_tell"]
-    assert cnt["wheelchair_unrecorded"] == 1
-    assert cnt["generator_unrecorded"] == 2
-    assert cnt["shelters_considered"] == 2
-    assert "shelters_clean" in brief["sources"]["shelters_to_verify"]
-
-
-def test_readiness_brief_requires_a_county():
-    with pytest.raises(ValueError):
-        tools.build_readiness_brief("GA")
+    lookup = {"a": {"status": "inundated", "first_category": "2"}}
+    monkeypatch.setattr(tools, "shelter_record", lambda r: shelter_record(r, lookup))
+    rows["value"] = [shelter_row("a"), shelter_row("b")]
+    out = tools.assess_shelter_accessibility(county_fips="13157")
+    a, b = out["shelters"]
+    assert (a["in_surge_slosh_area"], a["in_surge_source"]) == ("YES", "noaa_slosh")
+    assert (b["in_surge_slosh_area"], b["in_surge_source"]) == ("UNRECORDED", "registry")

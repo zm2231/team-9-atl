@@ -1,0 +1,239 @@
+{
+ "method": "leave one storm out; logit-normal hierarchical model, EM variances",
+ "rows": 6075,
+ "storms": 27,
+ "mae": 0.0419,
+ "inside_10_90": 0.7789,
+ "constant_mae": 0.0624,
+ "big_storm_threshold": 0.1,
+ "big_storms": [
+  "2018280N18273",
+  "2023239N21274",
+  "2024268N17278"
+ ],
+ "big_storm_mae": 0.1373,
+ "big_storm_inside_10_90": 0.7523,
+ "per_storm": [
+  {
+   "sid": "2018146N19273",
+   "counties": 226,
+   "observed_mean": 0.0184,
+   "predicted_mean": 0.0206,
+   "mae": 0.0185,
+   "inside_10_90": 0.8451
+  },
+  {
+   "sid": "2018242N13343",
+   "counties": 226,
+   "observed_mean": 0.0138,
+   "predicted_mean": 0.0328,
+   "mae": 0.0277,
+   "inside_10_90": 0.7345
+  },
+  {
+   "sid": "2018280N18273",
+   "counties": 226,
+   "observed_mean": 0.1893,
+   "predicted_mean": 0.0975,
+   "mae": 0.127,
+   "inside_10_90": 0.7168
+  },
+  {
+   "sid": "2019236N10314",
+   "counties": 226,
+   "observed_mean": 0.0147,
+   "predicted_mean": 0.0237,
+   "mae": 0.0183,
+   "inside_10_90": 0.8584
+  },
+  {
+   "sid": "2019291N22264",
+   "counties": 225,
+   "observed_mean": 0.0124,
+   "predicted_mean": 0.0539,
+   "mae": 0.0459,
+   "inside_10_90": 0.6578
+  },
+  {
+   "sid": "2020148N32281",
+   "counties": 226,
+   "observed_mean": 0.0123,
+   "predicted_mean": 0.0114,
+   "mae": 0.0147,
+   "inside_10_90": 0.7434
+  },
+  {
+   "sid": "2020188N28271",
+   "counties": 226,
+   "observed_mean": 0.0205,
+   "predicted_mean": 0.0308,
+   "mae": 0.0262,
+   "inside_10_90": 0.8628
+  },
+  {
+   "sid": "2020211N13306",
+   "counties": 225,
+   "observed_mean": 0.0156,
+   "predicted_mean": 0.0159,
+   "mae": 0.0193,
+   "inside_10_90": 0.7289
+  },
+  {
+   "sid": "2020244N30279",
+   "counties": 226,
+   "observed_mean": 0.0129,
+   "predicted_mean": 0.0144,
+   "mae": 0.0165,
+   "inside_10_90": 0.7743
+  },
+  {
+   "sid": "2020256N25281",
+   "counties": 226,
+   "observed_mean": 0.0505,
+   "predicted_mean": 0.0355,
+   "mae": 0.0375,
+   "inside_10_90": 0.8053
+  },
+  {
+   "sid": "2020261N21265",
+   "counties": 226,
+   "observed_mean": 0.0092,
+   "predicted_mean": 0.0202,
+   "mae": 0.0203,
+   "inside_10_90": 0.6681
+  },
+  {
+   "sid": "2020279N16284",
+   "counties": 226,
+   "observed_mean": 0.012,
+   "predicted_mean": 0.0177,
+   "mae": 0.0162,
+   "inside_10_90": 0.7434
+  },
+  {
+   "sid": "2020299N18277",
+   "counties": 226,
+   "observed_mean": 0.0942,
+   "predicted_mean": 0.0303,
+   "mae": 0.0776,
+   "inside_10_90": 0.6018
+  },
+  {
+   "sid": "2020306N15288",
+   "counties": 226,
+   "observed_mean": 0.015,
+   "predicted_mean": 0.0346,
+   "mae": 0.0342,
+   "inside_10_90": 0.7301
+  },
+  {
+   "sid": "2021169N23268",
+   "counties": 226,
+   "observed_mean": 0.0174,
+   "predicted_mean": 0.0289,
+   "mae": 0.0208,
+   "inside_10_90": 0.8894
+  },
+  {
+   "sid": "2021179N30287",
+   "counties": 226,
+   "observed_mean": 0.0075,
+   "predicted_mean": 0.0118,
+   "mae": 0.0121,
+   "inside_10_90": 0.7478
+  },
+  {
+   "sid": "2021182N09317",
+   "counties": 225,
+   "observed_mean": 0.0293,
+   "predicted_mean": 0.0513,
+   "mae": 0.0374,
+   "inside_10_90": 0.8844
+  },
+  {
+   "sid": "2021222N14301",
+   "counties": 225,
+   "observed_mean": 0.0335,
+   "predicted_mean": 0.0334,
+   "mae": 0.0298,
+   "inside_10_90": 0.8667
+  },
+  {
+   "sid": "2021239N17281",
+   "counties": 226,
+   "observed_mean": 0.0263,
+   "predicted_mean": 0.0208,
+   "mae": 0.0225,
+   "inside_10_90": 0.8496
+  },
+  {
+   "sid": "2021252N28273",
+   "counties": 226,
+   "observed_mean": 0.0197,
+   "predicted_mean": 0.027,
+   "mae": 0.0274,
+   "inside_10_90": 0.7389
+  },
+  {
+   "sid": "2022183N32280",
+   "counties": 225,
+   "observed_mean": 0.0068,
+   "predicted_mean": 0.0179,
+   "mae": 0.0157,
+   "inside_10_90": 0.7556
+  },
+  {
+   "sid": "2022266N12294",
+   "counties": 225,
+   "observed_mean": 0.072,
+   "predicted_mean": 0.0948,
+   "mae": 0.0439,
+   "inside_10_90": 0.8222
+  },
+  {
+   "sid": "2022311N21293",
+   "counties": 224,
+   "observed_mean": 0.0314,
+   "predicted_mean": 0.0773,
+   "mae": 0.0582,
+   "inside_10_90": 0.8036
+  },
+  {
+   "sid": "2023239N21274",
+   "counties": 224,
+   "observed_mean": 0.1422,
+   "predicted_mean": 0.0759,
+   "mae": 0.0926,
+   "inside_10_90": 0.8125
+  },
+  {
+   "sid": "2024216N20284",
+   "counties": 223,
+   "observed_mean": 0.0837,
+   "predicted_mean": 0.0797,
+   "mae": 0.0685,
+   "inside_10_90": 0.8296
+  },
+  {
+   "sid": "2024268N17278",
+   "counties": 212,
+   "observed_mean": 0.2821,
+   "predicted_mean": 0.1998,
+   "mae": 0.1957,
+   "inside_10_90": 0.7264
+  },
+  {
+   "sid": "2025185N30280",
+   "counties": 226,
+   "observed_mean": 0.0092,
+   "predicted_mean": 0.0201,
+   "mae": 0.0176,
+   "inside_10_90": 0.8319
+  }
+ ],
+ "full_fit": {
+  "tau_storm": 0.6581,
+  "tau_county": 0.848,
+  "sigma": 1.5852
+ }
+}
