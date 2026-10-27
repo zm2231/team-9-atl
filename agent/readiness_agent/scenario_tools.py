@@ -4,6 +4,7 @@ from datetime import date as Date
 from pathlib import Path
 from typing import Any
 
+from . import report
 from .evacuation_tools import QueryTooLargeError, _dataset_name, _project_id, _run_query
 
 CONTEXT_PREFIX = "CONTEXT v1 "
@@ -27,11 +28,13 @@ SOURCES = {
         f"EAGLE-I labels ({MODEL_FACTS}) (scenario_season_county)"
     ),
     "gaps": "Simulated · season model rerun with each unknown set low and high (scenario_fix_ranking)",
+    "reports": "Precomputed · scenario_reports, built by scenario/build/build_reports.py",
     "audit": "Survey · ACS 2020-2024 B03002, audit only, never a model input (ext_ga_acs_race_tract)",
 }
 NOT_DETERMINED = "not_determined"
 TOP_COUNTIES = 20
 N_DRAWS = 400
+MAX_DRAWS = 2000
 SEED = 20261027
 CASES = ("low", "base", "high")
 AFFECTED_SHARE = 0.10
@@ -44,6 +47,11 @@ SITING_POOL = 60
 SOURCES["planner"] = (
     "Planner-reported site updates (scenario_site_updates), shown next to the registry"
 )
+SOURCES["conditions"] = (
+    "Live NOAA inputs (CPC ONI, PSL Tropical North Atlantic SST, CPC ENSO discussion, CPC seasonal "
+    "hurricane outlook) with a conditions model back-tested on 1950-2025 storms near Georgia"
+)
+AUTO = "auto"
 SOURCES["siting"] = (
     "Simulated · season model rerun with each candidate site added (scenario_siting); "
     "shelters from shelters_clean, counties from Census population centres"
@@ -194,6 +202,8 @@ def run_scenario(
     case: str = "base",
     sites_off: list[str] | None = None,
     assume_generator: list[str] | None = None,
+    draws: int | None = None,
+    run_index: int | None = None,
     seats_override: dict[str, int] | None = None,
     stations_override: dict[str, int] | None = None,
     add_sites: list[dict[str, Any]] | None = None,
@@ -204,6 +214,8 @@ def run_scenario(
     Uses the track drawn on the map (sent in CONTEXT v1) when there is one; otherwise matches past storms that passed near (lat, lon) with a similar heading, time of year and intensity. Call it whenever the user asks what a storm would do, who is at risk, or where people could go. All numbers come from this tool; report them with the range_label the tool returns.
 
     sites_off (shelter_id or ccn) and assume_generator (shelter_id) are operator what-ifs (assume_generator on a shelter recorded NO means adding a generator there; on UNRECORDED it means confirming one; each site's generator_assumption says which), merged with CONTEXT v1 scenario.site_overrides; the result then carries baseline, with_switches and delta for people lacking shelter and needing transport. seats_override {shelter_id: seats}, stations_override {ccn: stations} and add_sites [{lat, lon, seats, generator}] are further what-ifs; invalid values land in ignored_ids. Planner-reported site updates (record_site_update) are always applied and listed under planner_updates next to the registry values.
+
+    draws sets how many simulated runs to make (1-2000, default 400); ranges are taken across them. run_index picks one of those runs (0-based) and reports it alone, as the storm the simulation plays. The result's report holds the same sections as county_plan for that run or set of runs.
     """
     case = case if case in CASES else "base"
     ctx = _context(tool_context)
@@ -277,7 +289,11 @@ def run_scenario(
             ),
         }
 
-    result = engine.run(tracks, n_draws=N_DRAWS, seed=SEED)
+    n_runs = draws if isinstance(draws, int) and not isinstance(draws, bool) and 1 <= draws <= MAX_DRAWS else N_DRAWS
+    result = engine.run(tracks, n_draws=n_runs, seed=SEED)
+    one = isinstance(run_index, int) and not isinstance(run_index, bool) and 0 <= run_index < n_runs
+    if one:
+        result = engine.one_draw(result, run_index)
     counties = data.counties()
     risk = engine.people_at_risk(result, counties)
     outage = result.outage
@@ -418,7 +434,7 @@ def run_scenario(
     receiving_shelters = [
         r["shelter_id"] for r in (receiving or {}).get("sites", []) if r.get("shelter_id")
     ]
-    return {
+    out = {
         "affected_county_fips": affected,
         "affected_shelter_ids": affected_shelters,
         "receiving_top": receiving_shelters,
@@ -432,6 +448,7 @@ def run_scenario(
             "likelihood": likelihood,
             "support": "outside_labeled_support" if support_outside else "within_labeled_support",
             "range_label": RANGE_LABEL,
+            "runs": {"n": n_runs, "seed": SEED, "run_index": run_index if one else None},
             "assumptions": {
                 "affected_threshold_share": AFFECTED_SHARE,
                 "affected_county_rule": "at least 10% outage in at least half of the draws",
@@ -449,9 +466,14 @@ def run_scenario(
         "source": SOURCES["scenario"],
         "counties": rows,
         "receiving": receiving,
+        "selected_county_fips": county_fips if county_fips in index else None,
+        "selected_county_name": counties[index[county_fips]]["county_name"]
+        if county_fips in index else None,
         "planner_updates": _planner_report(planner),
         "ignored_ids": [*switches["invalid"], *request["invalid"]],
     }
+    out["report"] = report.run_report(out)
+    return out
 
 
 def _season_query(sql: str, params: list[Any], key: str, source: str) -> dict[str, Any]:
@@ -471,32 +493,110 @@ def _season_query(sql: str, params: list[Any], key: str, source: str) -> dict[st
     return {key: rows, "source": source}
 
 
+def season_conditions(as_of_date: str | None = None) -> dict[str, Any]:
+    """Current NOAA conditions and the season outlook worked out from them, with sources, dates, back-test, blend weights and the share of the season remaining. as_of_date: YYYY-MM-DD, default today."""
+    from .scenario import conditions
+
+    try:
+        out = conditions.season_conditions(as_of_date)
+    except ValueError as exc:
+        return _status("bad_date", f"as_of_date must be YYYY-MM-DD ({exc}).")
+    return {**out, "source": SOURCES["conditions"]}
+
+
+def _auto_note(cond: dict[str, Any]) -> str:
+    b = cond["blended"]
+    sel = cond["backtest"]["selected"]
+    model = (
+        "No conditions predictor beat the 1950-2025 long-run rate in the leave-one-season-out "
+        "back-test, so the conditions part is the long-run rate"
+        if all(v == ["long_run"] for v in sel.values())
+        else "Conditions model predictors: " + "; ".join(f"{k}: {', '.join(v)}"
+                                                         for k, v in sel.items())
+    )
+    noaa = cond["inputs"]["noaa_outlook"]
+    noaa_text = (
+        f"blended {cond['weights']['noaa_outlook']:g} with the outside forecast input "
+        f"{noaa['name']} (issued {noaa['issued']}, {noaa['url']})" if noaa
+        else cond["noaa_note"].rstrip(".")
+    )
+    note = (
+        f"{cond['plan']['reason']} {model}; {noaa_text}. "
+        f"Blended: {b['storms_per_year']['value']:.2f} storms per year within 250 km of Georgia "
+        f"(10-90: {b['storms_per_year']['p10']:.2f}-{b['storms_per_year']['p90']:.2f}), "
+        f"{b['hurricane_share']['value']:.0%} hurricanes, {b['major_share']['value']:.0%} major."
+    )
+    rest = cond["rest_of_current_season"]
+    if rest:
+        note += (
+            f" Rest of {rest['season']} after {rest['as_of_date']}: "
+            f"{rest['share_of_season_remaining']:.0%} of the season remains, about "
+            f"{rest['expected_storms']['value']:.2f} storms, reported separately."
+        )
+    return note
+
+
+def _outlook_args(
+    outlook: str, as_of_date: str | None
+) -> tuple[str, dict, dict | None, dict | None]:
+    from .scenario import conditions
+
+    if outlook != AUTO:
+        return outlook, {}, None, None
+    cond = conditions.season_conditions(as_of_date)
+    rest = cond["rest_of_current_season"]
+    auto = {
+        "note": _auto_note(cond),
+        **{k: cond[k] for k in ("as_of_date", "plan", "share_of_season_remaining", "inputs",
+                                "noaa_note", "conditions_model", "noaa_implied", "blended",
+                                "weights", "backtest", "method")},
+        "rest_of_current_season": rest and {k: v for k, v in rest.items() if k != "custom"},
+    }
+    run_as_of = cond["plan"]["run_as_of_date"]
+    extra = {"custom": cond["custom"], **({"as_of_date": run_as_of} if run_as_of else {})}
+    rest_extra = rest and {"custom": rest["custom"], "as_of_date": rest["as_of_date"]}
+    return "custom", extra, auto, rest_extra
+
+
+def _ranked(rows: list[dict[str, Any]], county_fips: str | None, limit: int) -> list:
+    if county_fips:
+        return [c for c in rows if c["county_fips"] == county_fips]
+    return sorted(rows, key=lambda c: -c["lacking_shelter"]["total"]["one_in_10"])[
+        : max(1, min(int(limit), 159))
+    ]
+
+
 def season_county_risk(
     county_fips: str | None = None,
     limit: int = 10,
-    outlook: str = "long_run",
+    outlook: str = AUTO,
     sites_off: list[str] | None = None,
     assume_generator: list[str] | None = None,
     case: str = "base",
     seats_override: dict[str, int] | None = None,
     stations_override: dict[str, int] | None = None,
     add_sites: list[dict[str, Any]] | None = None,
+    as_of_date: str | None = None,
 ) -> dict[str, Any]:
     """Season-long hurricane risk per Georgia county from 3,200 simulated events built on every storm since 1950 near Georgia (800 replays of the historical tracks and 2,400 synthetic variants shifted, re-intensified, re-timed and resized): chance per year of losing power to at least 25% of customers, power-dependent residents affected, people lacking shelter (no powered seat, no dialysis chair) and people needing transport (no vehicle), each in a typical, a 1-in-10 and a 1-in-100 season.
 
-    outlook picks the storm rate: long_run (default, 1950-2025), recent (2000-2025), la_nina, neutral, el_nino (seasons with that ENSO state), or noaa_aug_2026 (scaled to NOAA's August 2026 outlook, an outside forecast input). sites_off and assume_generator rerun the season with shelters or dialysis centres switched off, or generators assumed. seats_override, stations_override and add_sites [{lat, lon, seats, generator}] are further what-ifs. Planner-reported site updates are always applied. Each result carries probability: the share of simulated seasons with anyone lacking shelter, with 50 or more, and with anyone lacking a dialysis chair. Without county_fips, returns the counties with the most people lacking shelter.
+    outlook picks the storm rate: auto (default) works it out from current conditions (season_conditions): the rest of the current season after as_of_date (default today) when more than half of it remains, otherwise the next full season with the rest of the current season in auto.rest_of_current_season; long_run (1950-2025), recent (2000-2025), la_nina, neutral, el_nino (seasons with that ENSO state), or noaa_aug_2026 (scaled to NOAA's August 2026 outlook, an outside forecast input). sites_off and assume_generator rerun the season with shelters or dialysis centres switched off, or generators assumed. seats_override, stations_override and add_sites [{lat, lon, seats, generator}] are further what-ifs. Planner-reported site updates are always applied. Each result carries probability: the share of simulated seasons with anyone lacking shelter, with 50 or more, and with anyone lacking a dialysis chair. Without county_fips, returns the counties with the most people lacking shelter.
     """
     from .scenario import data, season, site_updates
 
-    if outlook not in season.OUTLOOKS:
+    if outlook != AUTO and outlook not in season.OUTLOOKS:
         return {
             "status": "unknown_outlook",
-            "message": f"Outlook must be one of: {', '.join(season.OUTLOOKS)}.",
+            "message": f"Outlook must be one of: {AUTO}, {', '.join(season.OUTLOOKS)}.",
             "counties": [],
             "source": SOURCES["season"],
         }
     case = case if case in CASES else "base"
-    note = season_outlook_note(outlook)
+    try:
+        name, extra, auto, rest_extra = _outlook_args(outlook, as_of_date)
+    except ValueError as exc:
+        return _status("bad_date", f"as_of_date must be YYYY-MM-DD ({exc}).")
+    note = auto["note"] if auto else season_outlook_note(outlook)
     switches = _switches({}, sites_off, assume_generator)
     planner = _planner(data.sites())
     request = site_updates.request_overrides(
@@ -505,24 +605,31 @@ def season_county_risk(
         add_sites,
         site_updates.effective_sites(data.sites(), planner),
     )
-    run = season.run_season(
-        outlook,
-        sites_off=sorted(switches["sites_off"] | set(planner["sites_off"])),
-        assume_generator=sorted(switches["assume_generator"]),
-        case=case,
-        **site_updates.season_kwargs(planner, request),
-    )
-    rows = run["counties"]
-    if county_fips:
-        rows = [c for c in rows if c["county_fips"] == county_fips]
-    else:
-        rows = sorted(rows, key=lambda c: -c["lacking_shelter"]["total"]["one_in_10"])[
-            : max(1, min(int(limit), 159))
-        ]
+    def run_with(run_name: str, kwargs: dict) -> dict[str, Any]:
+        return season.run_season(
+            run_name,
+            sites_off=sorted(switches["sites_off"] | set(planner["sites_off"])),
+            assume_generator=sorted(switches["assume_generator"]),
+            case=case,
+            **site_updates.season_kwargs(planner, request),
+            **kwargs,
+        )
+
+    run = run_with(name, extra)
+    rows = _ranked(run["counties"], county_fips, limit)
+    if auto and rest_extra:
+        rest_run = run_with("custom", rest_extra)
+        auto["rest_of_current_season"]["result"] = {
+            "as_of": rest_run.get("as_of"),
+            "statewide": rest_run["statewide"],
+            "counties": _ranked(rest_run["counties"], county_fips, limit),
+        }
     return {
         "outlook": outlook,
         "label": run["label"],
         "outlook_note": note,
+        **({"auto": auto, "as_of": run.get("as_of"), "severity": run.get("severity")}
+           if auto else {}),
         "storms_per_year": run["storms_per_year"],
         "case": case,
         "sites_off": run["sites_off"],
@@ -603,10 +710,12 @@ def _readiness_brief(county_fips: str) -> dict[str, Any]:
     return build_readiness_brief(county_fips)
 
 
-def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
+def county_plan(
+    county_fips: str, outlook: str = AUTO, as_of_date: str | None = None
+) -> dict[str, Any]:
     """One call that assembles a county's season readiness plan: the readiness brief (who cannot leave, where they would go, what to fix, what we could not tell), how often the power goes out under the chosen outlook and the long run, people lacking shelter and needing transport in a typical and a 1-in-10 season, what confirming every unrecorded medical-shelter generator would change, and an audit of the brief's ranked tracts against the state. Sections that cannot be filled are marked not_determined. Write the plan from these sections only, and verify the top shelters live with Google Maps.
 
-    outlook: long_run (default), recent, la_nina, neutral, el_nino or noaa_aug_2026.
+    outlook: auto (default: worked out from current conditions; the rest of the current season after as_of_date, default today, when more than half of it remains, otherwise the next full season with the rest of the current season reported separately), long_run, recent, la_nina, neutral, el_nino or noaa_aug_2026.
     """
     from google.cloud import bigquery
 
@@ -614,8 +723,8 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
 
     if not isinstance(county_fips, str) or not county_fips.startswith("13"):
         return _status("needs_county", "Give a Georgia county_fips, for example 13051.")
-    if outlook not in season.OUTLOOKS:
-        outlook = "long_run"
+    if outlook != AUTO and outlook not in season.OUTLOOKS:
+        outlook = AUTO
     county = next((c for c in data.counties() if c["county_fips"] == county_fips), None)
     if county is None:
         return _status("unknown_county", "No Georgia county has that FIPS code.")
@@ -624,13 +733,27 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
     no_request = site_updates.request_overrides(None, None, None, {})
     planner_kwargs = site_updates.season_kwargs(planner, no_request)
 
+    try:
+        auto_args = _outlook_args(AUTO, as_of_date) if outlook == AUTO else None
+    except ValueError as exc:
+        return _status("bad_date", f"as_of_date must be YYYY-MM-DD ({exc}).")
+
     def run_season(name: str, assume_generator: list[str] | None = None) -> dict[str, Any]:
+        run_name, extra = name, {}
+        if name == AUTO and auto_args:
+            run_name, extra = auto_args[0], auto_args[1]
         return season.run_season(
-            name,
+            run_name,
             sites_off=planner["sites_off"],
             assume_generator=assume_generator or (),
             **planner_kwargs,
+            **extra,
         )
+
+    def note(name: str) -> str:
+        if name == AUTO and auto_args:
+            return auto_args[2]["note"]
+        return season_outlook_note(name)
 
     def pick(run: dict[str, Any]) -> dict[str, Any]:
         return next(c for c in run["counties"] if c["county_fips"] == county_fips)
@@ -645,10 +768,21 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
             rows[name] = {
                 "label": run["label"],
                 "storms_per_year": run["storms_per_year"],
-                "note": season_outlook_note(name),
+                "note": note(name),
                 **pick(run),
             }
-        return {"by_outlook": rows}
+        out: dict[str, Any] = {"by_outlook": rows}
+        if auto_args and auto_args[3]:
+            rest = season.run_season(
+                "custom", sites_off=planner["sites_off"], **planner_kwargs, **auto_args[3]
+            )
+            out["rest_of_current_season"] = {
+                "season": auto_args[2]["rest_of_current_season"]["season"],
+                "as_of": rest.get("as_of"),
+                "storms_per_year": rest["storms_per_year"],
+                **pick(rest),
+            }
+        return out
 
     def generator_switch():
         unrecorded = [
@@ -677,6 +811,7 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
         "county_fips": county_fips,
         "county_name": county["county_name"],
         "outlook": outlook,
+        **({"auto": auto_args[2]} if auto_args else {}),
         "planner_updates": _planner_report(planner),
     }
     plan["readiness_brief"] = _section("readiness brief (see its own sources)", brief)
@@ -705,10 +840,41 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
         }
 
     plan["audit"] = _section(SOURCES["audit"], audit)
-    plan["source"] = (
-        "Assembled from the readiness brief and the season model; each section names its source"
-    )
+    plan["source"] = "Assembled from the readiness brief and the season model; each section names its source"
+    storm_profile = county_storm_profile(county_fips, outlook)
+    plan["scope"] = "county"
+    plan["report"] = report.county_report(plan, storm_profile)
     return plan
+
+
+def state_plan(outlook: str = AUTO, as_of_date: str | None = None) -> dict[str, Any]:
+    """Georgia's season readiness plan in the same report shape as county_plan: the counties with the most people lacking shelter, the chance any county has a 25% outage, people lacking shelter and needing transport statewide in typical, 1-in-10 and 1-in-100 seasons, the ranked unknowns worth fixing, and the worst simulated storms. Write the plan from its report sections only.
+
+    outlook: auto (default: worked out from current conditions; the rest of the current season after as_of_date, default today, when more than half of it remains, otherwise the next full season), long_run, recent, la_nina, neutral, el_nino or noaa_aug_2026.
+    """
+    from google.api_core.exceptions import GoogleAPIError
+    from google.auth.exceptions import GoogleAuthError
+
+    from .scenario import season
+
+    if outlook != AUTO and outlook not in season.OUTLOOKS:
+        outlook = AUTO
+    try:
+        name, extra, auto, _ = _outlook_args(outlook, as_of_date)
+    except ValueError as exc:
+        return _status("bad_date", f"as_of_date must be YYYY-MM-DD ({exc}).")
+    run = season.run_season(name, **extra)
+    run["source"] = SOURCES["season"]
+    run["outlook_note"] = auto["note"] if auto else season_outlook_note(outlook)
+    try:
+        worst = _run_query(
+            f"""SELECT * FROM `{_project_id()}.{_dataset_name()}.scenario_worst_events`
+                ORDER BY power_dependent_affected DESC LIMIT 10""", [])
+    except (GoogleAPIError, GoogleAuthError, RuntimeError):
+        worst = None
+    gaps = gap_sensitivity()
+    return {"scope": "state", "outlook": outlook, **({"auto": auto} if auto else {}),
+            "report": report.state_report(run, worst, gaps), "source": SOURCES["season"]}
 
 
 def record_site_update(
@@ -863,3 +1029,29 @@ def county_storm_profile(county_fips: str, outlook: str = "long_run") -> dict[st
     if result["status"] != "ok":
         return _status("unknown_county", "No Georgia county has that FIPS code.")
     return {**result, "source": SOURCES["scenario"]}
+
+
+def get_report(report_id: str | None = None) -> dict[str, Any]:
+    """Return a precomputed report (same shape as county_plan, state_plan and run_scenario reports) by report_id, or list the available ones when report_id is empty. Use it when the planner asks for one of the prepared reports; run the live tools for anything else.
+    """
+    from google.api_core.exceptions import GoogleAPIError
+    from google.auth.exceptions import GoogleAuthError
+    from google.cloud import bigquery
+
+    table = f"`{_project_id()}.{_dataset_name()}.scenario_reports`"
+    try:
+        if not report_id:
+            rows = _run_query(f"SELECT report_id, scope, title, built_at FROM {table} "
+                              "ORDER BY report_id", [])
+            return {"reports": rows, "source": SOURCES["reports"]}
+        rows = _run_query(f"SELECT * FROM {table} WHERE report_id = @id",
+                          [bigquery.ScalarQueryParameter("id", "STRING", report_id)])
+    except (GoogleAPIError, GoogleAuthError, RuntimeError) as exc:
+        return {"status": "error", "message": type(exc).__name__, "source": SOURCES["reports"]}
+    if not rows:
+        return {"status": "unknown_report",
+                "message": "No precomputed report has that id; call get_report() with no id "
+                "to list them.", "source": SOURCES["reports"]}
+    row = rows[0]
+    return {"report_id": row["report_id"], "title": row["title"], "built_at": str(row["built_at"]),
+            "report": json.loads(row["report_json"]), "source": SOURCES["reports"]}

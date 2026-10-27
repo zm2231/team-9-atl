@@ -28,10 +28,13 @@ from .scenario_tools import (
     county_plan,
     county_storm_profile,
     gap_sensitivity,
+    get_report,
     recommend_sites,
     record_site_update,
     run_scenario,
+    season_conditions,
     season_county_risk,
+    state_plan,
 )
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-edc952746633")
@@ -91,9 +94,24 @@ Tools:
   receiving list carry a ccn, name and county; ground them with Google Maps by name and county,
   never through get_shelters.
 - For season-long risk use season_county_risk; for what to fix first use gap_sensitivity. Its
-  outlook defaults to long_run; use another outlook only when asked, and quote its outlook_note,
-  which says whether that outlook beat the long run in the 2018-2025 back-test. noaa_aug_2026 is
-  an outside forecast input: name NOAA's August 2026 outlook as its source.
+  outlook defaults to auto, which works the outlook out from current NOAA conditions and picks
+  the season to plan: the rest of the current season when more than half of it remains,
+  otherwise the next full season, with the rest of the current season reported separately
+  (rest_of_current_season). Never ask the planner for a forecast or for storm counts. Lead with
+  the auto outlook_note: it says which season was planned and why (for example "Planning the
+  2027 season: 95% of 2026's storms historically arrive before 27 Oct."), names every input with
+  its date, says whether NOAA has an outlook for that season, and says whether the conditions
+  model beat the long run in its back-test. Use
+  long_run, recent, la_nina, neutral, el_nino or noaa_aug_2026 only when asked, and quote their
+  outlook_note. noaa_aug_2026 is an outside forecast input: name NOAA's August 2026 outlook.
+- For "what does this season look like" or the current conditions, call season_conditions and
+  report its inputs with their sources and dates, the blended outlook with its range and weights,
+  and its back-test.
+- Reports come in four scopes with one shape (report.sections): county_plan for a county,
+  state_plan for Georgia, run_scenario with run_index for one simulated run, and run_scenario
+  with draws=N for N runs. Prepared reports load instantly with get_report(report_id); call
+  get_report() with no id to list them. Write reports from report.sections only, with each figure's
+  provenance and range; say "not determined" for a section marked not_determined.
 - For a county's season plan (outage frequency, outlooks, generator what-ifs), call county_plan
   once. It already contains build_readiness_brief's result, so do not call both. Write from its
   sections and say "not determined" for any section marked not_determined.
@@ -112,6 +130,10 @@ Tools:
   label, say that reductions do not add up across sites, and give the best combination of 3.
 - Probabilities are shares of simulated seasons; say so when you quote one.
 - Every number you state comes from a tool. Do not compute or estimate figures yourself.
+- State distances in miles and speeds in mph. The project's own tools return a `_mi` / `_mph` field
+  beside each `_km` / `_kmh` field; quote those and never convert units yourself. For an ad hoc BigQuery
+  query or a Google Maps answer that gives km, convert in the SQL (`ROUND(x_km * 0.621371, 1) AS x_mi`)
+  or quote the km figure as given.
 - For ad hoc BigQuery access, use only the read-only MCP tool against project `{PROJECT_ID}` and
   dataset `{DATASET_ID}`, and only these tables. Prefer a purpose-built tool when one answers the
   question; use these for what no tool covers, and cite the table and its caveat.
@@ -213,12 +235,15 @@ root_agent = Agent(
                 get_shelters,
                 record_live_check,
                 run_scenario,
+                season_conditions,
                 season_county_risk,
                 gap_sensitivity,
                 county_plan,
-                county_storm_profile,
+                get_report,
+                state_plan,
                 record_site_update,
                 recommend_sites,
+                county_storm_profile,
             ],
         ),
     ],

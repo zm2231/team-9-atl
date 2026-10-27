@@ -40,7 +40,7 @@ def test_latest_row_wins_per_site_and_field():
 def test_updates_applied_and_labelled_next_to_registry(monkeypatch):
     rows = [row("a", UNRECORDED, "generator", "yes", "2026-10-20T08:00:00", who="lee")]
     monkeypatch.setattr(scenario_tools, "_fetch_site_updates", lambda: rows)
-    r = scenario_tools.season_county_risk()
+    r = scenario_tools.season_county_risk(outlook="long_run")
     change = r["planner_updates"]["changes"][0]
     assert change["registry"] == "UNRECORDED" and change["planner"] == "YES"
     assert change["label"] == "planner-reported (lee, 2026-10-20)"

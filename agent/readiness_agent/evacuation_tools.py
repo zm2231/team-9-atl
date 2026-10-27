@@ -68,11 +68,30 @@ class QueryTooLargeError(RuntimeError):
     pass
 
 
+KM_TO_MI = 0.621371
+
+
+def with_miles(value: Any) -> Any:
+    if isinstance(value, list):
+        return [with_miles(v) for v in value]
+    if not isinstance(value, dict):
+        return value
+    out = {}
+    for key, v in value.items():
+        out[key] = with_miles(v)
+        if isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v):
+            if key.endswith("_km"):
+                out.setdefault(key[:-3] + "_mi", round(v * KM_TO_MI, 1))
+            elif key.endswith("_kmh"):
+                out.setdefault(key[:-4] + "_mph", round(v * KM_TO_MI, 1))
+    return out
+
+
 def query_capped(tool: Callable[..., dict[str, Any]]) -> Callable[..., dict[str, Any]]:
     @wraps(tool)
     def run(*args: Any, **kwargs: Any) -> dict[str, Any]:
         try:
-            return tool(*args, **kwargs)
+            return with_miles(tool(*args, **kwargs))
         except QueryTooLargeError as exc:
             return {
                 "status": "query_too_large",

@@ -28,6 +28,10 @@ def season_backtest() -> dict:
     return _json("season_backtest.json")
 
 
+def outage_metrics() -> dict:
+    return _json("outage_model_metrics.json")
+
+
 def model_npz() -> Path:
     return DATA_DIR / "outage_model.npz"
 

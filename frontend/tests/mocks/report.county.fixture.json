@@ -1,0 +1,1766 @@
+{
+ "report_version": 1,
+ "scope": "county",
+ "subject": {
+  "county_fips": "13051",
+  "county_name": "Chatham"
+ },
+ "season": {
+  "outlook": "long_run",
+  "label": "Every storm 1950-2025 that came within 250 km of Georgia",
+  "storms_per_year": 2.632,
+  "note": "Back-test 2018-2025: 80% of counties inside the range (target 80%). 2018-2025 had more storms than the long-run average, so this view understates it.",
+  "auto": null
+ },
+ "sections": {
+  "who_cannot_leave": {
+   "status": "ok",
+   "source": "ACS 5-yr and CDC SVI \u00b7 vulnerability_tracts_clean; CDC PLACES modeled estimates \u00b7 vulnerability_tracts_clean; CMS nursing homes \u00b7 care_facilities_clean; FEMA NRI coastal flood, joined by tract \u00b7 care_facilities_flow_staging; HHS emPOWER \u00b7 power_dependent_counties_clean",
+   "figures": [
+    {
+     "key": "power_dependent_residents",
+     "label": "Power-dependent residents (Medicare)",
+     "unit": "people",
+     "provenance": "registry",
+     "source": "HHS emPOWER",
+     "value": 2328,
+     "range": null,
+     "range_kind": null
+    }
+   ],
+   "items": [
+    {
+     "kind": "tract",
+     "geo_id": "13051001200",
+     "total_pop": 2719,
+     "households_no_vehicle": 391,
+     "reasons": [
+      "391 households without a vehicle",
+      "18% with a disability",
+      "30% with a mobility difficulty (modeled)",
+      "14% with a self-care difficulty (modeled)",
+      "68 residents aged 65+"
+     ]
+    },
+    {
+     "kind": "tract",
+     "geo_id": "13051010502",
+     "total_pop": 4558,
+     "households_no_vehicle": 343,
+     "reasons": [
+      "343 households without a vehicle",
+      "23% with a disability",
+      "22% with a mobility difficulty (modeled)",
+      "8% with a self-care difficulty (modeled)",
+      "474 residents aged 65+",
+      "11 in group quarters"
+     ]
+    },
+    {
+     "kind": "tract",
+     "geo_id": "13051010901",
+     "total_pop": 4079,
+     "households_no_vehicle": 341,
+     "reasons": [
+      "341 households without a vehicle",
+      "16% with a disability",
+      "18% with a mobility difficulty (modeled)",
+      "6% with a self-care difficulty (modeled)",
+      "603 residents aged 65+",
+      "55 in group quarters"
+     ]
+    },
+    {
+     "kind": "tract",
+     "geo_id": "13051000601",
+     "total_pop": 5387,
+     "households_no_vehicle": 333,
+     "reasons": [
+      "333 households without a vehicle",
+      "22% with a disability",
+      "17% with a mobility difficulty (modeled)",
+      "6% with a self-care difficulty (modeled)",
+      "483 residents aged 65+",
+      "1564 in group quarters"
+     ]
+    },
+    {
+     "kind": "tract",
+     "geo_id": "13051011900",
+     "total_pop": 2034,
+     "households_no_vehicle": 330,
+     "reasons": [
+      "330 households without a vehicle",
+      "13% with a disability",
+      "12% with a mobility difficulty (modeled)",
+      "3% with a self-care difficulty (modeled)",
+      "603 residents aged 65+",
+      "5 in group quarters"
+     ]
+    },
+    {
+     "kind": "tract",
+     "geo_id": "13051004001",
+     "total_pop": 4268,
+     "households_no_vehicle": 294,
+     "reasons": [
+      "294 households without a vehicle",
+      "20% with a disability",
+      "16% with a mobility difficulty (modeled)",
+      "4% with a self-care difficulty (modeled)",
+      "1129 residents aged 65+",
+      "79 in group quarters"
+     ]
+    },
+    {
+     "kind": "tract",
+     "geo_id": "13051004500",
+     "total_pop": 4367,
+     "households_no_vehicle": 251,
+     "reasons": [
+      "251 households without a vehicle",
+      "18% with a disability",
+      "23% with a mobility difficulty (modeled)",
+      "8% with a self-care difficulty (modeled)",
+      "556 residents aged 65+",
+      "19 in group quarters"
+     ]
+    },
+    {
+     "kind": "tract",
+     "geo_id": "13051004207",
+     "total_pop": 3115,
+     "households_no_vehicle": 249,
+     "reasons": [
+      "249 households without a vehicle",
+      "21% with a disability",
+      "15% with a mobility difficulty (modeled)",
+      "5% with a self-care difficulty (modeled)",
+      "584 residents aged 65+",
+      "74 in group quarters"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115641",
+     "name": "RIVERVIEW HEALTH & REHAB CTR",
+     "city": "SAVANNAH",
+     "certified_beds": 284,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 20.4,
+     "reasons": [
+      "284 certified nursing-home beds",
+      "tract with 20.4% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115339",
+     "name": "PRUITTHEALTH - SAVANNAH",
+     "city": "SAVANNAH",
+     "certified_beds": 140,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 6.0,
+     "reasons": [
+      "140 certified nursing-home beds",
+      "tract with 6.0% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115293",
+     "name": "RESORTS AT POOLER INC",
+     "city": "POOLER",
+     "certified_beds": 122,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 12.0,
+     "reasons": [
+      "122 certified nursing-home beds",
+      "tract with 12.0% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115120",
+     "name": "SAVANNAH POST ACUTE LLC",
+     "city": "SAVANNAH",
+     "certified_beds": 120,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 25.6,
+     "reasons": [
+      "120 certified nursing-home beds",
+      "tract with 25.6% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115534",
+     "name": "Savannah Crossing of Journey LLC",
+     "city": "SAVANNAH",
+     "certified_beds": 107,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 22.5,
+     "reasons": [
+      "107 certified nursing-home beds",
+      "tract with 22.5% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115547",
+     "name": "PRUITTHEALTH - SEASIDE",
+     "city": "PORT WENTWORTH",
+     "certified_beds": 101,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 14.7,
+     "reasons": [
+      "101 certified nursing-home beds",
+      "tract with 14.7% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115132",
+     "name": "ABERCORN REHABILITATION CENTER",
+     "city": "SAVANNAH",
+     "certified_beds": 100,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 13.8,
+     "reasons": [
+      "100 certified nursing-home beds",
+      "tract with 13.8% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115730",
+     "name": "Rosewood at Tybee Island of Journey LLC, The",
+     "city": "Tybee Island",
+     "certified_beds": 85,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 96.5,
+     "reasons": [
+      "85 certified nursing-home beds",
+      "tract with 96.5% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115633",
+     "name": "Tybee Island Trails of Journey LLC",
+     "city": "TYBEE ISLAND",
+     "certified_beds": 50,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 96.5,
+     "reasons": [
+      "50 certified nursing-home beds",
+      "tract with 96.5% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115715",
+     "name": "OAKS HEALTH CTR AT THE MARSHES OF SKIDAWAY ISLAND",
+     "city": "SAVANNAH",
+     "certified_beds": 23,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 88.0,
+     "reasons": [
+      "23 certified nursing-home beds",
+      "tract with 88.0% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115610",
+     "name": "CANDLER SKILLED NURSING UNIT",
+     "city": "SAVANNAH",
+     "certified_beds": 22,
+     "coastal_flood_exposed": "NO",
+     "tract_coastal_flood_share_pct": 0.0,
+     "reasons": [
+      "22 certified nursing-home beds",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    }
+   ],
+   "note": "Facility county assigned from the nearest tract centre (straight-line)."
+  },
+  "power_outage": {
+   "status": "ok",
+   "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+   "figures": [
+    {
+     "key": "p_outage25_per_year",
+     "label": "Chance per year of a 25%+ customer outage",
+     "unit": "share",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": 0.2269,
+     "range": null,
+     "range_kind": null
+    }
+   ],
+   "items": [],
+   "note": "Back-test 2018-2025: 80% of counties inside the range (target 80%). 2018-2025 had more storms than the long-run average, so this view understates it. Season figures are a planning stress test, not a forecast. Back-testing 2018-2025, the model expected 119 county outages of 25%+ statewide against 200 observed, and it under-predicts major storms (Irma 2017: 38% observed, 11% modelled); read the 1-in-10 and 1-in-100 figures as floors for a major storm."
+  },
+  "people_at_risk": {
+   "status": "ok",
+   "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+   "figures": [
+    {
+     "key": "power_dependent_affected",
+     "label": "Power-dependent residents losing power",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": null,
+     "range": {
+      "typical": 139,
+      "one_in_10": 1288,
+      "one_in_100": 2156
+     },
+     "range_kind": "season"
+    },
+    {
+     "key": "no_powered_seat",
+     "label": "Lacking shelter: no powered seat",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": null,
+     "range": {
+      "typical": 0,
+      "one_in_10": 0,
+      "one_in_100": 0
+     },
+     "range_kind": "season"
+    },
+    {
+     "key": "no_dialysis_chair",
+     "label": "Lacking shelter: no dialysis chair",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": null,
+     "range": {
+      "typical": 0,
+      "one_in_10": 318,
+      "one_in_100": 423
+     },
+     "range_kind": "season"
+    },
+    {
+     "key": "lacking_shelter_total",
+     "label": "Lacking shelter: seats plus chairs (upper bound; a dialysis patient can be in both)",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": null,
+     "range": {
+      "typical": 0,
+      "one_in_10": 318,
+      "one_in_100": 427
+     },
+     "range_kind": "season"
+    },
+    {
+     "key": "needing_transport_no_vehicle",
+     "label": "Needing transport: no vehicle (65+ households)",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": null,
+     "range": {
+      "typical": 11,
+      "one_in_10": 103,
+      "one_in_100": 172
+     },
+     "range_kind": "season"
+    },
+    {
+     "key": "needing_transport_no_vehicle_low",
+     "label": "Needing transport: no vehicle (all households)",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": null,
+     "range": {
+      "typical": 10,
+      "one_in_10": 94,
+      "one_in_100": 158
+     },
+     "range_kind": "season"
+    }
+   ],
+   "items": [],
+   "note": "Lacking shelter and needing transport are separate needs and are never added: one person can be in both. These figures are planning arithmetic on county totals and stated assumptions (share seeking a seat, Florida inflow, patients per station), not counts of unique people."
+  },
+  "where_they_would_go": {
+   "status": "ok",
+   "source": "FEMA NSS registry \u00b7 shelters_clean",
+   "figures": [],
+   "items": [
+    {
+     "shelter_id": "363515",
+     "name": "Windsor Forest High School",
+     "address": "12419 Largo Drive, SAVANNAH, 31419",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 31.976029,
+     "lon": -81.152755,
+     "evacuation_capacity": 595.0,
+     "post_impact_capacity": 297.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "registry",
+     "surge_noaa": {
+      "status": "inundated",
+      "first_category": 3
+     },
+     "quality_flags": [],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
+     ],
+     "nearest_km": 2.7
+    },
+    {
+     "shelter_id": "363520",
+     "name": "Alfred E. Beach High School",
+     "address": "3001 Hopkins Street, SAVANNAH, 31405",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.0547935,
+     "lon": -81.115891,
+     "evacuation_capacity": 548.0,
+     "post_impact_capacity": 274.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "registry",
+     "surge_noaa": {
+      "status": "inundated",
+      "first_category": 3
+     },
+     "quality_flags": [],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
+     ],
+     "nearest_km": 1.3
+    },
+    {
+     "shelter_id": "363517",
+     "name": "Jenkins High School",
+     "address": "1800 DeRenne Avenue, SAVANNAH, 31406",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.0230981,
+     "lon": -81.0832346,
+     "evacuation_capacity": 495.0,
+     "post_impact_capacity": 247.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "registry",
+     "surge_noaa": {
+      "status": "inundated",
+      "first_category": 2
+     },
+     "quality_flags": [],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
+     ],
+     "nearest_km": 1.8
+    },
+    {
+     "shelter_id": "363512",
+     "name": "Hesse K-8 School",
+     "address": "9116 Whitfield Avenue, SAVANNAH, 31406",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 31.9775643,
+     "lon": -81.1046034,
+     "evacuation_capacity": 479.0,
+     "post_impact_capacity": 239.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "registry",
+     "surge_noaa": {
+      "status": "inundated",
+      "first_category": 3
+     },
+     "quality_flags": [],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
+     ],
+     "nearest_km": 3.8
+    },
+    {
+     "shelter_id": "363514",
+     "name": "Oglethorpe Charter School",
+     "address": "7202 Central Avenue, SAVANNAH, 31406",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 31.9955317,
+     "lon": -81.0761071,
+     "evacuation_capacity": 430.0,
+     "post_impact_capacity": 215.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "registry",
+     "surge_noaa": {
+      "status": "inundated",
+      "first_category": 3
+     },
+     "quality_flags": [],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
+     ],
+     "nearest_km": 3.3
+    },
+    {
+     "shelter_id": "358590",
+     "name": "End Times Commision",
+     "address": "1402 Mills B Lane Blvd, GARDEN CITY, 31405",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.0524331,
+     "lon": -81.1282948,
+     "evacuation_capacity": 200.0,
+     "post_impact_capacity": 100.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "UNRECORDED",
+     "generator_onsite": "UNRECORDED",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "noaa_slosh",
+     "surge_noaa": {
+      "status": "inundated",
+      "first_category": 3
+     },
+     "quality_flags": [],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
+     ],
+     "nearest_km": 0.4
+    },
+    {
+     "shelter_id": "358557",
+     "name": "Savannah Classical School",
+     "address": "705 E. Anderson Street, SAVANNAH, 31401",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.0593342,
+     "lon": -81.0873171,
+     "evacuation_capacity": 1.0,
+     "post_impact_capacity": 1.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "UNRECORDED",
+     "generator_onsite": "UNRECORDED",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "noaa_slosh",
+     "surge_noaa": {
+      "status": "inundated",
+      "first_category": 3
+     },
+     "quality_flags": [],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
+     ],
+     "nearest_km": 1.2
+    },
+    {
+     "shelter_id": "363518",
+     "name": "Savannah High School",
+     "address": "400 Pennsylvania Avenue, SAVANNAH, 31404",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.0630035,
+     "lon": -81.0572033,
+     "evacuation_capacity": 632.0,
+     "post_impact_capacity": 316.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "registry",
+     "surge_noaa": {
+      "status": "dry",
+      "first_category": null
+     },
+     "quality_flags": [
+      "surge_disagrees"
+     ],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051011900"
+     ],
+     "nearest_km": 3.4
+    },
+    {
+     "shelter_id": "363510",
+     "name": "Compassion Christian Church (The Adult Center)",
+     "address": "50 Al Henderson Blvd., SAVANNAH, 31419",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.00639,
+     "lon": -81.251804,
+     "evacuation_capacity": 162.0,
+     "post_impact_capacity": 81.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "registry",
+     "surge_noaa": {
+      "status": "inundated",
+      "first_category": 3
+     },
+     "quality_flags": [],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901"
+     ],
+     "nearest_km": 8.3
+    },
+    {
+     "shelter_id": "358517",
+     "name": "Savannah International Trade & Convention Center",
+     "address": "1 International Drive, SAVANNAH, 31421",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.0842436,
+     "lon": -81.0872041,
+     "evacuation_capacity": 1.0,
+     "post_impact_capacity": 1.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "UNRECORDED",
+     "generator_onsite": "UNRECORDED",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "noaa_slosh",
+     "surge_noaa": {
+      "status": "inundated",
+      "first_category": 2
+     },
+     "quality_flags": [],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051011900"
+     ],
+     "nearest_km": 1.7
+    }
+   ],
+   "note": "Assumption: reachable means within 16 km (10 miles) straight-line of the tract centre, a county transport run for households without a vehicle. Drive times come from Routes in run_scenario. Not yet verified: ground each destination with Google Maps before relying on it."
+  },
+  "what_to_fix": {
+   "status": "ok",
+   "source": "readiness brief (see its own sources)",
+   "figures": [],
+   "items": [
+    {
+     "kind": "tracts_without_recorded_accessible_shelter_in_reach",
+     "entries": [
+      {
+       "geo_id": "13051011110",
+       "households_no_vehicle": 7,
+       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
+       "shelters_within_reach": 1,
+       "wheelchair_no_within_reach": 0,
+       "wheelchair_unrecorded_within_reach": 1,
+       "nearest_shelter_km": 9.5
+      }
+     ]
+    },
+    {
+     "kind": "shelters_in_surge_or_flood_zone",
+     "entries": [
+      {
+       "shelter_id": "367768",
+       "name": "Union Mission",
+       "usage": null,
+       "evacuation_capacity": null,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "346354",
+       "name": "Island's High School",
+       "usage": "BOTH",
+       "evacuation_capacity": 261.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "358557",
+       "name": "Savannah Classical School",
+       "usage": "BOTH",
+       "evacuation_capacity": 1.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "346390",
+       "name": "Coastal Middle School",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "363511",
+       "name": "Godley Station School",
+       "usage": "BOTH",
+       "evacuation_capacity": 407.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": false
+      },
+      {
+       "shelter_id": "363517",
+       "name": "Jenkins High School",
+       "usage": "BOTH",
+       "evacuation_capacity": 495.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "363520",
+       "name": "Alfred E. Beach High School",
+       "usage": "BOTH",
+       "evacuation_capacity": 548.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": false
+      },
+      {
+       "shelter_id": "363512",
+       "name": "Hesse K-8 School",
+       "usage": "BOTH",
+       "evacuation_capacity": 479.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": false
+      },
+      {
+       "shelter_id": "358517",
+       "name": "Savannah International Trade & Convention Center",
+       "usage": "BOTH",
+       "evacuation_capacity": 1.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "363518",
+       "name": "Savannah High School",
+       "usage": "BOTH",
+       "evacuation_capacity": 632.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": false
+      },
+      {
+       "shelter_id": "358555",
+       "name": "Rice Creek K-8 School",
+       "usage": "BOTH",
+       "evacuation_capacity": 1.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "363510",
+       "name": "Compassion Christian Church (The Adult Center)",
+       "usage": "BOTH",
+       "evacuation_capacity": 162.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "363515",
+       "name": "Windsor Forest High School",
+       "usage": "BOTH",
+       "evacuation_capacity": 595.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": false
+      },
+      {
+       "shelter_id": "358590",
+       "name": "End Times Commision",
+       "usage": "BOTH",
+       "evacuation_capacity": 200.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "363514",
+       "name": "Oglethorpe Charter School",
+       "usage": "BOTH",
+       "evacuation_capacity": 430.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": false
+      },
+      {
+       "shelter_id": "358556",
+       "name": "New Hempstead High School",
+       "usage": "BOTH",
+       "evacuation_capacity": 1.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "366331",
+       "name": "Enmarket Arena",
+       "usage": null,
+       "evacuation_capacity": null,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "366351",
+       "name": "Coastal Georgia Academy",
+       "usage": null,
+       "evacuation_capacity": null,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "366100",
+       "name": "Tompkins Regional Center",
+       "usage": null,
+       "evacuation_capacity": null,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "358566",
+       "name": "Compassion Christian Church",
+       "usage": "BOTH",
+       "evacuation_capacity": null,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "367738",
+       "name": "Greenbriar Children\u00bfs Center Gymnasium",
+       "usage": null,
+       "evacuation_capacity": null,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140738",
+       "name": "East Broad Street Elementary School",
+       "usage": "POST",
+       "evacuation_capacity": 270.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140740",
+       "name": "Esther F Garrison School of Visual & Performing Arts",
+       "usage": "POST",
+       "evacuation_capacity": 240.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140745",
+       "name": "Haven Elementary School",
+       "usage": "POST",
+       "evacuation_capacity": 226.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140714",
+       "name": "West Chatham Elementary School",
+       "usage": "POST",
+       "evacuation_capacity": 293.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140759",
+       "name": "Skidaway Island Presbyterian Church",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140764",
+       "name": "Windsor Forest Baptist Church",
+       "usage": "POST",
+       "evacuation_capacity": 263.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140716",
+       "name": "YMCA - Pooler Branch",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "139702",
+       "name": "YMCA - Habersham",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "139703",
+       "name": "Woodlawn Baptist Church",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "140743",
+       "name": "Sol C. Johnson High School",
+       "usage": "POST",
+       "evacuation_capacity": 712.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140751",
+       "name": "First Baptist Church",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140752",
+       "name": "Port Wentworth Recreation Center",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140761",
+       "name": "Southwest Middle School",
+       "usage": "EVAC",
+       "evacuation_capacity": 394.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140755",
+       "name": "Robert W. Groves High School",
+       "usage": "POST",
+       "evacuation_capacity": 750.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140756",
+       "name": "Woodville-Tompkins High School",
+       "usage": "POST",
+       "evacuation_capacity": 432.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "139704",
+       "name": "YMCA - Islands Branch",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "140762",
+       "name": "Southwest Elementary School",
+       "usage": "EVAC",
+       "evacuation_capacity": 204.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140712",
+       "name": "Savannah First Seventh Day Adventist Church",
+       "usage": "POST",
+       "evacuation_capacity": 150.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140750",
+       "name": "White Bluff Elementary School",
+       "usage": "POST",
+       "evacuation_capacity": 293.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140763",
+       "name": "Georgetown K-8 School",
+       "usage": "POST",
+       "evacuation_capacity": 266.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140729",
+       "name": "YMCA - Tybee Island Branch",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "140715",
+       "name": "West Chatham Middle School",
+       "usage": "POST",
+       "evacuation_capacity": 538.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140749",
+       "name": "Immanuel Baptist Church",
+       "usage": "POST",
+       "evacuation_capacity": 258.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140758",
+       "name": "Marshpoint Elementary School",
+       "usage": "POST",
+       "evacuation_capacity": 128.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      }
+     ]
+    },
+    {
+     "kind": "confirm_unrecorded_generators",
+     "switch": "every medical shelter without a recorded generator assumed to have one",
+     "shelters_switched": 6,
+     "figures": [
+      {
+       "key": "lacking_shelter_recorded_only",
+       "label": "Lacking shelter, generators as recorded",
+       "unit": "people",
+       "provenance": "simulated",
+       "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+       "value": null,
+       "range": {
+        "typical": 0,
+        "one_in_10": 318,
+        "one_in_100": 427
+       },
+       "range_kind": "season"
+      },
+      {
+       "key": "lacking_shelter_unrecorded_assumed",
+       "label": "Lacking shelter, unrecorded generators assumed present",
+       "unit": "people",
+       "provenance": "simulated",
+       "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+       "value": null,
+       "range": {
+        "typical": 0,
+        "one_in_10": 318,
+        "one_in_100": 427
+       },
+       "range_kind": "season"
+      }
+     ],
+     "reading": "Shortfalls count a shelter as powered only when a generator is recorded; the truth lies between recorded_only and all_assumed."
+    }
+   ],
+   "note": null
+  },
+  "storm_history": {
+   "status": "ok",
+   "source": "outage model fitted on 35 labelled storms (7,808 county-storm rows); held-out storms: 79% of counties inside the 10-90 range",
+   "figures": [
+    {
+     "key": "return_period_outage_25pct",
+     "label": "Years between 25pct outages",
+     "unit": "years",
+     "provenance": "simulated",
+     "source": "outage model fitted on 35 labelled storms (7,808 county-storm rows); held-out storms: 79% of counties inside the 10-90 range",
+     "value": 3.9,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "return_period_outage_50pct",
+     "label": "Years between 50pct outages",
+     "unit": "years",
+     "provenance": "simulated",
+     "source": "outage model fitted on 35 labelled storms (7,808 county-storm rows); held-out storms: 79% of counties inside the 10-90 range",
+     "value": 8.6,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "fragility_rank",
+     "label": "Grid fragility rank (1 = most outage-prone)",
+     "unit": "rank",
+     "provenance": "simulated",
+     "source": "outage model fitted on 35 labelled storms (7,808 county-storm rows); held-out storms: 79% of counties inside the 10-90 range",
+     "value": 43,
+     "range": null,
+     "range_kind": null
+    }
+   ],
+   "items": [
+    {
+     "storm": "Matthew 2016",
+     "observed": 0.9846,
+     "modelled": {
+      "p10": 0.0483,
+      "p50": 0.3825,
+      "p90": 0.8762
+     },
+     "inside_10_90": false,
+     "peak_wind_kt": 63.8
+    },
+    {
+     "storm": "Helene 2024",
+     "observed": 0.827,
+     "modelled": {
+      "p10": 0.004,
+      "p50": 0.058,
+      "p90": 0.4663
+     },
+     "inside_10_90": false,
+     "peak_wind_kt": 43.6
+    },
+    {
+     "storm": "Irma 2017",
+     "observed": 0.5291,
+     "modelled": {
+      "p10": 0.0022,
+      "p50": 0.03,
+      "p90": 0.2548
+     },
+     "inside_10_90": false,
+     "peak_wind_kt": 38.2
+    },
+    {
+     "storm": "Hermine 2016",
+     "observed": 0.3339,
+     "modelled": {
+      "p10": 0.0085,
+      "p50": 0.0833,
+      "p90": 0.5634
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 48.5
+    },
+    {
+     "storm": "Idalia 2023",
+     "observed": 0.2587,
+     "modelled": {
+      "p10": 0.0185,
+      "p50": 0.2073,
+      "p90": 0.7855
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 53.4
+    },
+    {
+     "storm": "Dorian 2019",
+     "observed": 0.107,
+     "modelled": {
+      "p10": 0.0056,
+      "p50": 0.0746,
+      "p90": 0.5253
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 43.7
+    },
+    {
+     "storm": "Elsa 2021",
+     "observed": 0.0802,
+     "modelled": {
+      "p10": 0.0038,
+      "p50": 0.0432,
+      "p90": 0.3873
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 43.2
+    },
+    {
+     "storm": "Michael 2018",
+     "observed": 0.054,
+     "modelled": {
+      "p10": 0.0041,
+      "p50": 0.0528,
+      "p90": 0.4335
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 42.5
+    },
+    {
+     "storm": "Debby 2024",
+     "observed": 0.0471,
+     "modelled": {
+      "p10": 0.0257,
+      "p50": 0.2613,
+      "p90": 0.8261
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 49.7
+    },
+    {
+     "storm": "Ida 2021",
+     "observed": 0.0281,
+     "modelled": {
+      "p10": 0.0003,
+      "p50": 0.0036,
+      "p90": 0.0436
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 33.0
+    },
+    {
+     "storm": "Chantal 2025",
+     "observed": 0.0278,
+     "modelled": {
+      "p10": 0.0006,
+      "p50": 0.0092,
+      "p90": 0.1054
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 32.7
+    },
+    {
+     "storm": "Ian 2022",
+     "observed": 0.0274,
+     "modelled": {
+      "p10": 0.0051,
+      "p50": 0.0597,
+      "p90": 0.4375
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 41.4
+    },
+    {
+     "storm": "Harvey 2017",
+     "observed": 0.0256,
+     "modelled": {
+      "p10": 0.0002,
+      "p50": 0.0029,
+      "p90": 0.0378
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 22.4
+    },
+    {
+     "storm": "Nicole 2022",
+     "observed": 0.0226,
+     "modelled": {
+      "p10": 0.0007,
+      "p50": 0.0085,
+      "p90": 0.0833
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 33.6
+    },
+    {
+     "storm": "Claudette 2021",
+     "observed": 0.0219,
+     "modelled": {
+      "p10": 0.0006,
+      "p50": 0.007,
+      "p90": 0.0781
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 33.2
+    },
+    {
+     "storm": "Colin 2016",
+     "observed": 0.0194,
+     "modelled": {
+      "p10": 0.0063,
+      "p50": 0.0632,
+      "p90": 0.4126
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 45.0
+    },
+    {
+     "storm": "Sally 2020",
+     "observed": 0.0153,
+     "modelled": {
+      "p10": 0.0011,
+      "p50": 0.0128,
+      "p90": 0.1214
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 33.7
+    },
+    {
+     "storm": "Mindy 2021",
+     "observed": 0.0128,
+     "modelled": {
+      "p10": 0.0009,
+      "p50": 0.0103,
+      "p90": 0.1142
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 29.7
+    },
+    {
+     "storm": "Fay 2020",
+     "observed": 0.012,
+     "modelled": {
+      "p10": 0.0006,
+      "p50": 0.0074,
+      "p90": 0.0762
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 31.3
+    },
+    {
+     "storm": "Bonnie 2016",
+     "observed": 0.0116,
+     "modelled": {
+      "p10": 0.0007,
+      "p50": 0.0094,
+      "p90": 0.1118
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 29.7
+    },
+    {
+     "storm": "Florence 2018",
+     "observed": 0.0111,
+     "modelled": {
+      "p10": 0.0066,
+      "p50": 0.0787,
+      "p90": 0.5671
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 47.4
+    },
+    {
+     "storm": "Danny 2021",
+     "observed": 0.0084,
+     "modelled": {
+      "p10": 0.0008,
+      "p50": 0.0093,
+      "p90": 0.0991
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 29.6
+    },
+    {
+     "storm": "Julia 2016",
+     "observed": 0.007,
+     "modelled": {
+      "p10": 0.0039,
+      "p50": 0.0437,
+      "p90": 0.3497
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 40.0
+    },
+    {
+     "storm": "Nestor 2019",
+     "observed": 0.0056,
+     "modelled": {
+      "p10": 0.0026,
+      "p50": 0.0342,
+      "p90": 0.2773
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 39.9
+    },
+    {
+     "storm": "Isaias 2020",
+     "observed": 0.0055,
+     "modelled": {
+      "p10": 0.0011,
+      "p50": 0.0135,
+      "p90": 0.14
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 32.9
+    },
+    {
+     "storm": "Fred 2021",
+     "observed": 0.0052,
+     "modelled": {
+      "p10": 0.0006,
+      "p50": 0.0084,
+      "p90": 0.0942
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 33.6
+    },
+    {
+     "storm": "Bertha 2020",
+     "observed": 0.0047,
+     "modelled": {
+      "p10": 0.0006,
+      "p50": 0.0078,
+      "p90": 0.0931
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 27.9
+    },
+    {
+     "storm": "Nate 2017",
+     "observed": 0.0042,
+     "modelled": {
+      "p10": 0.0004,
+      "p50": 0.0052,
+      "p90": 0.0743
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 31.3
+    },
+    {
+     "storm": "Omar 2020",
+     "observed": 0.0035,
+     "modelled": {
+      "p10": 0.0004,
+      "p50": 0.0056,
+      "p90": 0.0635
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 24.5
+    },
+    {
+     "storm": "Colin 2022",
+     "observed": 0.0024,
+     "modelled": {
+      "p10": 0.0011,
+      "p50": 0.0148,
+      "p90": 0.1715
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 34.1
+    },
+    {
+     "storm": "Beta 2020",
+     "observed": 0.0017,
+     "modelled": {
+      "p10": 0.0003,
+      "p50": 0.0041,
+      "p90": 0.0526
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 30.9
+    },
+    {
+     "storm": "Alberto 2018",
+     "observed": 0.0016,
+     "modelled": {
+      "p10": 0.0006,
+      "p50": 0.0073,
+      "p90": 0.0734
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 27.6
+    },
+    {
+     "storm": "Zeta 2020",
+     "observed": 0.0016,
+     "modelled": {
+      "p10": 0.0005,
+      "p50": 0.0074,
+      "p90": 0.1057
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 31.3
+    },
+    {
+     "storm": "Delta 2020",
+     "observed": 0.001,
+     "modelled": {
+      "p10": 0.0003,
+      "p50": 0.0033,
+      "p90": 0.0468
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 27.3
+    },
+    {
+     "storm": "Eta 2020",
+     "observed": 0.0005,
+     "modelled": {
+      "p10": 0.0036,
+      "p50": 0.0385,
+      "p90": 0.3347
+     },
+     "inside_10_90": false,
+     "peak_wind_kt": 36.8
+    }
+   ],
+   "note": "Observed peak share of customers without power (EAGLE-I) against the model's prediction with that storm held out of the fit"
+  },
+  "planner_updates": {
+   "status": "ok",
+   "source": "scenario_site_updates",
+   "figures": [],
+   "items": [],
+   "note": "No planner updates in effect."
+  },
+  "could_not_tell": {
+   "status": "ok",
+   "source": "readiness brief (see its own sources)",
+   "figures": [
+    {
+     "key": "shelters_in_county",
+     "label": "shelters in county",
+     "unit": "count",
+     "provenance": "registry",
+     "source": "readiness brief (see its own sources)",
+     "value": 49,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "wheelchair_unrecorded",
+     "label": "wheelchair unrecorded",
+     "unit": "count",
+     "provenance": "registry",
+     "source": "readiness brief (see its own sources)",
+     "value": 38,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "generator_unrecorded",
+     "label": "generator unrecorded",
+     "unit": "count",
+     "provenance": "registry",
+     "source": "readiness brief (see its own sources)",
+     "value": 36,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "medical_unrecorded",
+     "label": "medical unrecorded",
+     "unit": "count",
+     "provenance": "registry",
+     "source": "readiness brief (see its own sources)",
+     "value": 24,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "surge_unrecorded",
+     "label": "surge unrecorded",
+     "unit": "count",
+     "provenance": "registry",
+     "source": "readiness brief (see its own sources)",
+     "value": 0,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "hurricane_rating_unrecorded",
+     "label": "hurricane rating unrecorded",
+     "unit": "count",
+     "provenance": "registry",
+     "source": "readiness brief (see its own sources)",
+     "value": 49,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "nursing_home_generator_unrecorded",
+     "label": "nursing home generator unrecorded",
+     "unit": "count",
+     "provenance": "registry",
+     "source": "readiness brief (see its own sources)",
+     "value": 11,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "nursing_home_coastal_flood_unrecorded",
+     "label": "nursing home coastal flood unrecorded",
+     "unit": "count",
+     "provenance": "registry",
+     "source": "readiness brief (see its own sources)",
+     "value": 0,
+     "range": null,
+     "range_kind": null
+    }
+   ],
+   "items": [
+    "No source records whether a shelter building is rated for hurricane winds.",
+    "No source records nursing-home generators, fuel or evacuation agreements.",
+    "Ambulance and wheelchair-van fleet sizes are not recorded.",
+    "Official clearance times are published only in HURREVAC, which is restricted.",
+    "emPOWER is county-level: it says how many, never which block.",
+    "Whether a shelter will open during a storm is not known from this data."
+   ],
+   "note": null
+  },
+  "audit": {
+   "status": "ok",
+   "source": "Survey \u00b7 ACS 2020-2024 B03002, audit only, never a model input (ext_ga_acs_race_tract)",
+   "figures": [],
+   "items": [
+    {
+     "tract_set": "rest_of_state",
+     "tracts": 2788,
+     "pop": 10911255,
+     "white_nh": 0.492,
+     "black_nh": 0.307,
+     "hispanic": 0.11
+    },
+    {
+     "tract_set": "ranked",
+     "tracts": 8,
+     "pop": 29152,
+     "white_nh": 0.251,
+     "black_nh": 0.615,
+     "hispanic": 0.091
+    }
+   ],
+   "note": "Did the ranked tracts land where people cannot leave, or where records happen to be filled in? Compare their make-up with the rest of the state."
+  }
+ },
+ "source": "Assembled from the readiness brief and the season model; each section names its source"
+}
