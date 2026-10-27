@@ -24,6 +24,10 @@ def tracks() -> dict:
     return _json("tracks.json")
 
 
+def season_backtest() -> dict:
+    return _json("season_backtest.json")
+
+
 def model_npz() -> Path:
     return DATA_DIR / "outage_model.npz"
 

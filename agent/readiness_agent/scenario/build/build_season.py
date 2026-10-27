@@ -9,16 +9,18 @@ from pathlib import Path
 
 import numpy as np
 
-from .. import data, engine, storms
+from .. import data, engine, season, storms
+from ..season import allocate as allocate
+from ..season import worst_per_season as worst_per_season
 from ..windfield import TrackPoint
 from .limits import MAX_BYTES_BILLED
 
 DATA = Path(__file__).resolve().parents[1] / "data"
 PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-edc952746633")
 DATASET = os.getenv("EVAC_DATASET", "evac_prod")
-SEED = 20261027
-N_EVENTS = 2000
-N_SEASONS = 20000
+SEED = season.SEED
+EVENTS_PER_STORM = 10
+N_SEASONS_TABLE = 20000
 JITTER_DEG = 0.25
 OUTAGE_25 = 0.25
 RECEIVE_KM = 100.0
@@ -26,58 +28,38 @@ NEAR_GA_KM = 300.0
 SAFFIR_KT = (64.0, 83.0, 96.0, 113.0, 137.0)
 MAJOR_KT = 96.0
 BACKTEST_YEARS = (2018, 2025)
-
-BASE = {
-    "generator_unrecorded_powered": False,
-    "relocation_share": 0.20,
-    "florida_inflow": 0.15,
-    "major_bias_logit": 0.0,
-    "dialysis_per_station": 1.0,
-    "rates_from": 1950,
-}
+SWITCH_SETS = ("baseline", "all_unrecorded_generators_yes", "coastal_shelters_off")
 
 SWINGS = [
     {
         "gap": "medical_shelter_generators",
         "description": "Medical shelters with no generator record: none powered vs all powered",
         "record_to_collect": "Generator on site and fuel days for each medical shelter (GEMA)",
-        "param": "generator_unrecorded_powered",
-        "values": (False, True),
     },
     {
         "gap": "relocation_share",
         "description": "Share of power-dependent residents who seek a powered seat: 0.1 vs 0.4",
         "record_to_collect": "County special-needs registry counts and past shelter intake",
-        "param": "relocation_share",
-        "values": (0.10, 0.40),
     },
     {
         "gap": "florida_inflow",
         "description": "Share of Georgia receiving capacity Florida evacuees take: 0 vs 0.3",
         "record_to_collect": "Shelter intake by home state from Irma 2017 and Ian 2022",
-        "param": "florida_inflow",
-        "values": (0.0, 0.30),
     },
     {
         "gap": "model_major_storm_bias",
         "description": "Outage model under-predicts major storms by 0.7 logit vs no bias",
         "record_to_collect": "County outage records for more Category 3+ landfalls near Georgia",
-        "param": "major_bias_logit",
-        "values": (0.0, 0.7),
     },
     {
         "gap": "dialysis_surge_absorption",
         "description": "Displaced patients a dialysis station can absorb: 0.5 vs 2",
         "record_to_collect": "Each centre's extra-shift capacity in an emergency (ESRD Network 6)",
-        "param": "dialysis_per_station",
-        "values": (0.5, 2.0),
     },
     {
         "gap": "storm_rates",
-        "description": "Storm frequency from tracks 1950-LAST vs 2000-LAST",
+        "description": "Storm frequency from tracks 1950-2025 vs 2000-2025",
         "record_to_collect": "None; a modelling choice between long and recent climate",
-        "param": "rates_from",
-        "values": (1950, 2000),
     },
 ]
 
@@ -107,40 +89,6 @@ def jitter(track: list[TrackPoint], dlat: float, dlon: float) -> list[TrackPoint
     return [dataclasses.replace(p, lat=p.lat + dlat, lon=p.lon + dlon) for p in track]
 
 
-def sample_events(clim: list, rng: np.random.Generator, n: int) -> np.ndarray:
-    w = np.array([a.weight for a in clim])
-    return rng.choice(len(clim), size=n, p=w / w.sum())
-
-
-def event_rates(seasons: np.ndarray, storm_of_event: np.ndarray, rates_from: int, last: int):
-    years = last - rates_from + 1
-    per_storm = np.where(seasons >= rates_from, 1.0 / years, 0.0)
-    counts = np.bincount(storm_of_event, minlength=len(seasons))
-    return per_storm[storm_of_event] / counts[storm_of_event]
-
-
-def allocate(demand: np.ndarray, capacity: np.ndarray, reach: np.ndarray) -> np.ndarray:
-    """demand (E, C), capacity (E, S), reach (C, S) -> covered (E, C), sites shared pro rata."""
-    total = demand @ reach
-    ratio = np.divide(capacity, total, out=np.ones_like(capacity), where=total > 0)
-    return np.minimum(demand, demand * (np.minimum(ratio, 1.0) @ reach.T))
-
-
-def worst_per_season(
-    values: dict[str, np.ndarray], rate: np.ndarray, rng: np.random.Generator, n: int
-) -> dict[str, np.ndarray]:
-    lam = float(rate.sum())
-    k = rng.poisson(lam, size=n)
-    picks = rng.choice(len(rate), size=int(k.sum()), p=rate / lam)
-    season = np.repeat(np.arange(n), k)
-    out = {}
-    for key, v in values.items():
-        best = np.zeros((n, v.shape[1]))
-        np.maximum.at(best, season, v[picks])
-        out[key] = best
-    return out
-
-
 def poisson_quantile(mu: float, q: float) -> int:
     k, p = 0, math.exp(-mu)
     cdf = p
@@ -151,7 +99,7 @@ def poisson_quantile(mu: float, q: float) -> int:
     return k
 
 
-def site_arrays(counties: list[dict], sites: dict):
+def site_arrays(counties: list[dict], sites: dict) -> dict[str, np.ndarray]:
     clat = np.array([c["lat"] for c in counties])
     clon = np.array([c["lon"] for c in counties])
     sh, dc = sites["medical_shelters"], sites["dialysis_centers"]
@@ -162,151 +110,119 @@ def site_arrays(counties: list[dict], sites: dict):
         return dist_km(clat[:, None], clon[:, None], lat[None, :], lon[None, :]) <= RECEIVE_KM
 
     def surge_min(rows):
-        return np.array([min(r["in_surge"]) if r["in_surge"] else 99 for r in rows])
+        return np.array([min(r["in_surge"]) if r["in_surge"] else 99 for r in rows], np.int8)
 
-    fips = [c["county_fips"] for c in counties]
-    idx = {f: i for i, f in enumerate(fips)}
-    dc_county = np.array([idx.get(r["county_fips"], -1) for r in dc])
+    idx = {c["county_fips"]: i for i, c in enumerate(counties)}
     return {
-        "shelter_reach": reach(sh).astype(float),
-        "shelter_seats": np.array([r["seats"] for r in sh], float),
-        "shelter_gen": np.array([r["generator"] for r in sh]),
+        "shelter_id": np.array([str(r["shelter_id"]) for r in sh]),
+        "shelter_seats": np.array([r["seats"] for r in sh], np.float32),
+        "shelter_generator": np.array([r["generator"] for r in sh]),
         "shelter_surge": surge_min(sh),
-        "dialysis_reach": reach(dc).astype(float),
-        "dialysis_stations": np.array([r["stations"] for r in dc], float),
+        "shelter_reach": reach(sh),
+        "dialysis_ccn": np.array([str(r["ccn"]) for r in dc]),
+        "dialysis_stations": np.array([r["stations"] for r in dc], np.float32),
         "dialysis_surge": surge_min(dc),
-        "dialysis_county": dc_county,
+        "dialysis_county": np.array([idx.get(r["county_fips"], -1) for r in dc], np.int16),
+        "dialysis_reach": reach(dc),
     }
 
 
-def evaluate(outage: np.ndarray, cats: np.ndarray, counties: list[dict], s: dict, p: dict):
-    pd_at_risk = outage * np.array([float(c.get("power_dependent") or 0) for c in counties])
+def impacts(outage: np.ndarray, cats: np.ndarray, counties: list[dict], s: dict) -> dict:
+    pd_aff = outage * np.array([float(c.get("power_dependent") or 0) for c in counties])
     patients = np.array([float(c.get("dialysis_patients") or 0) for c in counties])
-    flooded_dc = s["dialysis_surge"][None, :] <= cats[:, None]
-    county_down = outage >= engine.DIALYSIS_DOWN_SHARE
-    nc = len(counties)
+    down = outage >= engine.DIALYSIS_DOWN_SHARE
     on_map = s["dialysis_county"] >= 0
-    stations_by_county = np.bincount(
-        s["dialysis_county"][on_map], weights=s["dialysis_stations"][on_map], minlength=nc
-    )
-    flooded_stations = np.zeros_like(outage)
-    for j in np.flatnonzero(on_map):
-        flooded_stations[:, s["dialysis_county"][j]] += flooded_dc[:, j] * s["dialysis_stations"][j]
-    surge_frac = np.divide(
-        flooded_stations,
-        stations_by_county[None, :],
-        out=np.zeros_like(outage),
-        where=stations_by_county[None, :] > 0,
-    )
-    displaced = patients * np.where(county_down, 1.0, surge_frac)
-
-    keep = 1.0 - p["florida_inflow"]
-    powered = s["shelter_gen"] == "YES"
-    if p["generator_unrecorded_powered"]:
-        powered |= s["shelter_gen"] == "UNRECORDED"
-    seats = s["shelter_seats"] * powered * keep
-    seats = np.where(s["shelter_surge"][None, :] <= cats[:, None], 0.0, seats[None, :])
-    seekers = p["relocation_share"] * pd_at_risk
-    seat_gap = seekers - allocate(seekers, seats, s["shelter_reach"])
-
-    dc_down = np.zeros_like(flooded_dc)
-    valid = s["dialysis_county"] >= 0
-    dc_down[:, valid] = county_down[:, s["dialysis_county"][valid]]
-    chairs = s["dialysis_stations"] * p["dialysis_per_station"] * keep
-    chairs = np.where(flooded_dc | dc_down, 0.0, chairs[None, :])
-    chair_gap = displaced - allocate(displaced, chairs, s["dialysis_reach"])
+    county = s["dialysis_county"][on_map]
+    stations = s["dialysis_stations"][on_map].astype(np.float64)
+    flooded = s["dialysis_surge"][on_map][None, :] <= cats[:, None]
+    by_county = np.bincount(county, weights=stations, minlength=len(counties))
+    flooded_by_county = np.zeros_like(outage)
+    np.add.at(flooded_by_county.T, county, (flooded * stations).T)
+    frac = np.divide(flooded_by_county, by_county, out=np.zeros_like(outage), where=by_county > 0)
+    displaced = patients * np.where(down, 1.0, frac)
     return {
-        "pd_affected": pd_at_risk,
-        "displaced": displaced,
-        "uncovered": seat_gap + chair_gap,
+        "pd_affected": pd_aff.astype(np.float32),
+        "displaced": displaced.astype(np.float32),
+        "out25": outage >= OUTAGE_25,
+        "down50": down,
     }
 
 
 def biased(outage: np.ndarray, peaks: np.ndarray, shift: float) -> np.ndarray:
-    if shift == 0:
-        return outage
     o = np.clip(outage, 1e-9, 1 - 1e-9)
     logit = np.log(o / (1 - o)) + shift * (peaks >= MAJOR_KT)[:, None]
     return 1 / (1 + np.exp(-logit))
-
-
-def run_case(ctx: dict, p: dict, seed: int) -> dict:
-    outage = biased(ctx["outage"], ctx["peaks"], p["major_bias_logit"])
-    per_event = evaluate(outage, ctx["cats"], ctx["counties"], ctx["sites"], p)
-    rate = event_rates(ctx["seasons"], ctx["storm_of_event"], p["rates_from"], ctx["last"])
-    seasons = worst_per_season(per_event, rate, np.random.default_rng(seed), N_SEASONS)
-    return {"outage": outage, "rate": rate, "seasons": seasons}
 
 
 def build(seed: int = SEED) -> dict:
     counties = data.counties()
     clat = np.array([c["lat"] for c in counties])
     clon = np.array([c["lon"] for c in counties])
-    clim = storms.climatology()
+    clim = [a for a in storms.climatology() if season.YEARS[0] <= a.season <= season.YEARS[1]]
     rng = np.random.default_rng(seed)
-    storm_of_event = sample_events(clim, rng, N_EVENTS)
-    shifts = rng.normal(0.0, JITTER_DEG, size=(N_EVENTS, 2))
+    storm_of_event = np.repeat(np.arange(len(clim)), EVENTS_PER_STORM)
+    shifts = rng.normal(0.0, JITTER_DEG, size=(len(storm_of_event), 2))
     tracks = [
         jitter(clim[i].track, float(dy), float(dx))
         for i, (dy, dx) in zip(storm_of_event, shifts, strict=True)
     ]
-    peak_by_storm = {i: peak_near_ga(clim[i].track, clat, clon) for i in set(storm_of_event)}
-    peaks = np.array([peak_by_storm[i] for i in storm_of_event])
-    result = engine.run(tracks, n_draws=N_EVENTS, seed=seed)
-    order = np.argsort(result.track_of_draw, kind="stable")
-    return {
-        "counties": counties,
-        "sites": site_arrays(counties, data.sites()),
-        "outage": result.outage[order],
-        "peaks": peaks,
-        "cats": np.array([category(v) for v in peaks]),
-        "seasons": np.array([a.season for a in clim]),
-        "storm_of_event": storm_of_event,
-        "last": data.tracks()["years"][1],
-        "n_storms": len(clim),
+    peak = np.array([peak_near_ga(a.track, clat, clon) for a in clim])[storm_of_event]
+    result = engine.run(tracks, n_draws=len(tracks), seed=seed)
+    outage = result.outage[np.argsort(result.track_of_draw, kind="stable")]
+    cats = np.array([category(v) for v in peak], np.int8)
+    sites = site_arrays(counties, data.sites())
+    storm_season = np.array([a.season for a in clim], np.int16)
+    ev = {
+        **impacts(outage, cats, counties, sites),
+        **sites,
+        "category": cats,
+        "storm_of_event": storm_of_event.astype(np.int16),
+        "storm_season": storm_season,
+        "event_year": storm_season[storm_of_event],
+        "county_fips": np.array([c["county_fips"] for c in counties]),
+        "county_name": np.array([c["county_name"] for c in counties]),
     }
+    return {"ev": ev, "outage": outage, "peak": peak, "counties": counties}
 
 
-def county_rows(ctx: dict, base: dict) -> list[dict]:
-    hits = (base["outage"] >= OUTAGE_25).astype(float)
-    lam = base["rate"] @ hits
-    s = base["seasons"]
-    rows = []
-    for j, c in enumerate(ctx["counties"]):
-        rows.append(
-            {
-                "county_fips": c["county_fips"],
-                "county_name": c["county_name"],
-                "p_outage25_per_year": round(float(1 - math.exp(-lam[j])), 4),
-                "power_dependent_affected_typical": round(float(np.median(s["pd_affected"][:, j]))),
-                "power_dependent_affected_1in10": round(
-                    float(np.quantile(s["pd_affected"][:, j], 0.9))
-                ),
-                "dialysis_displaced_1in10": round(float(np.quantile(s["displaced"][:, j], 0.9))),
-                "uncovered_typical": round(float(np.median(s["uncovered"][:, j]))),
-                "uncovered_1in10": round(float(np.quantile(s["uncovered"][:, j], 0.9))),
-            }
-        )
-    return rows
+def statewide_lacking(ev: dict, outlook: str = "long_run", **params) -> float:
+    params.setdefault("relocation_share", season.RELOCATION_SHARE["base"])
+    values = {"x": season.per_event(ev, **params)["lacking_shelter"]}
+    rate = season.event_rates(outlook, ev["storm_season"], ev["storm_of_event"])
+    seasons = worst_per_season(values, rate, np.random.default_rng(SEED), N_SEASONS_TABLE)
+    return float(np.quantile(seasons["x"].sum(1), 0.9))
 
 
-def statewide_1in10(case: dict) -> float:
-    return float(np.quantile(case["seasons"]["uncovered"].sum(1), 0.9))
-
-
-def fix_ranking(ctx: dict) -> list[dict]:
+def fix_ranking(ctx: dict, ev: dict) -> list[dict]:
+    unrec = np.isin(ev["shelter_generator"], ["YES", "UNRECORDED"])
+    shifted = biased(ctx["outage"], ctx["peak"], 0.7)
+    bias_ev = {**ev, **impacts(shifted, ev["category"], ctx["counties"], ev)}
+    pairs = {
+        "medical_shelter_generators": (
+            statewide_lacking(ev),
+            statewide_lacking(ev, shelter_powered=unrec),
+        ),
+        "relocation_share": (
+            statewide_lacking(ev, relocation_share=0.1),
+            statewide_lacking(ev, relocation_share=0.4),
+        ),
+        "florida_inflow": (
+            statewide_lacking(ev, florida_inflow=0.0),
+            statewide_lacking(ev, florida_inflow=0.3),
+        ),
+        "model_major_storm_bias": (statewide_lacking(ev), statewide_lacking(bias_ev)),
+        "dialysis_surge_absorption": (
+            statewide_lacking(ev, dialysis_per_station=0.5),
+            statewide_lacking(ev, dialysis_per_station=2.0),
+        ),
+        "storm_rates": (statewide_lacking(ev), statewide_lacking(ev, "recent")),
+    }
     rows = []
     for sw in SWINGS:
-        vals = []
-        for v in sw["values"]:
-            p = dict(BASE, **{sw["param"]: v})
-            vals.append(statewide_1in10(run_case(ctx, p, SEED + 1)))
-        lo, hi = min(vals), max(vals)
+        lo, hi = sorted(pairs[sw["gap"]])
         rows.append(
             {
-                "gap": sw["gap"],
-                "description": sw["description"].replace("LAST", str(ctx["last"])),
-                "record_to_collect": sw["record_to_collect"],
+                **sw,
                 "uncovered_1in10_low": round(lo),
                 "uncovered_1in10_high": round(hi),
                 "swing": round(hi - lo),
@@ -315,24 +231,27 @@ def fix_ranking(ctx: dict) -> list[dict]:
     return sorted(rows, key=lambda r: -r["swing"])
 
 
-def backtest_counts(lam: np.ndarray, observed: dict[str, int], counties: list[dict]) -> dict:
-    years = BACKTEST_YEARS[1] - BACKTEST_YEARS[0] + 1
+def county_lambda(ev: dict, outlook: str) -> np.ndarray:
+    rate = season.event_rates(outlook, ev["storm_season"], ev["storm_of_event"])
+    return rate @ ev["out25"].astype(np.float64)
+
+
+def coverage(mu: np.ndarray, observed: dict[str, int], fips: np.ndarray) -> dict:
     rows = []
-    for j, c in enumerate(counties):
-        mu = float(lam[j] * years)
-        lo, hi = poisson_quantile(mu, 0.1), poisson_quantile(mu, 0.9)
-        obs = int(observed.get(c["county_fips"], 0))
+    for f, m in zip(fips, mu, strict=True):
+        lo, hi = poisson_quantile(float(m), 0.1), poisson_quantile(float(m), 0.9)
+        obs = int(observed.get(str(f), 0))
         rows.append(
             {
-                "county_fips": c["county_fips"],
+                "county_fips": str(f),
                 "observed": obs,
-                "expected": round(mu, 3),
+                "expected": round(float(m), 3),
                 "p10": lo,
                 "p90": hi,
                 "inside": lo <= obs <= hi,
             }
         )
-    total = float(lam.sum() * years)
+    total = float(mu.sum())
     return {
         "share_inside": round(sum(r["inside"] for r in rows) / len(rows), 3),
         "statewide": {
@@ -345,26 +264,42 @@ def backtest_counts(lam: np.ndarray, observed: dict[str, int], counties: list[di
     }
 
 
-def backtest(ctx: dict, base: dict, observed: dict[str, int]) -> dict:
-    hits = (base["outage"] >= OUTAGE_25).astype(float)
-    main = backtest_counts(base["rate"] @ hits, observed, ctx["counties"])
-    recent_rate = event_rates(ctx["seasons"], ctx["storm_of_event"], 2000, ctx["last"])
-    recent = backtest_counts(recent_rate @ hits, observed, ctx["counties"])
+def backtest(ev: dict, observed: dict[str, int], long_run_state: dict) -> dict:
+    years = list(range(BACKTEST_YEARS[0], BACKTEST_YEARS[1] + 1))
+    lam = {o: county_lambda(ev, o) for o in ("long_run", "recent", "la_nina", "neutral", "el_nino")}
+    phases = {y: season.enso_phase(y) for y in years}
+    fips = ev["county_fips"]
+    long_run = coverage(lam["long_run"] * len(years), observed, fips)
+    recent = coverage(lam["recent"] * len(years), observed, fips)
+    cond = coverage(np.sum([lam[phases[y]] for y in years], axis=0), observed, fips)
+    better = cond["share_inside"] > long_run["share_inside"]
     return {
-        "window": list(BACKTEST_YEARS),
+        "window": [BACKTEST_YEARS[0], BACKTEST_YEARS[1]],
         "threshold": OUTAGE_25,
-        "method": "observed county-storms with peak_share >= 0.25 (not suspect) vs Poisson "
-        "10th-90th percentile of the season model's expected count over the window; the "
-        "statewide range treats counties as independent, so it is narrower than the truth",
-        "counties": len(main["rows"]),
-        "rates_from": BASE["rates_from"],
-        "share_inside": main["share_inside"],
-        "statewide": main["statewide"],
-        "rates_from_2000": {
-            "share_inside": recent["share_inside"],
-            "statewide": recent["statewide"],
+        "method": (
+            "observed county-storms with peak_share >= 0.25 (not suspect) vs Poisson 10th-90th "
+            "percentile of the season model's expected count over the window; the statewide "
+            "range treats counties as independent, so it is narrower than the truth"
+        ),
+        "counties": len(long_run["rows"]),
+        "share_inside": long_run["share_inside"],
+        "statewide": long_run["statewide"],
+        "rates_from_2000": {k: recent[k] for k in ("share_inside", "statewide")},
+        "enso_conditional": {
+            "phases": {str(y): p for y, p in phases.items()},
+            "share_inside": cond["share_inside"],
+            "statewide": cond["statewide"],
+            "verdict": (
+                "Conditioning each year on its Aug-Oct ENSO phase "
+                f"{'improves' if better else 'does not improve'} coverage: "
+                f"{cond['share_inside']:.1%} of counties inside vs "
+                f"{long_run['share_inside']:.1%} with the long-run rate "
+                f"({sum(r['inside'] for r in cond['rows'])} vs "
+                f"{sum(r['inside'] for r in long_run['rows'])} of {len(fips)} counties)."
+            ),
         },
-        "rows": main["rows"],
+        "long_run_statewide": long_run_state,
+        "rows": long_run["rows"],
     }
 
 
@@ -377,7 +312,11 @@ def observed_counts() -> dict[str, int]:
       GROUP BY 1"""
     out = subprocess.run(
         [
-            "bq", "query", "--nouse_legacy_sql", "--format=json", "--max_rows=1000",
+            "bq",
+            "query",
+            "--nouse_legacy_sql",
+            "--format=json",
+            "--max_rows=1000",
             f"--maximum_bytes_billed={MAX_BYTES_BILLED}",
             f"--parameter=outage_share:FLOAT64:{OUTAGE_25}",
             f"--parameter=first_year:INT64:{BACKTEST_YEARS[0]}",
@@ -391,45 +330,189 @@ def observed_counts() -> dict[str, int]:
     return {r["fips_code"]: int(r["n"]) for r in json.loads(out)}
 
 
+def switches(name: str, ev: dict) -> dict:
+    if name == "all_unrecorded_generators_yes":
+        ids = ev["shelter_id"][ev["shelter_generator"] == "UNRECORDED"]
+        return {"assume_generator": [str(x) for x in ids]}
+    if name == "coastal_shelters_off":
+        return {"sites_off": [str(x) for x in ev["shelter_id"][ev["shelter_surge"] <= 3]]}
+    return {}
+
+
+def flat(r: dict) -> dict:
+    ls, nt = r["lacking_shelter"], r["needing_transport"]
+    out = {
+        "power_dependent_affected": r["power_dependent_affected"],
+        "no_powered_seat": ls["no_powered_seat"],
+        "no_dialysis_chair": ls["no_dialysis_chair"],
+        "no_vehicle": nt["no_vehicle"],
+        "no_vehicle_low": nt["no_vehicle_low"],
+    }
+    row = {}
+    for k, v in out.items():
+        row[f"{k}_typical"] = v["typical"]
+        row[f"{k}_1in10"] = v["one_in_10"]
+    return row
+
+
+def season_rows(ev: dict, outlook: str) -> list[dict]:
+    r = season.run_season(outlook, n_seasons=N_SEASONS_TABLE)
+    rate = season.event_rates(outlook, ev["storm_season"], ev["storm_of_event"])
+    d = worst_per_season(
+        {"d": ev["displaced"]}, rate, np.random.default_rng(SEED), N_SEASONS_TABLE
+    )["d"]
+    displaced = np.quantile(d, 0.9, axis=0)
+    rows = []
+    for i, c in enumerate(r["counties"]):
+        ls = c["lacking_shelter"]
+        rows.append(
+            {
+                "outlook": outlook,
+                "county_fips": c["county_fips"],
+                "county_name": c["county_name"],
+                "p_outage25_per_year": c["p_outage25_per_year"],
+                "power_dependent_affected_typical": c["power_dependent_affected"]["typical"],
+                "power_dependent_affected_1in10": c["power_dependent_affected"]["one_in_10"],
+                "dialysis_displaced_1in10": round(float(displaced[i])),
+                "uncovered_typical": ls["total"]["typical"],
+                "uncovered_1in10": ls["total"]["one_in_10"],
+                "no_powered_seat_1in10": ls["no_powered_seat"]["one_in_10"],
+                "no_dialysis_chair_1in10": ls["no_dialysis_chair"]["one_in_10"],
+                "no_vehicle_1in10": c["needing_transport"]["no_vehicle"]["one_in_10"],
+                "storms_per_year": r["storms_per_year"],
+            }
+        )
+    return rows
+
+
+def batch_rows(ev: dict) -> list[dict]:
+    rows = []
+    for outlook in season.OUTLOOKS:
+        for sw in SWITCH_SETS:
+            for case in season.RELOCATION_SHARE:
+                r = season.run_season(outlook, case=case, **switches(sw, ev))
+                key = {
+                    "outlook": outlook,
+                    "switch_set": sw,
+                    "case": case,
+                    "storms_per_year": r["storms_per_year"],
+                }
+                st = r["statewide"]
+                rows.append(
+                    {
+                        **key,
+                        "scope": "statewide",
+                        "county_fips": None,
+                        "county_name": None,
+                        "p_outage25_per_year": st["p_any_county_outage25_per_year"],
+                        **flat(st),
+                    }
+                )
+                for c in r["counties"]:
+                    rows.append(
+                        {
+                            **key,
+                            "scope": "county",
+                            "county_fips": c["county_fips"],
+                            "county_name": c["county_name"],
+                            "p_outage25_per_year": c["p_outage25_per_year"],
+                            **flat(c),
+                        }
+                    )
+    return rows
+
+
 NOTE = (
-    "Season risk uses every storm track since 1950 within 250 km of Georgia for exposure; "
-    "the outage model behind it is labelled on 2018+ storms only."
+    "Season risk uses every storm track 1950-2025 within 250 km of Georgia for exposure; "
+    "the outage model behind it is labelled on 2018+ storms only. Outlooks reweight those "
+    "storms: long_run (default), recent (2000-2025), la_nina / neutral / el_nino (years by "
+    "Aug-Oct ONI), noaa_aug_2026 (outside forecast input: NOAA CPC August 2026 outlook, "
+    f"{season.NOAA_URL})."
 )
+TYPICAL = "median season (worst storm of the season)"
+ONE_IN_10 = "90th percentile season"
+OUTLOOK_FIELD = ("outlook", "STRING", "Season outlook used to weight storms")
+STORMS_FIELD = ("storms_per_year", "FLOAT", "Storms per year near Georgia under this outlook")
 SEASON_SCHEMA = [
+    OUTLOOK_FIELD,
     ("county_fips", "STRING", "Census county FIPS"),
     ("county_name", "STRING", "County name"),
     ("p_outage25_per_year", "FLOAT", "Chance per year of a storm leaving >= 25% of customers out"),
     (
         "power_dependent_affected_typical",
         "INTEGER",
-        "Medicare power-dependent residents in outage, median season (worst storm of the season)",
+        "Medicare power-dependent residents in outage, " + TYPICAL,
     ),
-    ("power_dependent_affected_1in10", "INTEGER", "Same, 90th percentile season"),
+    ("power_dependent_affected_1in10", "INTEGER", "Same, " + ONE_IN_10),
     (
         "dialysis_displaced_1in10",
         "INTEGER",
-        (
-            "Dialysis patients whose county is at >= 50% outage or whose centres are in the surge "
-            "zone, 90th percentile season"
-        ),
+        "Dialysis patients whose county is at >= 50% outage or whose centres are in the surge "
+        "zone, " + ONE_IN_10,
     ),
     (
         "uncovered_typical",
         "INTEGER",
-        (
-            "Seekers without a generator-recorded medical seat within 100 km plus displaced "
-            "dialysis patients without a chair, median season"
-        ),
+        "Lacking shelter: seekers without a generator-recorded medical seat within 100 km plus "
+        "displaced dialysis patients without a chair, " + TYPICAL,
     ),
-    ("uncovered_1in10", "INTEGER", "Same, 90th percentile season"),
+    ("uncovered_1in10", "INTEGER", "Same, " + ONE_IN_10),
+    ("no_powered_seat_1in10", "INTEGER", "Seekers without a powered seat, " + ONE_IN_10),
+    ("no_dialysis_chair_1in10", "INTEGER", "Displaced patients without a chair, " + ONE_IN_10),
+    (
+        "no_vehicle_1in10",
+        "INTEGER",
+        "Needing transport: power-dependent affected x county no-vehicle share of 65+ "
+        "households (ACS B25045), " + ONE_IN_10 + "; never added to uncovered",
+    ),
+    STORMS_FIELD,
 ]
 FIX_SCHEMA = [
     ("gap", "STRING", "Unknown or assumption"),
     ("description", "STRING", "The two values compared"),
     ("record_to_collect", "STRING", "Record that would resolve it"),
-    ("uncovered_1in10_low", "INTEGER", "Statewide uncovered in a 1-in-10 season, lower setting"),
-    ("uncovered_1in10_high", "INTEGER", "Statewide uncovered in a 1-in-10 season, higher setting"),
+    ("uncovered_1in10_low", "INTEGER", "Statewide lacking shelter in a 1-in-10 season, lower"),
+    ("uncovered_1in10_high", "INTEGER", "Statewide lacking shelter in a 1-in-10 season, higher"),
     ("swing", "INTEGER", "high minus low"),
+]
+BATCH_SCHEMA = [
+    OUTLOOK_FIELD,
+    (
+        "switch_set",
+        "STRING",
+        (
+            "baseline (registry), all_unrecorded_generators_yes, or coastal_shelters_off "
+            "(medical shelters in the Category 3 surge zone switched off)"
+        ),
+    ),
+    ("case", "STRING", "Relocation share: low 0.1, base 0.2, high 0.4"),
+    STORMS_FIELD,
+    ("scope", "STRING", "statewide or county"),
+    ("county_fips", "STRING", "Census county FIPS; null for statewide"),
+    ("county_name", "STRING", "County name; null for statewide"),
+    (
+        "p_outage25_per_year",
+        "FLOAT",
+        "County: chance per year of >= 25% outage. Statewide: chance any county reaches it",
+    ),
+    ("power_dependent_affected_typical", "INTEGER", "Power-dependent in outage, " + TYPICAL),
+    ("power_dependent_affected_1in10", "INTEGER", "Same, " + ONE_IN_10),
+    ("no_powered_seat_typical", "INTEGER", "Lacking shelter: no powered seat, " + TYPICAL),
+    ("no_powered_seat_1in10", "INTEGER", "Same, " + ONE_IN_10),
+    ("no_dialysis_chair_typical", "INTEGER", "Lacking shelter: no dialysis chair, " + TYPICAL),
+    ("no_dialysis_chair_1in10", "INTEGER", "Same, " + ONE_IN_10),
+    (
+        "no_vehicle_typical",
+        "INTEGER",
+        "Needing transport: affected x 65+ no-vehicle share, " + TYPICAL,
+    ),
+    ("no_vehicle_1in10", "INTEGER", "Same, " + ONE_IN_10),
+    (
+        "no_vehicle_low_typical",
+        "INTEGER",
+        "Needing transport, low case: affected x all-household no-vehicle share, " + TYPICAL,
+    ),
+    ("no_vehicle_low_1in10", "INTEGER", "Same, " + ONE_IN_10),
 ]
 
 
@@ -445,6 +528,7 @@ def load(name: str, rows: list[dict], schema: list[tuple], description: str) -> 
         subprocess.run(
             ["bq", "load", "--replace", "--source_format=NEWLINE_DELIMITED_JSON", ref, body, spec],
             check=True,
+            stdout=subprocess.DEVNULL,
         )
     subprocess.run(
         ["bq", "update", "--description", description, ref], check=True, stdout=subprocess.DEVNULL
@@ -454,40 +538,55 @@ def load(name: str, rows: list[dict], schema: list[tuple], description: str) -> 
 def main() -> None:
     a = argparse.ArgumentParser()
     a.add_argument("--no-load", action="store_true")
+    a.add_argument("--skip-batch", action="store_true")
     args = a.parse_args()
     ctx = build()
-    base = run_case(ctx, BASE, SEED + 1)
-    counties = county_rows(ctx, base)
-    ranking = fix_ranking(ctx)
-    bt = backtest(ctx, base, observed_counts())
+    np.savez_compressed(season.EVENTS_FILE, **ctx["ev"])
+    season.events.cache_clear()
+    ev = season.events()
+    counties = [r for o in season.OUTLOOKS for r in season_rows(ev, o)]
+    ranking = fix_ranking(ctx, ev)
+    long_run = season.run_season("long_run", n_seasons=N_SEASONS_TABLE)["statewide"]
+    bt = backtest(ev, observed_counts(), long_run)
     (DATA / "season_backtest.json").write_text(json.dumps(bt, separators=(",", ":")))
+    batch = [] if args.skip_batch else batch_rows(ev)
     if not args.no_load:
         load(
             "scenario_season_county",
             counties,
             SEASON_SCHEMA,
-            "Per-county hurricane season risk from about 2,000 simulated storms. " + NOTE,
+            "Per-county hurricane season risk per outlook from 2,000 simulated storms. " + NOTE,
         )
         load(
             "scenario_fix_ranking",
             ranking,
             FIX_SCHEMA,
-            "Unknowns ranked by how much each moves statewide people left uncovered in a "
-            "1-in-10 season. " + NOTE,
+            "Unknowns ranked by how much each moves statewide people lacking shelter in a "
+            "1-in-10 season (long_run outlook). " + NOTE,
         )
+        if batch:
+            load(
+                "scenario_batch",
+                batch,
+                BATCH_SCHEMA,
+                "Every outlook x switch set x relocation case, statewide and per county, from "
+                "readiness_agent.scenario.season.run_season with 5,000 seasons. " + NOTE,
+            )
     print(
         json.dumps(
             {
-                "storms": ctx["n_storms"],
-                "events": N_EVENTS,
-                "annual_rate": round(float(base["rate"].sum()), 3),
-                "statewide_uncovered_1in10": round(statewide_1in10(base)),
-                "statewide_pd_affected_1in10": round(
-                    float(np.quantile(base["seasons"]["pd_affected"].sum(1), 0.9))
-                ),
+                "storms": len(ev["storm_season"]),
+                "events": len(ev["category"]),
+                "events_npz_kb": round(season.EVENTS_FILE.stat().st_size / 1024),
+                "outlook_rates": {
+                    o: round(season.storms_per_year(o, ev["storm_season"]), 3)
+                    for o in season.OUTLOOKS
+                },
+                "long_run_statewide": long_run,
                 "backtest": {k: v for k, v in bt.items() if k != "rows"},
                 "ranking": ranking,
-                "top": sorted(counties, key=lambda r: -r["uncovered_1in10"])[:8],
+                "season_rows": len(counties),
+                "batch_rows": len(batch),
             },
             indent=1,
         )

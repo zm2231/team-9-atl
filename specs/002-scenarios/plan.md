@@ -49,7 +49,7 @@ A county readiness report is assembled from tool results only. Each section name
 | How often the power goes out here | `season_county_risk` | `p_outage25_per_year`, `power_dependent_affected_typical`, `power_dependent_affected_1in10` |
 | The storm patterns that matter for this county | `run_scenario` per pattern | `scenario.likelihood`, `scenario.past_storms_used`, `counties[]` row for the county |
 | People at risk in those storms | `run_scenario` | `counties[].power_dependent`, `oxygen_users`, `home_health_users`, `dialysis_patients`, facility beds, all as ranges |
-| Where they would go, and whether it holds up | `run_scenario` (selected county) + `get_shelters` + Maps grounding + `record_live_check` | `receiving.sites[]`, `receiving.shortfall`, live check status |
+| Where they would go, and whether it holds up | `run_scenario` (selected county) + `get_shelters` + Maps grounding + `record_live_check` | `receiving.sites[]`, `receiving.lacking_shelter, receiving.needing_transport`, live check status |
 | What to fix before the season | `gap_sensitivity` + `build_readiness_brief` | `gaps[]` ranked by swing with `record_to_collect`; shelters to verify |
 | What we could not tell you | all of the above | `could_not_tell`, `support`, censored emPOWER counts, every `assumptions` entry |
 

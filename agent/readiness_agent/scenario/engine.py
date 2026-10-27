@@ -74,6 +74,8 @@ def people_at_risk(result: Result, counties: list[dict]) -> dict[str, np.ndarray
 
     return {
         "power_dependent": share * col("power_dependent"),
+        "no_vehicle": share * col("power_dependent") * col("no_vehicle_share_65"),
+        "no_vehicle_low": share * col("power_dependent") * col("no_vehicle_share_all"),
         "oxygen": share * col("oxygen"),
         "home_health": share * col("home_health"),
         "dialysis": np.where(share >= DIALYSIS_DOWN_SHARE, col("dialysis_patients"), 0.0),

@@ -107,3 +107,114 @@ def test_season_tools_return_sourced_error_when_bigquery_fails(monkeypatch):
     assert risk["status"] == gaps["status"] == "error"
     assert risk["counties"] == [] and gaps["gaps"] == []
     assert risk["source"] and gaps["source"]
+
+
+def test_switches_merge_context_and_arguments():
+    from readiness_agent.scenario_tools import _switches
+
+    s = _switches({"site_overrides": {"off": ["a", 3], "assume_generator": "b"}}, ["c"], None)
+    assert s["sites_off"] == frozenset({"a", "c"})
+    assert s["assume_generator"] == frozenset()
+    assert set(s["invalid"]) == {"3", "'b'"}
+    bad = _switches({"site_overrides": "x"}, None, None)
+    assert bad["sites_off"] == frozenset() and bad["invalid"] == ["'x'"]
+
+
+def test_malformed_switches_leave_baseline_and_are_reported():
+    track = {"type": "LineString", "coordinates": [[-86.5, 27.0], [-85.2, 30.5], [-84.3, 31.6], [-82.0, 34.0]]}
+    base = run_scenario(tool_context=ctx({"county_fips": "13095", "scenario": {"track": track, "category": 4}}))
+    for off in ["140058", [123], {"x": 1}]:
+        r = run_scenario(tool_context=ctx({"county_fips": "13095", "scenario": {
+            "track": track, "category": 4, "site_overrides": {"off": off}}}))
+        assert r["receiving"]["lacking_shelter"] == base["receiving"]["lacking_shelter"]
+        assert r["receiving"]["ignored_ids"]
+        assert "delta" not in r["receiving"]
+
+
+def test_season_malformed_switch_reported():
+    from readiness_agent.scenario_tools import season_county_risk
+
+    r = season_county_risk(county_fips="13127", sites_off="140058")
+    assert "'140058'" in r["ignored_ids"]
+
+
+def test_season_rejects_unknown_outlook_with_source():
+    from readiness_agent.scenario_tools import season_county_risk
+
+    r = season_county_risk(outlook="bogus")
+    assert r["status"] == "unknown_outlook" and r["source"]
+
+
+def test_season_with_switches_runs_live_and_reports_ignored_ids():
+    from readiness_agent.scenario_tools import season_county_risk
+
+    r = season_county_risk(county_fips="13127", outlook="el_nino", sites_off=["nope"])
+    assert r["run"] == "live" and r["ignored_ids"] == ["nope"]
+    assert len(r["counties"]) == 1
+    assert "a small improvement" in r["outlook_note"] and "115 vs 113" in r["outlook_note"]
+
+
+def test_outlook_notes_state_backtest_honestly():
+    from readiness_agent.scenario_tools import season_outlook_note
+
+    assert "not an independent check" in season_outlook_note("recent")
+    assert "cpc.ncep.noaa.gov" in season_outlook_note("noaa_aug_2026")
+
+
+def test_county_plan_marks_failed_sections_not_determined(monkeypatch):
+    from google.api_core.exceptions import Forbidden
+
+    from readiness_agent import scenario_tools
+
+    def fail(*_a, **_k):
+        raise Forbidden("denied")
+
+    monkeypatch.setattr(scenario_tools, "_readiness_brief", fail)
+    monkeypatch.setattr(scenario_tools, "_run_query", fail)
+    plan = scenario_tools.county_plan("13127")
+    assert plan["readiness_brief"]["status"] == "not_determined"
+    assert plan["audit"]["status"] == "not_determined"
+    assert plan["power_outage_frequency"]["by_outlook"]["long_run"]["county_fips"] == "13127"
+    eff = plan["generator_switch_effect"]
+    assert eff["statewide_lacking_shelter"]["all_assumed"]["one_in_10"] <= (
+        eff["statewide_lacking_shelter"]["recorded_only"]["one_in_10"])
+
+
+def test_county_plan_rejects_non_georgia():
+    from readiness_agent.scenario_tools import county_plan
+
+    assert county_plan("12001")["status"] == "needs_county"
+
+
+def test_county_plan_assumes_generators_only_where_unrecorded(monkeypatch):
+    from readiness_agent import scenario_tools
+    from readiness_agent.scenario import data, season
+
+    seen = {}
+    real = season.run_season
+
+    def spy(outlook, **kw):
+        if kw.get("assume_generator"):
+            seen["ids"] = set(kw["assume_generator"])
+        return real(outlook, **kw)
+
+    monkeypatch.setattr(season, "run_season", spy)
+    monkeypatch.setattr(scenario_tools, "_readiness_brief", lambda _f: {})
+    plan = scenario_tools.county_plan("13051")
+    meds = data.sites()["medical_shelters"]
+    unrecorded = {s["shelter_id"] for s in meds if s["generator"] == "UNRECORDED"}
+    recorded_no = {s["shelter_id"] for s in meds if s["generator"] == "NO"}
+    assert unrecorded and recorded_no
+    assert seen["ids"] == unrecorded and not seen["ids"] & recorded_no
+    assert plan["generator_switch_effect"]["shelters_switched"] == len(unrecorded)
+
+
+def test_assumed_generator_reports_what_it_overrides():
+    from readiness_agent.scenario import data, season
+
+    meds = data.sites()["medical_shelters"]
+    no = next(s["shelter_id"] for s in meds if s["generator"] == "NO")
+    unrec = next(s["shelter_id"] for s in meds if s["generator"] == "UNRECORDED")
+    run = season.run_season("long_run", assume_generator=[no, unrec])
+    assert run["generator_assumptions"][no].startswith("adds a generator")
+    assert run["generator_assumptions"][unrec].startswith("confirms a generator")

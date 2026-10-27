@@ -23,7 +23,7 @@ from .evacuation_tools import (
     record_live_check,
 )
 from .readiness_brief import build_readiness_brief
-from .scenario_tools import gap_sensitivity, run_scenario, season_county_risk
+from .scenario_tools import county_plan, gap_sensitivity, run_scenario, season_county_risk
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-edc952746633")
 DATASET_ID = os.getenv("EVAC_DATASET", "evac_prod")
@@ -81,7 +81,17 @@ Tools:
   Its receiving_top holds medical shelter ids only, for get_shelters. Dialysis centres in its
   receiving list carry a ccn, name and county; ground them with Google Maps by name and county,
   never through get_shelters.
-- For season-long risk use season_county_risk; for what to fix first use gap_sensitivity.
+- For season-long risk use season_county_risk; for what to fix first use gap_sensitivity. Its
+  outlook defaults to long_run; use another outlook only when asked, and quote its outlook_note,
+  which says whether that outlook beat the long run in the 2018-2025 back-test. noaa_aug_2026 is
+  an outside forecast input: name NOAA's August 2026 outlook as its source.
+- For a county's season plan (outage frequency, outlooks, generator what-ifs), call county_plan
+  once. It already contains build_readiness_brief's result, so do not call both. Write from its
+  sections and say "not determined" for any section marked not_determined.
+- Report people lacking shelter (no powered seat, no dialysis chair) and people needing transport
+  (no vehicle, cannot arrive before the winds) as separate figures. Never add them together.
+- Operator what-ifs (a site switched off, a generator assumed) go in sites_off and
+  assume_generator. Report the baseline, the result with the switches, and the difference.
 - Every number you state comes from a tool. Do not compute or estimate figures yourself.
 - For ad hoc BigQuery access, use only the read-only MCP tool against project `{PROJECT_ID}` and
   dataset `{DATASET_ID}`, tables ending in `_clean`.
@@ -155,5 +165,6 @@ root_agent = Agent(
         run_scenario,
         season_county_risk,
         gap_sensitivity,
+        county_plan,
     ],
 )
