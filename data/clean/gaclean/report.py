@@ -103,8 +103,9 @@ def checks(con) -> dict[str, list[tuple]]:
         ],
         "assisted_living (GaMap2Care)": [
             ("gamap2care_facility", a[0], "GaMap2Care facility fields", f"one row per FACID; {_fmt(a[2])} licensed beds"),
-            ("small_home_aggregated", a[1], "name, street address and point of homes with 6 or fewer beds",
-             "`NAME`, `ADDRESS` null; `Latitude`/`Longitude` = tract centroid; status aggregated_small_home"),
+            ("small_home_aggregated", a[1], "FACID, name, address, city, ZIP, dates and point of homes with 6 or fewer beds",
+             ("opaque `FACID` (pch_small_<county>_<n>); identifying fields null; `Latitude`/`Longitude` = tract "
+              "centroid; status aggregated_small_home")),
             ("nearest_tract_centroid", a[0], "GaMap2Care `COUNTY` text",
              f"`county_fips` (imputed); {a_disagree} disagree with the county text, both kept"),
             ("gema_zone", z[2], "no evacuation zone", "`evac_zone`, `evac_zone_county`"),

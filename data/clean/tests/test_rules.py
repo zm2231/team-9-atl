@@ -183,8 +183,8 @@ GAMAP = ["FACTYPE VARCHAR", "FACID VARCHAR", "NAME VARCHAR", "ADDRESS VARCHAR", 
 
 
 def gamap_row(facid, ftype, beds, lat, lon):
-    return [None, facid, f"Home {facid}", f"{facid} Oak St", "Town", "GA", "30000", "Active", None, None, None,
-            beds, None, ftype, None, "APPLING", lat, lon, "ROOFTOP"]
+    return [None, facid, f"Home {facid}", f"{facid} Oak St", "Town", "GA", "30000", "Active", "2020-01-01",
+            "2019-01-01", None, beds, "2021-01-01", ftype, None, "APPLING", lat, lon, "ROOFTOP"]
 
 
 def test_small_personal_care_homes_lose_name_address_and_point(con):
@@ -197,7 +197,11 @@ def test_small_personal_care_homes_lose_name_address_and_point(con):
     rows = {r[0]: r[1:] for r in con.execute(
         "SELECT FACID, NAME, ADDRESS, Latitude, Longitude, facility_identity_status, licensed_beds, county_fips, "
         "evac_zone FROM assisted_living").fetchall()}
-    assert rows["PCH1"] == (None, None, 33.0, -84.0, "aggregated_small_home", 6, "13001", None)
+    assert "PCH1" not in rows
+    assert rows["pch_small_13001_001"] == (None, None, 33.0, -84.0, "aggregated_small_home", 6, "13001", None)
+    small = con.execute(f"SELECT {', '.join(B.SMALL_HOME_REMOVED)} FROM assisted_living "
+                        "WHERE facility_identity_status = 'aggregated_small_home'").fetchall()
+    assert small == [(None,) * len(B.SMALL_HOME_REMOVED)]
     assert rows["PCH2"][:5] == ("Home PCH2", "PCH2 Oak St", 33.01, -84.02, "recorded")
     assert rows["ALC1"][4:] == ("recorded", 6, "13003", "A")
     assert B.unprovenanced(con, "assisted_living") == []
@@ -246,6 +250,12 @@ def test_real_inputs_canonical_numbers():
                             "dialysis_centers": 355, "assisted_living": 1894, "contraflow_intersections": 32,
                             "gema_shelter_feed": 0, "storm_events": 6934, "storm_history": 192}
     assert nums["assisted_living"]["PERSONAL CARE HOME"]["small_homes_aggregated"] == 1044
+    small = con.execute("""
+        SELECT COUNT(*) FROM assisted_living a WHERE facility_identity_status = 'aggregated_small_home' AND (
+            FACID IN (SELECT FACID FROM raw_gamap2care) OR NAME IS NOT NULL OR ADDRESS IS NOT NULL
+            OR EXISTS (SELECT 1 FROM raw_gamap2care g WHERE g.Latitude = a.Latitude AND g.Longitude = a.Longitude))
+    """).fetchall()[0][0]
+    assert small == 0
     assert nums["evacuation_zones"]["tracts_in_zone"] == 198
     p = nums["power_dependent_counties"]
     assert (p["dialysis_live"], p["dialysis_stations"], p["facility_esrd_dialysis_any_dme_snapshot"]) == (18026, 5956, 6009)

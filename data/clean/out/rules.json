@@ -24,7 +24,7 @@
   "nearest_tract_centroid": "Assigned to the tract whose 2020 centroid is nearest (straight line, UTM 17N).",
   "nullif_trim": "Blank or whitespace-only strings are null (unrecorded), never a value.",
   "overture_places": "Overture Maps Places release 2026-10-21.0, per-row licence in source_license (CDLA-Permissive-2.0, Apache-2.0, CC0-1.0); confidence is Overture's own. A listing, not licensure: no beds, no fleet size.",
-  "small_home_aggregated": "Personal care home with 6 or fewer licensed beds, often a family home in a private residence: NAME and ADDRESS are null and Latitude/Longitude are its tract centroid in every output; beds and counts stay. Distances and evacuation zone use the tract centroid.",
+  "small_home_aggregated": "Personal care home with 6 or fewer licensed beds, often a family home in a private residence: FACID is replaced by an opaque key (pch_small_<county>_<n>); NAME, ADDRESS, city, ZIP, license and operating dates and geocode accuracy are null; Latitude/Longitude are its tract centroid in every output. Beds, type and status stay. Distances and evacuation zone use the tract centroid.",
   "source_value": "Value as published by the source; no transformation.",
   "tract_hazard_join": "Hazard value of the facility's nearest tract (hazard_tracts clean columns).",
   "vulnerability_tract_join": "True when the hazard row's geo_id is in the snapshot vulnerability_tracts table.",

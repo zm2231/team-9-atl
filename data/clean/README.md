@@ -19,7 +19,7 @@ Inputs and licences are in [SOURCES.md](SOURCES.md). The build stops with a list
 | `hazard_tracts.parquet` | 2,791 | `geo_id` | the 11 columns of `evacuation_readiness.hazard_tracts_clean` |
 | `power_dependent_counties.parquet` | 159 | `fips_code` | the 20 columns of `evacuation_readiness.power_dependent_counties_clean` |
 | `dialysis_centers.parquet` | 355 | `ccn` | gap fill: CMS dialysis facilities with county and coordinates |
-| `assisted_living.parquet` | 1,894 | `FACID` | GaMap2Care assisted living communities and personal care homes |
+| `assisted_living.parquet` | 1,894 | `FACID` (opaque for small homes) | GaMap2Care assisted living communities and personal care homes |
 | `contraflow_intersections.parquet` | 32 | `OBJECTID` | GEMA I-16 contraflow intersections |
 | `gema_shelter_feed.parquet` | 0 | `GlobalID` | WebEOC shelter feed, facility and status fields only; an input for the teammate shelters table |
 | `storm_events.parquet` | 6,934 | `event_id` | NCEI tropical-related storm events, GA and FL, 1996-2025 |
@@ -70,9 +70,10 @@ Status values: `recorded` (the source has a value), `unrecorded` (the source has
   27 zone polygons. 198 tracts are in a zone (697,384 residents), as are 26 nursing homes and 78
   assisted living or personal care homes.
 - **Small personal care homes.** 1,044 of the 1,568 personal care homes have 6 or fewer licensed beds.
-  In every output they have no `NAME` or `ADDRESS`, their `Latitude`/`Longitude` is the tract
-  centroid, and their distances and evacuation zone are taken from it; beds and counts stay. Status
-  `aggregated_small_home`.
+  In every output their `FACID` is an opaque key (`pch_small_<county>_<n>`, numbered by tract and
+  beds); name, address, city, ZIP, license and operating dates and geocode accuracy are null; their
+  `Latitude`/`Longitude` is the tract centroid, and their distances and evacuation zone are taken
+  from it. Beds, type and status stay. Status `aggregated_small_home`.
 - **County of an assisted living home.** Imputed from the nearest tract centroid; 59 disagree with
   the GaMap2Care county text, and both are kept.
 - **Shelter feed.** The WebEOC feed had no rows when fetched. `gema_shelter_feed` fixes its 16

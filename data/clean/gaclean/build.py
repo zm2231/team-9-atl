@@ -49,6 +49,7 @@ SHELTER_FEED_FIELDS = [
     "shelter_closing_datetime", "shelter_closing_qualifier",
 ]
 SOURCE_COLUMNS["gema_shelter_feed"] = SHELTER_FEED_FIELDS
+SMALL_HOME_REMOVED = ["FAC_CITY", "FAC_ZIP", "OPERSTATDT", "OPEN_DATE", "EFFECTIVE_DATE_OF_LICENSE", "Accuracy"]
 RAW_SOURCE = {"assisted_living": "raw_gamap2care", "contraflow_intersections": "raw_contraflow",
               "storm_events": "raw_ncei"}
 STORM_AGGREGATES = ["storm_name", "year", "events", "tropical_type_events", "counties", "deaths_direct",
@@ -332,8 +333,13 @@ def build_assisted_living(con) -> None:
             LEFT JOIN assisted_living_nearest n USING (FACID)
             LEFT JOIN raw_tracts t ON t.geo_id = n.nearest_tract_geo_id
         ), med AS (SELECT {R.point('longitude', 'latitude')} AS geom FROM raw_shelters WHERE is_medical)
-        SELECT g.* EXCLUDE (NAME, ADDRESS, Latitude, Longitude, is_small_home, nearest_tract_geo_id,
-                            nearest_tract_county_fips, pub_lon, pub_lat),
+        SELECT CASE WHEN is_small_home THEN printf('pch_small_%s_%03d', g.nearest_tract_county_fips,
+                        ROW_NUMBER() OVER (PARTITION BY is_small_home, g.nearest_tract_county_fips
+                                           ORDER BY g.nearest_tract_geo_id, g.licensed_beds, g.FACID))
+                    ELSE g.FACID END AS FACID,
+               g.* EXCLUDE (FACID, NAME, ADDRESS, Latitude, Longitude, {', '.join(SMALL_HOME_REMOVED)},
+                            is_small_home, nearest_tract_geo_id, nearest_tract_county_fips, pub_lon, pub_lat),
+               {', '.join(f"CASE WHEN is_small_home THEN NULL ELSE g.{c} END AS {c}" for c in SMALL_HOME_REMOVED)},
                CASE WHEN is_small_home THEN NULL ELSE g.NAME END AS NAME,
                CASE WHEN is_small_home THEN NULL ELSE g.ADDRESS END AS ADDRESS,
                g.pub_lat AS Latitude, g.pub_lon AS Longitude,
@@ -350,8 +356,8 @@ def build_assisted_living(con) -> None:
                       "km_nearest_medical_shelter", "'assumption'", "medical_shelter_distance_pending")}
         FROM g
         LEFT JOIN hazard_tracts h ON h.geo_id = g.nearest_tract_geo_id
-        LEFT JOIN {zone_join("g", "FACID", "pub_lon", "pub_lat")} z USING (FACID)
-        ORDER BY FACID
+        LEFT JOIN {zone_join("g", "FACID", "pub_lon", "pub_lat")} z ON z.FACID = g.FACID
+        ORDER BY 1
     """)
     expect(con, "assisted_living", count(con, "SELECT * FROM raw_gamap2care"))
     assert count(con, "SELECT DISTINCT FACID FROM assisted_living") == count(con, "SELECT * FROM assisted_living")
@@ -359,9 +365,11 @@ def build_assisted_living(con) -> None:
     unmatched(con, "assisted living whose GaMap2Care county differs from the imputed county",
               """SELECT a.FACID, a.COUNTY, p.name FROM assisted_living a JOIN raw_power p ON p.fips_code = a.county_fips
                  WHERE lower(replace(a.COUNTY, ' ', '')) <> lower(replace(p.name, ' ', ''))""")
-    leaked = count(con, """SELECT * FROM assisted_living WHERE facility_identity_status = 'aggregated_small_home'
-                           AND (NAME IS NOT NULL OR ADDRESS IS NOT NULL)""")
-    assert leaked == 0, f"{leaked} small homes carry a name or address"
+    leaked = count(con, f"""SELECT * FROM assisted_living a WHERE facility_identity_status = 'aggregated_small_home'
+                            AND (NAME IS NOT NULL OR ADDRESS IS NOT NULL
+                                 OR {' OR '.join(f'{c} IS NOT NULL' for c in SMALL_HOME_REMOVED)}
+                                 OR FACID IN (SELECT FACID FROM raw_gamap2care))""")
+    assert leaked == 0, f"{leaked} small homes carry an identifying field"
 
 
 def build_contraflow_intersections(con) -> None:

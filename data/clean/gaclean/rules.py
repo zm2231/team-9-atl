@@ -47,8 +47,9 @@ RULES = {
     "gamap2care_facility": "GaMap2Care facility record as published by Georgia DCH, facility fields only.",
     "small_home_aggregated": (
         f"Personal care home with {SMALL_HOME_BEDS} or fewer licensed beds, often a family home in a private "
-        "residence: NAME and ADDRESS are null and Latitude/Longitude are its tract centroid in every output; "
-        "beds and counts stay. Distances and evacuation zone use the tract centroid."),
+        "residence: FACID is replaced by an opaque key (pch_small_<county>_<n>); NAME, ADDRESS, city, ZIP, "
+        "license and operating dates and geocode accuracy are null; Latitude/Longitude are its tract centroid "
+        "in every output. Beds, type and status stay. Distances and evacuation zone use the tract centroid."),
     "gema_contraflow_point": "GEMA I-16 contraflow intersection as published.",
     "webeoc_facility_fields": (
         "GEMA WebEOC shelter feed restricted to facility and status fields; contact names, phones, fax, "
