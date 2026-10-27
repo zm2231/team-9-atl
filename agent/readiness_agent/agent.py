@@ -96,8 +96,9 @@ Tools:
 - For ad hoc BigQuery access, use only the read-only MCP tool against project `{PROJECT_ID}` and
   dataset `{DATASET_ID}`, and only these tables. Prefer a purpose-built tool when one answers the
   question; use these for what no tool covers, and cite the table and its caveat.
-  - Tables ending in `_clean`: the challenge's shelters, tracts, hazard tracts, nursing homes and
-    emPOWER counties.
+  - shelters_clean, vulnerability_tracts_clean, hazard_tracts_clean, care_facilities_clean,
+    power_dependent_counties_clean: the challenge's shelters, tracts, hazard tracts, nursing homes
+    and emPOWER counties. shelter_surge_noaa_clean: the NOAA surge fallback described below.
   - ext_ga_places_tract: CDC PLACES 2025 tract prevalence (%), e.g. mobility difficulty. Modeled, not
     counted.
   - ext_ga_lodes_rac_tract_2023 / ext_ga_lodes_wac_tract_2023: Census LODES 2023 residents' jobs and
