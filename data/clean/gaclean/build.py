@@ -326,17 +326,17 @@ def build_assisted_living(con) -> None:
         CREATE TABLE assisted_living AS
         WITH g AS (
             SELECT g.*, {small} AS is_small_home, n.nearest_tract_geo_id, n.nearest_tract_county_fips,
-                   t.lon AS tract_lon, t.lat AS tract_lat
+                   CASE WHEN {small} THEN t.lon ELSE g.Longitude END AS pub_lon,
+                   CASE WHEN {small} THEN t.lat ELSE g.Latitude END AS pub_lat
             FROM assisted_living_pre g
             LEFT JOIN assisted_living_nearest n USING (FACID)
             LEFT JOIN raw_tracts t ON t.geo_id = n.nearest_tract_geo_id
         ), med AS (SELECT {R.point('longitude', 'latitude')} AS geom FROM raw_shelters WHERE is_medical)
         SELECT g.* EXCLUDE (NAME, ADDRESS, Latitude, Longitude, is_small_home, nearest_tract_geo_id,
-                            nearest_tract_county_fips, tract_lon, tract_lat),
+                            nearest_tract_county_fips, pub_lon, pub_lat),
                CASE WHEN is_small_home THEN NULL ELSE g.NAME END AS NAME,
                CASE WHEN is_small_home THEN NULL ELSE g.ADDRESS END AS ADDRESS,
-               CASE WHEN is_small_home THEN g.tract_lat ELSE g.Latitude END AS Latitude,
-               CASE WHEN is_small_home THEN g.tract_lon ELSE g.Longitude END AS Longitude,
+               g.pub_lat AS Latitude, g.pub_lon AS Longitude,
                CASE WHEN is_small_home THEN 'aggregated_small_home' ELSE 'recorded' END AS facility_identity_status,
                CASE WHEN is_small_home THEN 'small_home_aggregated' ELSE 'gamap2care_facility' END AS facility_identity_rule,
                {R.tag("g.nearest_tract_geo_id", "nearest_tract_geo_id", "'imputed'", "nearest_tract_centroid")},
@@ -346,11 +346,11 @@ def build_assisted_living(con) -> None:
                           for name, src in (("hrcn_ealp_pctile", "hrcn_ealp_pctile"), ("cfld_share", "cfld_share"),
                                             ("coastal_flood_exposed", "coastal_flood_exposed")))},
                {zone_columns("z", "g.Latitude IS NOT NULL")},
-               {R.tag(f"(SELECT MIN(ST_Distance({R.point('CASE WHEN is_small_home THEN g.tract_lon ELSE g.Longitude END', 'CASE WHEN is_small_home THEN g.tract_lat ELSE g.Latitude END')}, med.geom)) / 1000 FROM med)",
+               {R.tag(f"(SELECT MIN(ST_Distance({R.point('g.pub_lon', 'g.pub_lat')}, med.geom)) / 1000 FROM med)",
                       "km_nearest_medical_shelter", "'assumption'", "medical_shelter_distance_pending")}
         FROM g
         LEFT JOIN hazard_tracts h ON h.geo_id = g.nearest_tract_geo_id
-        LEFT JOIN {zone_join("assisted_living_pre", "FACID", "Longitude", "Latitude")} z USING (FACID)
+        LEFT JOIN {zone_join("g", "FACID", "pub_lon", "pub_lat")} z USING (FACID)
         ORDER BY FACID
     """)
     expect(con, "assisted_living", count(con, "SELECT * FROM raw_gamap2care"))

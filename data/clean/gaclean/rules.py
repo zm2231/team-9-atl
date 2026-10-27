@@ -48,7 +48,7 @@ RULES = {
     "small_home_aggregated": (
         f"Personal care home with {SMALL_HOME_BEDS} or fewer licensed beds, often a family home in a private "
         "residence: NAME and ADDRESS are null and Latitude/Longitude are its tract centroid in every output; "
-        "beds and counts stay. Distances use the tract centroid."),
+        "beds and counts stay. Distances and evacuation zone use the tract centroid."),
     "gema_contraflow_point": "GEMA I-16 contraflow intersection as published.",
     "webeoc_facility_fields": (
         "GEMA WebEOC shelter feed restricted to facility and status fields; contact names, phones, fax, "

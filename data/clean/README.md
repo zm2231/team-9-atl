@@ -71,7 +71,7 @@ Status values: `recorded` (the source has a value), `unrecorded` (the source has
   assisted living or personal care homes.
 - **Small personal care homes.** 1,044 of the 1,568 personal care homes have 6 or fewer licensed beds.
   In every output they have no `NAME` or `ADDRESS`, their `Latitude`/`Longitude` is the tract
-  centroid, and their distances are measured from it; beds and counts stay. Status
+  centroid, and their distances and evacuation zone are taken from it; beds and counts stay. Status
   `aggregated_small_home`.
 - **County of an assisted living home.** Imputed from the nearest tract centroid; 59 disagree with
   the GaMap2Care county text, and both are kept.
