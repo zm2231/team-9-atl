@@ -1,0 +1,218 @@
+[
+  {
+    "corridor": "I-75 S",
+    "origin": "gulf",
+    "case": "low",
+    "volume_to_capacity": 0.173,
+    "route_source": "GDOT SR 401 (FL line to Macon)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-16",
+    "origin": "gulf",
+    "case": "low",
+    "volume_to_capacity": 0.0,
+    "route_source": "GDOT SR 404 + GDOT contraflow route",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-95",
+    "origin": "gulf",
+    "case": "low",
+    "volume_to_capacity": 0.0,
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-75 S",
+    "origin": "gulf",
+    "case": "base",
+    "volume_to_capacity": 2.04,
+    "route_source": "GDOT SR 401 (FL line to Macon)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-16",
+    "origin": "gulf",
+    "case": "base",
+    "volume_to_capacity": 0.0,
+    "route_source": "GDOT SR 404 + GDOT contraflow route",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-95",
+    "origin": "gulf",
+    "case": "base",
+    "volume_to_capacity": 0.0,
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-75 S",
+    "origin": "gulf",
+    "case": "high",
+    "volume_to_capacity": 12.143,
+    "route_source": "GDOT SR 401 (FL line to Macon)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-16",
+    "origin": "gulf",
+    "case": "high",
+    "volume_to_capacity": 0.0,
+    "route_source": "GDOT SR 404 + GDOT contraflow route",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-95",
+    "origin": "gulf",
+    "case": "high",
+    "volume_to_capacity": 0.0,
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-75 S",
+    "origin": "florida_peninsula",
+    "case": "low",
+    "volume_to_capacity": 0.094,
+    "route_source": "GDOT SR 401 (FL line to Macon)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-16",
+    "origin": "florida_peninsula",
+    "case": "low",
+    "volume_to_capacity": 0.328,
+    "route_source": "GDOT SR 404 + GDOT contraflow route",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-95",
+    "origin": "florida_peninsula",
+    "case": "low",
+    "volume_to_capacity": 0.167,
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-75 S",
+    "origin": "florida_peninsula",
+    "case": "base",
+    "volume_to_capacity": 0.648,
+    "route_source": "GDOT SR 401 (FL line to Macon)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-16",
+    "origin": "florida_peninsula",
+    "case": "base",
+    "volume_to_capacity": 1.498,
+    "route_source": "GDOT SR 404 + GDOT contraflow route",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-95",
+    "origin": "florida_peninsula",
+    "case": "base",
+    "volume_to_capacity": 0.936,
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-75 S",
+    "origin": "florida_peninsula",
+    "case": "high",
+    "volume_to_capacity": 2.754,
+    "route_source": "GDOT SR 401 (FL line to Macon)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-16",
+    "origin": "florida_peninsula",
+    "case": "high",
+    "volume_to_capacity": 5.079,
+    "route_source": "GDOT SR 404 + GDOT contraflow route",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-95",
+    "origin": "florida_peninsula",
+    "case": "high",
+    "volume_to_capacity": 3.61,
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-75 S",
+    "origin": "atlantic_ga",
+    "case": "low",
+    "volume_to_capacity": 0.0,
+    "route_source": "GDOT SR 401 (FL line to Macon)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-16",
+    "origin": "atlantic_ga",
+    "case": "low",
+    "volume_to_capacity": 0.257,
+    "route_source": "GDOT SR 404 + GDOT contraflow route",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-95",
+    "origin": "atlantic_ga",
+    "case": "low",
+    "volume_to_capacity": 0.073,
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-75 S",
+    "origin": "atlantic_ga",
+    "case": "base",
+    "volume_to_capacity": 0.0,
+    "route_source": "GDOT SR 401 (FL line to Macon)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-16",
+    "origin": "atlantic_ga",
+    "case": "base",
+    "volume_to_capacity": 1.013,
+    "route_source": "GDOT SR 404 + GDOT contraflow route",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-95",
+    "origin": "atlantic_ga",
+    "case": "base",
+    "volume_to_capacity": 0.288,
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-75 S",
+    "origin": "atlantic_ga",
+    "case": "high",
+    "volume_to_capacity": 0.0,
+    "route_source": "GDOT SR 401 (FL line to Macon)",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-16",
+    "origin": "atlantic_ga",
+    "case": "high",
+    "volume_to_capacity": 3.014,
+    "route_source": "GDOT SR 404 + GDOT contraflow route",
+    "status": "assumption"
+  },
+  {
+    "corridor": "I-95",
+    "origin": "atlantic_ga",
+    "case": "high",
+    "volume_to_capacity": 0.857,
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
+    "status": "assumption"
+  }
+]

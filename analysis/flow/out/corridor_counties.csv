@@ -1,0 +1,73 @@
+corridor,county_fips,county_name,tracts_in_buffer
+I-16 (Savannah to Macon),13051,Chatham,81
+I-16 (Savannah to Macon),13021,Bibb,44
+I-16 (Savannah to Macon),13031,Bulloch,15
+I-16 (Savannah to Macon),13175,Laurens,13
+I-16 (Savannah to Macon),13103,Effingham,6
+I-16 (Savannah to Macon),13029,Bryan,4
+I-16 (Savannah to Macon),13107,Emanuel,4
+I-16 (Savannah to Macon),13169,Jones,4
+I-16 (Savannah to Macon),13043,Candler,3
+I-16 (Savannah to Macon),13289,Twiggs,3
+I-16 (Savannah to Macon),13283,Treutlen,2
+I-75 north (Macon to TN line),13121,Fulton,207
+I-75 north (Macon to TN line),13067,Cobb,170
+I-75 north (Macon to TN line),13089,DeKalb,137
+I-75 north (Macon to TN line),13151,Henry,56
+I-75 north (Macon to TN line),13063,Clayton,51
+I-75 north (Macon to TN line),13021,Bibb,48
+I-75 north (Macon to TN line),13015,Bartow,26
+I-75 north (Macon to TN line),13057,Cherokee,25
+I-75 north (Macon to TN line),13313,Whitfield,21
+I-75 north (Macon to TN line),13047,Catoosa,15
+I-75 north (Macon to TN line),13129,Gordon,14
+I-75 north (Macon to TN line),13207,Monroe,5
+I-75 north (Macon to TN line),13223,Paulding,5
+I-75 north (Macon to TN line),13295,Walker,5
+I-75 north (Macon to TN line),13035,Butts,4
+I-75 north (Macon to TN line),13169,Jones,4
+I-75 north (Macon to TN line),13247,Rockdale,3
+I-75 north (Macon to TN line),13255,Spalding,3
+I-75 north (Macon to TN line),13171,Lamar,2
+I-75 north (Macon to TN line),13213,Murray,2
+I-75 north (Macon to TN line),13217,Newton,1
+I-75 south (FL line to Macon),13021,Bibb,47
+I-75 south (FL line to Macon),13153,Houston,36
+I-75 south (FL line to Macon),13185,Lowndes,29
+I-75 south (FL line to Macon),13277,Tift,12
+I-75 south (FL line to Macon),13081,Crisp,6
+I-75 south (FL line to Macon),13225,Peach,6
+I-75 south (FL line to Macon),13075,Cook,5
+I-75 south (FL line to Macon),13169,Jones,4
+I-75 south (FL line to Macon),13019,Berrien,3
+I-75 south (FL line to Macon),13287,Turner,3
+I-75 south (FL line to Macon),13093,Dooly,2
+I-75 south (FL line to Macon),13027,Brooks,1
+I-75 south (FL line to Macon),13071,Colquitt,1
+I-75 south (FL line to Macon),13101,Echols,1
+I-85 (AL line to SC line),13121,Fulton,297
+I-85 (AL line to SC line),13135,Gwinnett,175
+I-85 (AL line to SC line),13089,DeKalb,154
+I-85 (AL line to SC line),13063,Clayton,37
+I-85 (AL line to SC line),13077,Coweta,25
+I-85 (AL line to SC line),13067,Cobb,24
+I-85 (AL line to SC line),13139,Hall,17
+I-85 (AL line to SC line),13285,Troup,17
+I-85 (AL line to SC line),13117,Forsyth,16
+I-85 (AL line to SC line),13157,Jackson,16
+I-85 (AL line to SC line),13113,Fayette,13
+I-85 (AL line to SC line),13013,Barrow,10
+I-85 (AL line to SC line),13119,Franklin,8
+I-85 (AL line to SC line),13147,Hart,4
+I-85 (AL line to SC line),13011,Banks,2
+I-85 (AL line to SC line),13257,Stephens,2
+I-85 (AL line to SC line),13149,Heard,1
+I-85 (AL line to SC line),13195,Madison,1
+I-85 (AL line to SC line),13199,Meriwether,1
+I-95 (FL line to SC line),13051,Chatham,66
+I-95 (FL line to SC line),13127,Glynn,21
+I-95 (FL line to SC line),13039,Camden,15
+I-95 (FL line to SC line),13103,Effingham,6
+I-95 (FL line to SC line),13191,McIntosh,6
+I-95 (FL line to SC line),13029,Bryan,5
+I-95 (FL line to SC line),13179,Liberty,5

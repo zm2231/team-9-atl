@@ -1,0 +1,5 @@
+tract_set,tracts,pop,white_nh,black_nh,hispanic,asian_nh,other,carless_households
+state,2796,10722325,0.508,0.311,0.101,0.043,0.038,242123.0
+coastal_flood_tracts,182,660685,0.556,0.305,0.073,0.02,0.046,15066.0
+top20_carless_on_flood_layer,20,80434,0.415,0.451,0.067,0.017,0.05,4194.0
+top20_carless_raw_count,20,79379,0.358,0.503,0.079,0.021,0.039,5688.0

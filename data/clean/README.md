@@ -1,0 +1,101 @@
+# Clean layer: care facilities, hazard tracts, power-dependent counties (Georgia)
+
+Builds three clean tables from the Georgia snapshot, plus gap-fill and scenario tables, as local Parquet.
+Nothing here writes to BigQuery or GCS; `POST.md` holds the load commands for when posting is approved.
+
+```bash
+cd data/clean
+uv run python -m gaclean.build   # writes out/, CLEANING.md, GAPS.md, POST.md
+uv run pytest -q                 # rule tests on fixtures, plus a regression on the real inputs
+```
+
+Inputs and licences are in [SOURCES.md](SOURCES.md). The build stops with a list of any missing inputs.
+
+## Outputs (`out/`)
+
+| File | Rows | Key | Leading columns |
+|---|---:|---|---|
+| `care_facilities.parquet` | 356 | `cms_certification_number_ccn` | the 10 columns of `evacuation_readiness.care_facilities_clean` |
+| `hazard_tracts.parquet` | 2,791 | `geo_id` | the 11 columns of `evacuation_readiness.hazard_tracts_clean` |
+| `power_dependent_counties.parquet` | 159 | `fips_code` | the 20 columns of `evacuation_readiness.power_dependent_counties_clean` |
+| `dialysis_centers.parquet` | 355 | `ccn` | gap fill: CMS dialysis facilities with county and coordinates |
+| `assisted_living.parquet` | 1,894 | `facid` (opaque for small homes) | GaMap2Care assisted living communities and personal care homes |
+| `contraflow_intersections.parquet` | 32 | `objectid` | GEMA I-16 contraflow intersections |
+| `gema_shelter_feed.parquet` | 0 | `globalid` | WebEOC shelter feed, facility and status fields only; an input for `shelters_clean` |
+| `storm_events.parquet` | 6,934 | `event_id` | NCEI tropical-related storm events, GA and FL, 1996-2025 |
+| `storm_history.parquet` | 192 | `storm_atcf_id`, `state` | per-storm, per-state totals for the scenario library |
+| `overture_places.parquet` | 4,858 | `id` | Overture care and transport listings, per-row licence |
+| `shelter_activation_history.parquet` | 4,590 | `shelter_id` | FEMA NSS last activation per GA and FL shelter; not merged into shelters |
+| `evac_orders.parquet` | 4 | `storm`, `order_type` | Georgia governor evacuation orders (Matthew, Irma, Dorian) from cited releases |
+| `outage_events.parquet` | 73 | `event_key` | DOE OE-417 weather outage filings for GA and FL, 2013-2023 |
+| `numbers.json` | | | every count quoted here and in the generated docs |
+| `rules.json` | | | the text of every rule named in a `_rule` column |
+| `gaps.json` | | | the gap register behind `GAPS.md` |
+
+The leading columns were read from the BigQuery schemas with `bq show --schema` and hold the
+snapshot values unchanged, one row per source row. Every column name is snake_case
+(`^[a-z][a-z0-9_]*$`), so BigQuery loads each file without a character map: source names are
+lowercased and runs of other characters become `_` (`Demand Loss (MW)` → `demand_loss_mw`,
+`HRCN_EALP` → `hrcn_ealp`); BigQuery matches column names case-insensitively, so the leading columns
+still line up with the `_clean` schemas. Every cleaned or added column follows with its own
+`<column>_status` and `<column>_rule`; the build fails if one is missing. The exceptions are grouped:
+`<field>_live_low` shares `<field>_live_status`, dialysis `latitude`, `longitude` and
+`coordinates_confidence` share `coordinates_status`, and `storm_history` totals share
+`aggregate_status`.
+
+
+Status values: `recorded` (the source has a value), `unrecorded` (the source has none),
+`imputed` (filled or assigned by a stated rule; a plain calculation on recorded inputs stays `recorded`), `assumption` (depends on an input not yet settled),
+`suspect` (kept but contradicted by a better source), `external` (from a gap-fill source),
+`aggregated_small_home` (identity removed, see below), `reported_lower_bound` (NSS populations),
+`activated_readiness_unrecorded` (NSS activations with no capacity recorded).
+
+## Decisions
+
+- **Live emPOWER is canonical.** Georgia has 18,026 Medicare dialysis beneficiaries in the live
+  service. The snapshot column `facility_esrd_dialysis_any_dme` sums to 6,009, is kept as published
+  and marked `suspect`; it is never labelled dialysis patients. Live power dependence is 106,561
+  against the snapshot's 92,567.
+- **Suppression.** emPOWER publishes counts of 1 to 10 as 11. Those cells carry value 11,
+  `<field>_live_low` = 1 and status `imputed` (72 cells).
+- **Dialysis stations.** CMS lists 5,956 stations in 355 centers across 91 counties, about 3.0
+  live dialysis beneficiaries per station. Each center's county comes from its ZIP through the
+  emPOWER ZIP table; coordinates come from the Census Geocoder, with match quality kept
+  (242 exact, 81 non-exact, 32 unmatched).
+- **Coastal flood.** `cfld_expp` is NULL for 2,588 tracts outside the NRI coastal-flood layer;
+  `cfld_expp_clean` sets those to 0 with status `imputed`.
+- **Hurricane exposure.** `hrcn_ealp_pctile` (percentile of `hrcn_ealp`) is the canonical measure;
+  `hrcn_afreq` is kept beside it.
+- **Nursing-home occupancy.** CMS average residents per day over CMS certified beds: 80.8%
+  statewide, 2 homes unrecorded. This is an average, not the census on the day of a storm.
+- **County of a nursing home.** Imputed from the nearest tract centroid; 11 homes disagree with
+  the CMS county text, and both are kept.
+- **Medical-shelter distance.** Read-only from the snapshot `shelters` table (`is_medical`), median
+  52.1 km. Status `assumption`, pending `shelters_clean`.
+
+- **Evacuation zones.** GEMA zone (A-D, X) from the tract centroid or facility point; null outside all
+  27 zone polygons. 198 tracts are in a zone (697,384 residents), as are 26 nursing homes and 78
+  assisted living or personal care homes.
+- **Small personal care homes.** 1,044 of the 1,568 personal care homes have 6 or fewer licensed beds.
+  In every output their `facid` is an opaque key (`pch_small_<county>_<n>`, numbered by tract and
+  beds); every other GaMap2Care field except `facility_type` and `licensed_beds` is null; their
+  `latitude`/`longitude` is the tract centroid, and their distances and evacuation zone are taken
+  from it. Status `aggregated_small_home`.
+- **County of an assisted living home.** Imputed from the nearest tract centroid; 59 disagree with
+  the GaMap2Care county text, and both are kept.
+- **Shelter feed.** The WebEOC feed had no rows when fetched. `gema_shelter_feed` fixes its 16
+  facility and status fields; 23 contact, phone, remarks and editor fields are never read.
+- **Storm history.** NCEI events keep their HURDAT2 match: 6,347 by narrative name (`external`),
+  577 by nearest active storm (`imputed`), 10 unmatched.
+
+- **Shelter activations.** NSS keeps only each shelter's latest activation. 205 of 1,792 Georgia
+  shelters show one; 93 of those have no capacity recorded (56 in incidents 155-26 and 193-25) and are
+  kept as `activated_readiness_unrecorded`, never as extra seats. Populations are a lower bound.
+- **Evacuation orders.** Hours before Georgia tropical-storm-wind onset (our calculation from NHC best
+  track): orders took effect 35 h (Irma) and 41 h (Dorian) ahead, the two recorded times. Matthew's
+  release gives dates only, so its hours are a range. No coastal mandatory order was found for Gulf
+  storms (unverified).
+- **Outages.** OE-417 filings are per utility filing and are not additive across rows; 7 publish no
+  customer count. County outage share by storm comes from EAGLE-I through the grid analysis.
+
+Rule-by-rule counts are in [CLEANING.md](CLEANING.md); unfilled gaps in [GAPS.md](GAPS.md).
