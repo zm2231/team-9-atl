@@ -84,6 +84,11 @@ export async function loadMapData(outer?: AbortSignal): Promise<MapData> {
 
 let chatSession: Promise<string> | null = null;
 
+/** The next question starts a fresh agent session: used by New simulation and reopen (002 R6). */
+export function resetChatSession(): void {
+  chatSession = null;
+}
+
 export function contextPart(context: ChatContext): string {
   return `CONTEXT v1 ${JSON.stringify(context)}`;
 }

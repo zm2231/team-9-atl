@@ -1,3 +1,4 @@
+import { resetChatSession } from "../../lib/agentClient";
 import { DEFAULT_CATEGORY, DEFAULT_CUTOFF_KM, useStore } from "../../state/store";
 import CategoryPicker from "./CategoryPicker";
 import ReachSlider from "./ReachSlider";
@@ -27,9 +28,17 @@ export default function ScenarioControls() {
         disabled={!s}
         onChange={(cutoff_km) => dispatch({ type: "setCutoff", cutoff_km })}
       />
-      {s && (
-        <button type="button" className="btn" onClick={() => dispatch({ type: "resetScenario" })}>
-          Reset
+      {(s || state.currentScenarioId) && (
+        // Replaces Reset: the current scenario stays in History; a new one starts on the next draw.
+        <button
+          type="button"
+          className="btn"
+          onClick={() => {
+            dispatch({ type: "newSimulation" });
+            resetChatSession();
+          }}
+        >
+          New simulation
         </button>
       )}
     </div>

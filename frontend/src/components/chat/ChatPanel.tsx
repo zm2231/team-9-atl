@@ -5,6 +5,8 @@ import type { ChatContext, ChatExchange, HurricaneScenario } from "../../lib/typ
 import { useStore } from "../../state/store";
 import { useScenario } from "../../state/scenario";
 import AnswerView from "./AnswerView";
+import EarlierQuestions from "./EarlierQuestions";
+import HistorySection from "./HistorySection";
 
 const RECEIVING_TOP = 20;
 
@@ -33,6 +35,9 @@ export default function ChatPanel() {
   const [input, setInput] = useState("");
   const logRef = useRef<HTMLDivElement>(null);
   const busy = state.chat.some((c) => c.status === "pending" || c.status === "streaming");
+  const current = state.currentScenarioId
+    ? state.history.find((h) => h.id === state.currentScenarioId)
+    : undefined;
 
   // Typing moves the pointer off the map, so fall back to the last county hovered (FR-011).
   const contextFips = state.selectedFips ?? state.lastHoverFips;
@@ -104,8 +109,17 @@ export default function ChatPanel() {
 
   return (
     <aside className="chat" aria-label="Ask the agent">
+      <HistorySection />
       <div className="chat__log" ref={logRef}>
         <h2>Ask the agent</h2>
+        {current && state.resimulatedAt && (
+          <EarlierQuestions
+            questions={current.questions}
+            resimulatedAt={state.resimulatedAt}
+            onAsk={(text) => ask(text)}
+            disabled={busy}
+          />
+        )}
         {state.chat.length === 0 && (
           <p className="muted small">
             Ask about a county, a shelter or the simulated hurricane. The selected county
