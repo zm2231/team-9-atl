@@ -56,7 +56,7 @@ def test_facility_beds_cover_every_county():
 
 
 def test_allocate_shares_a_site_pro_rata():
-    from readiness_agent.scenario.build.build_season import allocate
+    from readiness_agent.scenario.season import allocate
 
     demand = np.array([[30.0, 10.0, 5.0]])
     capacity = np.array([[20.0, 100.0]])
@@ -66,7 +66,7 @@ def test_allocate_shares_a_site_pro_rata():
 
 
 def test_worst_per_season_takes_the_max_event():
-    from readiness_agent.scenario.build.build_season import worst_per_season
+    from readiness_agent.scenario.season import worst_per_season
 
     values = {"x": np.array([[1.0, 0.0], [3.0, 2.0]])}
     out = worst_per_season(values, np.array([1.0, 1.0]), np.random.default_rng(0), 5000)

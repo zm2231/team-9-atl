@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useReducer, type Dispatch, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useReducer, useRef, type Dispatch, type ReactNode } from "react";
 import type { Category, ChatExchange, County, LiveCheckStatus, MapData, Shelter, WheelchairCheck } from "../lib/types";
 import type { LineString, Point } from "geojson";
 import { countyNames } from "../lib/geo";
@@ -10,6 +10,7 @@ import {
   type SavedScenario,
 } from "../lib/history";
 import { countiesAlongTrack } from "../lib/simulation";
+import { DEFAULT_UNIT, loadUnit, saveUnit, type DistanceUnit } from "../lib/units";
 
 export interface ScenarioInput {
   track: LineString | Point;
@@ -26,8 +27,12 @@ export interface State {
   highlight: { shelterIds: Set<string>; countyFips: Set<string> };
   scenario: ScenarioInput | null;
   drawing: boolean;
-  /** The details panel is collapsed by default; only the user's toggle changes it. */
-  detailsOpen: boolean;
+  /** Display unit only; every stored distance stays in km (feature 003, research R1). */
+  unit: DistanceUnit;
+  /** Which side-panel tab shows. Opens on Chat; selecting or drawing never switches it (FR-009, FR-012). */
+  sideTab: SideTab;
+  /** Details changed while Chat was showing; cleared when Details is opened. */
+  detailsUnseen: boolean;
   /** Session memory only: status and place ids per shelter, never titles/URIs/text (FR-022). */
   liveChecks: Map<string, { status: LiveCheckStatus; placeIds: string[]; checked_at: string }>;
   /** Google Maps wheelchair lookups, shown with attribution and kept only while the page is open. */
@@ -43,6 +48,8 @@ export interface State {
   notice: string | null;
 }
 
+export type SideTab = "chat" | "details";
+
 export const DEFAULT_CATEGORY: Category = 3;
 export const DEFAULT_CUTOFF_KM = 80;
 
@@ -55,7 +62,9 @@ export const initialState: State = {
   highlight: { shelterIds: new Set(), countyFips: new Set() },
   scenario: null,
   drawing: false,
-  detailsOpen: false,
+  unit: DEFAULT_UNIT,
+  sideTab: "chat",
+  detailsUnseen: false,
   liveChecks: new Map(),
   wheelchairChecks: new Map(),
   chat: [],
@@ -86,14 +95,32 @@ export type Action =
   | { type: "deleteScenario"; id: string }
   | { type: "dismissNotice" }
   | { type: "setDrawing"; drawing: boolean }
-  | { type: "setDetailsOpen"; open: boolean }
+  | { type: "setUnit"; unit: DistanceUnit }
+  | { type: "setSideTab"; tab: SideTab }
   | { type: "chatStart"; exchange: ChatExchange; now?: string }
   | { type: "chatSession"; scenarioId: string; sessionId: string }
   | { type: "chatUpdate"; id: string; patch: Partial<ChatExchange> }
   | { type: "liveCheck"; shelterId: string; status: LiveCheckStatus; placeIds: string[] }
   | { type: "wheelchairChecked"; results: WheelchairCheck[] };
 
+/** Actions that change what the Details tab shows; hover is left out because it fires constantly. */
+const DETAILS_NEWS = new Set<Action["type"]>([
+  "selectCounty",
+  "selectShelter",
+  "setTrack",
+  "setCategory",
+  "setCutoff",
+  "openScenario",
+]);
+
 export function reducer(state: State, action: Action): State {
+  const next = reduce(state, action);
+  return next !== state && next.sideTab === "chat" && DETAILS_NEWS.has(action.type)
+    ? { ...next, detailsUnseen: true }
+    : next;
+}
+
+function reduce(state: State, action: Action): State {
   switch (action.type) {
     case "mapLoading":
       return { ...state, mapData: { status: "loading" } };
@@ -209,8 +236,10 @@ export function reducer(state: State, action: Action): State {
       return { ...state, notice: null };
     case "setDrawing":
       return { ...state, drawing: action.drawing };
-    case "setDetailsOpen":
-      return { ...state, detailsOpen: action.open };
+    case "setUnit":
+      return { ...state, unit: action.unit };
+    case "setSideTab":
+      return { ...state, sideTab: action.tab, detailsUnseen: action.tab === "details" ? false : state.detailsUnseen };
     case "chatSession":
       return {
         ...state,
@@ -293,8 +322,27 @@ interface StoreValue {
 
 const StoreContext = createContext<StoreValue | null>(null);
 
+function browserStorage(): Storage | null {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
 export function StoreProvider({ children, initial }: { children: ReactNode; initial?: Partial<State> }) {
-  const [state, dispatch] = useReducer(reducer, { ...initialState, ...initial });
+  // The unit is read before the first render so a km user never sees miles flash (research R4).
+  const [state, dispatch] = useReducer(reducer, undefined, () => ({
+    ...initialState,
+    ...initial,
+    unit: initial?.unit ?? loadUnit(browserStorage()),
+  }));
+  const savedUnit = useRef(state.unit);
+  useEffect(() => {
+    if (state.unit === savedUnit.current) return;
+    savedUnit.current = state.unit;
+    saveUnit(browserStorage(), state.unit);
+  }, [state.unit]);
   const data = state.mapData.data;
   const countyByFips = useMemo(() => new Map((data?.counties ?? []).map((c) => [c.county_fips, c])), [data]);
   const shelterById = useMemo(() => new Map((data?.shelters ?? []).map((s) => [s.shelter_id, s])), [data]);

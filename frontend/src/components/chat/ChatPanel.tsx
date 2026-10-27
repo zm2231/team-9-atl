@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { streamChat, type AgentEvent } from "../../lib/agentClient";
 import { emptyFold, foldEvent, type Fold } from "../../lib/chatFold";
 import type { ChatContext, ChatExchange, HurricaneScenario } from "../../lib/types";
@@ -29,7 +29,8 @@ export function buildContext(
   };
 }
 
-export default function ChatPanel() {
+/** `active` is false while the Details tab shows; the panel stays mounted so nothing is lost (research R5). */
+export default function ChatPanel({ active = true }: { active?: boolean }) {
   const { state, dispatch, countyByFips, shelterById } = useStore();
   const scenario = useScenario();
   const [input, setInput] = useState("");
@@ -43,8 +44,22 @@ export default function ChatPanel() {
   const contextFips = state.selectedFips ?? state.lastHoverFips;
   const countyName = contextFips ? countyByFips.get(contextFips)?.name : undefined;
 
+  // A hidden panel can lose its scroll position, so keep it across tab switches.
+  const savedScroll = useRef(0);
+  useLayoutEffect(() => {
+    const log = logRef.current;
+    if (!log) return;
+    if (active) log.scrollTop = savedScroll.current;
+    return () => {
+      savedScroll.current = log.scrollTop;
+    };
+  }, [active]);
+
+  // Follow new messages only while visible; coming back to the tab restores the saved position instead.
+  const activeRef = useRef(active);
+  activeRef.current = active;
   useEffect(() => {
-    logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
+    if (activeRef.current) logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
   }, [state.chat]);
 
   async function run(question: string, context: ChatContext, id: string) {
@@ -65,6 +80,8 @@ export default function ChatPanel() {
             groundingMetadata: acc.grounding,
             referenced_shelter_ids: acc.shelterIds,
             referenced_county_fips: acc.countyFips,
+            tools_used: acc.tools,
+            report: acc.report,
           });
         },
       });
@@ -110,7 +127,7 @@ export default function ChatPanel() {
   if (scenario) suggestions.push("Which of these receiving shelters can actually take a wheelchair?");
 
   return (
-    <aside className="chat" aria-label="Ask the agent">
+    <div className="chat">
       <HistorySection />
       <div className="chat__log" ref={logRef}>
         <h2>Ask the agent</h2>
@@ -161,6 +178,6 @@ export default function ChatPanel() {
           Send
         </button>
       </form>
-    </aside>
+    </div>
   );
 }

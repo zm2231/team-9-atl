@@ -12,7 +12,7 @@ from google.adk.tools.mcp_tool import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnectionParams
 from google.auth.transport.requests import Request
 
-from .callbacks import check_wheelchair_callback, load_map_data_callback
+from .callbacks import check_wheelchair_callback
 from .evacuation_tools import (
     assess_shelter_accessibility,
     check_shelter_google_maps,
@@ -28,8 +28,13 @@ from .scenario_tools import (
     county_plan,
     county_storm_profile,
     gap_sensitivity,
+    get_report,
+    recommend_sites,
+    record_site_update,
     run_scenario,
+    season_conditions,
     season_county_risk,
+    state_plan,
 )
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-edc952746633")
@@ -89,9 +94,24 @@ Tools:
   receiving list carry a ccn, name and county; ground them with Google Maps by name and county,
   never through get_shelters.
 - For season-long risk use season_county_risk; for what to fix first use gap_sensitivity. Its
-  outlook defaults to long_run; use another outlook only when asked, and quote its outlook_note,
-  which says whether that outlook beat the long run in the 2018-2025 back-test. noaa_aug_2026 is
-  an outside forecast input: name NOAA's August 2026 outlook as its source.
+  outlook defaults to auto, which works the outlook out from current NOAA conditions and picks
+  the season to plan: the rest of the current season when more than half of it remains,
+  otherwise the next full season, with the rest of the current season reported separately
+  (rest_of_current_season). Never ask the planner for a forecast or for storm counts. Lead with
+  the auto outlook_note: it says which season was planned and why (for example "Planning the
+  2027 season: 95% of 2026's storms historically arrive before 27 Oct."), names every input with
+  its date, says whether NOAA has an outlook for that season, and says whether the conditions
+  model beat the long run in its back-test. Use
+  long_run, recent, la_nina, neutral, el_nino or noaa_aug_2026 only when asked, and quote their
+  outlook_note. noaa_aug_2026 is an outside forecast input: name NOAA's August 2026 outlook.
+- For "what does this season look like" or the current conditions, call season_conditions and
+  report its inputs with their sources and dates, the blended outlook with its range and weights,
+  and its back-test.
+- Reports come in four scopes with one shape (report.sections): county_plan for a county,
+  state_plan for Georgia, run_scenario with run_index for one simulated run, and run_scenario
+  with draws=N for N runs. Prepared reports load instantly with get_report(report_id); call
+  get_report() with no id to list them. Write reports from report.sections only, with each figure's
+  provenance and range; say "not determined" for a section marked not_determined.
 - For a county's season plan (outage frequency, outlooks, generator what-ifs), call county_plan
   once. It already contains build_readiness_brief's result, so do not call both. Write from its
   sections and say "not determined" for any section marked not_determined.
@@ -102,13 +122,28 @@ Tools:
   (no vehicle, cannot arrive before the winds) as separate figures. Never add them together.
 - Operator what-ifs (a site switched off, a generator assumed) go in sites_off and
   assume_generator. Report the baseline, the result with the switches, and the difference.
+- When a planner states a fact about a site (a generator confirmed, seats changed, a site closed
+  or added), call record_site_update once per field. Later results show it as planner-reported
+  next to the registry value; say both. Give its source (county_ema, gema, site_visit,
+  facility_call, state_registry or planner_review) and source_date; it stores no free text.
+- For where a new or upgraded medical shelter would help most, call recommend_sites. Quote its
+  label, say that reductions do not add up across sites, and give the best combination of 3.
+- Probabilities are shares of simulated seasons; say so when you quote one.
+- Season tools default to uncertainty="fixed". Use "sampled" only when asked how uncertain a
+  figure is or which unknown matters most, and quote its spread_attribution.
 - Every number you state comes from a tool. Do not compute or estimate figures yourself.
+- State distances in miles and speeds in mph. The project's own tools return a `_mi` / `_mph` field
+  beside each `_km` / `_kmh` field; quote those and never convert units yourself. For an ad hoc BigQuery
+  query or a Google Maps answer that gives km, convert in the SQL (`ROUND(x_km * 0.621371, 1) AS x_mi`)
+  or quote the km figure as given.
 - For ad hoc BigQuery access, use only the read-only MCP tool against project `{PROJECT_ID}` and
   dataset `{DATASET_ID}`, and only these tables. Prefer a purpose-built tool when one answers the
   question; use these for what no tool covers, and cite the table and its caveat.
   - shelters_clean, vulnerability_tracts_clean, hazard_tracts_clean, care_facilities_clean,
     power_dependent_counties_clean: the challenge's shelters, tracts, hazard tracts, nursing homes
     and emPOWER counties. shelter_surge_noaa_clean: the NOAA surge fallback described below.
+  - shelters_surge_filled: shelters_clean plus surge_flag (registry where recorded, otherwise the NOAA
+    SLOSH map) and surge_source. Use it for any surge question so no shelter reads as blank.
   - ext_ga_places_tract: CDC PLACES 2025 tract prevalence (%), e.g. mobility difficulty. Modeled, not
     counted.
   - ext_ga_lodes_rac_tract_2023 / ext_ga_lodes_wac_tract_2023: Census LODES 2023 residents' jobs and
@@ -188,7 +223,7 @@ root_agent = Agent(
     name="readiness_agent",
     model=os.getenv("MODEL_NAME", "gemini-3-flash-preview"),
     instruction=INSTRUCTION,
-    before_agent_callback=[load_map_data_callback, check_wheelchair_callback],
+    before_agent_callback=[check_wheelchair_callback],
     tools=[
         google_maps_grounding,
         bigquery_mcp,
@@ -204,9 +239,14 @@ root_agent = Agent(
                 get_shelters,
                 record_live_check,
                 run_scenario,
+                season_conditions,
                 season_county_risk,
                 gap_sensitivity,
                 county_plan,
+                get_report,
+                state_plan,
+                record_site_update,
+                recommend_sites,
                 county_storm_profile,
             ],
         ),

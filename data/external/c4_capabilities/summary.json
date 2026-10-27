@@ -1,0 +1,194 @@
+{
+ "shape": [
+  {
+   "layer": "Hospitals (acute + critical access)",
+   "unit": "staffed inpatient beds, 2023-24 median",
+   "sites": 125,
+   "capacity": 20044.0,
+   "counties": 100,
+   "pct_in_metro5": 35.0,
+   "pct_pop_metro5": 36.0,
+   "mean_km_per_person": 9.4,
+   "pct_pop_over_50km": 0.1,
+   "pop_over_50km": 7181.0,
+   "coast_mean_km": 10.0
+  },
+  {
+   "layer": "  ICU",
+   "unit": "ICU beds",
+   "sites": 83,
+   "capacity": 2992.0,
+   "counties": 60,
+   "pct_in_metro5": 37.0,
+   "pct_pop_metro5": 36.0,
+   "mean_km_per_person": 11.7,
+   "pct_pop_over_50km": 0.7,
+   "pop_over_50km": 72206.0,
+   "coast_mean_km": 13.0
+  },
+  {
+   "layer": "Dialysis centers",
+   "unit": "stations",
+   "sites": 346,
+   "capacity": 5956,
+   "counties": 91,
+   "pct_in_metro5": 33.0,
+   "pct_pop_metro5": 36.0,
+   "mean_km_per_person": 10.8,
+   "pct_pop_over_50km": 0.1,
+   "pop_over_50km": 9201.0,
+   "coast_mean_km": 11.0
+  },
+  {
+   "layer": "  Late-shift dialysis",
+   "unit": "stations",
+   "sites": 17,
+   "capacity": 364,
+   "counties": 9,
+   "pct_in_metro5": 52.0,
+   "pct_pop_metro5": 36.0,
+   "mean_km_per_person": 52.9,
+   "pct_pop_over_50km": 32.7,
+   "pop_over_50km": 3433954.0,
+   "coast_mean_km": 44.0
+  },
+  {
+   "layer": "Nursing homes",
+   "unit": "certified beds",
+   "sites": 355,
+   "capacity": 39494.0,
+   "counties": 142,
+   "pct_in_metro5": 23.0,
+   "pct_pop_metro5": 36.0,
+   "mean_km_per_person": 6.5,
+   "pct_pop_over_50km": null,
+   "pop_over_50km": null,
+   "coast_mean_km": 8.0
+  },
+  {
+   "layer": "Health centers (FQHC)",
+   "unit": "open hours per week",
+   "sites": 456,
+   "capacity": 17936.0,
+   "counties": 137,
+   "pct_in_metro5": 17.0,
+   "pct_pop_metro5": 36.0,
+   "mean_km_per_person": 8.2,
+   "pct_pop_over_50km": 0.1,
+   "pop_over_50km": 5438.0,
+   "coast_mean_km": 7.0
+  },
+  {
+   "layer": "Medical shelters",
+   "unit": "seats",
+   "sites": 14,
+   "capacity": 4594.0,
+   "counties": 9,
+   "pct_in_metro5": 30.0,
+   "pct_pop_metro5": 36.0,
+   "mean_km_per_person": 51.3,
+   "pct_pop_over_50km": 43.0,
+   "pop_over_50km": 4522140.0,
+   "coast_mean_km": 93.0
+  },
+  {
+   "layer": "  with generator recorded",
+   "unit": "seats",
+   "sites": 3,
+   "capacity": 1187.0,
+   "counties": 2,
+   "pct_in_metro5": null,
+   "pct_pop_metro5": 36.0,
+   "mean_km_per_person": 233.8,
+   "pct_pop_over_50km": 97.7,
+   "pop_over_50km": 10272101.0,
+   "coast_mean_km": 93.0
+  }
+ ],
+ "regions": [
+  {
+   "region": "Coast (6 counties)",
+   "pop": 543194.0,
+   "dialysis_pts": 820,
+   "stations": 256,
+   "pts_per_station": 3.2,
+   "hosp_beds": 1343.9,
+   "icu": 260.1,
+   "nh_beds": 2006.0,
+   "med_seats": 0.0,
+   "power_dep": 4981,
+   "power_dep_per_med_seat": null
+  },
+  {
+   "region": "Metro core (5)",
+   "pop": 3777464.0,
+   "dialysis_pts": 5129,
+   "stations": 1965,
+   "pts_per_station": 2.61,
+   "hosp_beds": 6944.1,
+   "icu": 1115.1,
+   "nh_beds": 9009.0,
+   "med_seats": 1398.0,
+   "power_dep": 24950,
+   "power_dep_per_med_seat": 18.0
+  },
+  {
+   "region": "Rest of GA (148)",
+   "pop": 6195921.0,
+   "dialysis_pts": 12077,
+   "stations": 3735,
+   "pts_per_station": 3.23,
+   "hosp_beds": 11756.199999999999,
+   "icu": 1617.2000000000003,
+   "nh_beds": 28479.0,
+   "med_seats": 3196.0,
+   "power_dep": 76630,
+   "power_dep_per_med_seat": 24.0
+  }
+ ],
+ "state": {
+  "dialysis_pts_live_empower": 18026,
+  "dialysis_pts_snapshot": 6009.0,
+  "stations": 5956,
+  "chair_capacity_assumed": 23824,
+  "dialysis_centers": 355,
+  "late_shift_centers": 18
+ },
+ "coast_dialysis_surge": [
+  {
+   "band": "<=100 km",
+   "stations": 220,
+   "centers": 14,
+   "chairs_assumed": 880,
+   "coastal_dialysis_pts": 820
+  },
+  {
+   "band": "100-200 km",
+   "stations": 652,
+   "centers": 38,
+   "chairs_assumed": 2608,
+   "coastal_dialysis_pts": 820
+  },
+  {
+   "band": ">200 km",
+   "stations": 4828,
+   "centers": 289,
+   "chairs_assumed": 19312,
+   "coastal_dialysis_pts": 820
+  }
+ ],
+ "counties_without": {
+  "no_hospital": 58,
+  "no_dialysis": 68,
+  "no_icu": 99,
+  "no_med_shelter": 150,
+  "no_hospital_no_dialysis": 49,
+  "dialysis_pts_in_counties_without_center": 2298
+ },
+ "assumptions": {
+  "patients_per_station": 4,
+  "dialysis_location": "county population centroid (CMS file has no coordinates)",
+  "hospital_beds": "HHS archived facility file, median of weeks 2023-11 to 2024-04, long-term hospitals excluded",
+  "distance": "straight line, tract population centroid to nearest site"
+ }
+}

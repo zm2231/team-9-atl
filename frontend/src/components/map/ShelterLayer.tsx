@@ -14,18 +14,26 @@ function usageClass(usage: string | null): string {
 
 export default function ShelterLayer() {
   const { state, dispatch } = useStore();
-  const { projection } = useMapGeometry();
+  const { projection, k } = useMapGeometry();
   const scenario = useScenario();
   const affected = useMemo(() => new Set(scenario?.affected_shelter_ids ?? []), [scenario]);
   const receiving = useMemo(() => new Set(scenario?.receiving.map((r) => r.shelter_id) ?? []), [scenario]);
 
-  if (state.mapData.status !== "ready" || !state.mapData.data) return null;
+  const shelters = state.mapData.status === "ready" ? state.mapData.data?.shelters : undefined;
+  // Projected once per data/size change, not per zoom frame (research R9).
+  const projected = useMemo(
+    () => (shelters ?? []).map((s) => [s, projection([s.lon, s.lat])] as const),
+    [shelters, projection],
+  );
 
-  const r = 3.2;
+  if (!shelters) return null;
+
+  // Sizes are divided by the zoom scale so markers stay the same on screen (FR-020).
+  const r = 3.2 / k;
+  const label = (x: number, y: number) => `translate(${x},${y}) scale(${1 / k})`;
   return (
     <g className="shelters">
-      {state.mapData.data.shelters.map((s: Shelter) => {
-        const xy = projection([s.lon, s.lat]);
+      {projected.map(([s, xy]: readonly [Shelter, [number, number] | null]) => {
         if (!xy) return null;
         const [x, y] = xy;
         const cls = ["shelter", usageClass(s.usage)];
@@ -49,9 +57,9 @@ export default function ShelterLayer() {
                 {`${s.name} · capacity ${s.evacuation_capacity ?? "not recorded"} · wheelchair ${flagLabel(s.wheelchair_accessible)}`}
               </title>
             </circle>
-            {surge && <circle cx={x} cy={y} r={r + 2.2} className="shelter-surge" />}
+            {surge && <circle cx={x} cy={y} r={r + 2.2 / k} className="shelter-surge" />}
             {s.quality_flags.length > 0 && (
-              <text x={x + r + 1} y={y - r} className="shelter-warn">
+              <text transform={label(x, y)} x={4.2} y={-3.2} className="shelter-warn">
                 !
               </text>
             )}
@@ -59,7 +67,7 @@ export default function ShelterLayer() {
             {(() => {
               const st = state.liveChecks.get(s.shelter_id)?.status;
               return st === "renamed" || st === "closed" ? (
-                <text x={x - r - 7} y={y - r} className="shelter-discrepancy" data-testid={`discrepancy-${s.shelter_id}`}>
+                <text transform={label(x, y)} x={-10.2} y={-3.2} className="shelter-discrepancy" data-testid={`discrepancy-${s.shelter_id}`}>
                   ?
                 </text>
               ) : null;

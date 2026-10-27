@@ -1,0 +1,233 @@
+{
+  "assisted_living": {
+    "ASSISTED LIVING COMMUNITY": {
+      "facilities": 326,
+      "licensed_beds": 27226.0,
+      "small_home_beds": 0.0,
+      "small_homes_aggregated": 0
+    },
+    "PERSONAL CARE HOME": {
+      "facilities": 1568,
+      "licensed_beds": 19341.0,
+      "small_home_beds": 4404.0,
+      "small_homes_aggregated": 1044
+    },
+    "county_text_disagrees_with_imputed_fips": 59,
+    "median_km_nearest_medical_shelter_pending": 45.2101
+  },
+  "care_facilities": {
+    "avg_residents_per_day": 31820.8,
+    "cms_certified_beds": 39462.0,
+    "cms_county_text_disagrees_with_imputed_fips": 11,
+    "in_coastal_flood_tract": 25,
+    "in_top_quintile_hurricane_tract": 108,
+    "median_km_nearest_medical_shelter_pending": 52.1143,
+    "occupancy_rate": 0.8084,
+    "occupancy_unrecorded": 2,
+    "snapshot_certified_beds": 39494.0
+  },
+  "contraflow_intersections": {
+    "counties": 8,
+    "in_zone": 13,
+    "points": 32
+  },
+  "dialysis_centers": {
+    "coordinates_confidence": {
+      "geocoded_census_exact": 242,
+      "geocoded_census_non_exact": 81,
+      "unmatched": 32
+    },
+    "stations_without_coordinates": 505
+  },
+  "evac_orders": {
+    "by_storm": {
+      "DORIAN mandatory": {
+        "announced": [
+          53.0,
+          59.0
+        ],
+        "contraflow": [
+          21.0,
+          21.0
+        ],
+        "effective": [
+          41.0,
+          41.0
+        ]
+      },
+      "IRMA mandatory": {
+        "announced": [
+          95.9,
+          95.9
+        ],
+        "contraflow": [
+          35.0,
+          35.0
+        ],
+        "effective": [
+          35.0,
+          35.0
+        ]
+      },
+      "MATTHEW mandatory": {
+        "announced": [
+          9.0,
+          33.0
+        ],
+        "contraflow": [
+          null,
+          null
+        ],
+        "effective": [
+          9.0,
+          33.0
+        ]
+      },
+      "MATTHEW voluntary": {
+        "announced": [
+          33.0,
+          57.0
+        ],
+        "contraflow": [
+          null,
+          null
+        ],
+        "effective": [
+          null,
+          null
+        ]
+      }
+    },
+    "effective_hours_before_ga_ts_winds_recorded": [
+      35.0,
+      41.0
+    ],
+    "orders": 4
+  },
+  "evacuation_zones": {
+    "assisted_living_beds_in_zone": 1884.0,
+    "assisted_living_in_zone": 78,
+    "care_facilities_in_zone": 26,
+    "population_by_zone": {
+      "A": 222567.0,
+      "B": 360949.0,
+      "C": 80233.0,
+      "D": 18032.0,
+      "X": 15603.0
+    },
+    "tracts_in_zone": 198
+  },
+  "gema_shelter_feed": {
+    "fields_dropped": 23,
+    "fields_kept": 16,
+    "rows": 0
+  },
+  "hazard_tracts": {
+    "cfld_imputed_outside_layer": 2588,
+    "coastal_flood_exposed": 182,
+    "nri_population": 10695030.0,
+    "vulnerability_tracts_without_hazard_row": 5,
+    "vulnerability_tracts_without_hazard_row_population": 0.0,
+    "without_vulnerability_tract": 0
+  },
+  "outage_events": {
+    "customers_unknown": 7,
+    "filings": 73,
+    "ga_filings": 47,
+    "storm_window_filings": 26
+  },
+  "overture_places": {
+    "ambulance_ems": {
+      "not_permanently_closed": 258,
+      "places": 272
+    },
+    "assisted_living": {
+      "not_permanently_closed": 421,
+      "places": 443
+    },
+    "home_health": {
+      "not_permanently_closed": 2037,
+      "places": 2064
+    },
+    "hospice": {
+      "not_permanently_closed": 375,
+      "places": 388
+    },
+    "medical_transport": {
+      "not_permanently_closed": 40,
+      "places": 40
+    },
+    "retirement_home": {
+      "not_permanently_closed": 1646,
+      "places": 1651
+    }
+  },
+  "power_dependent_counties": {
+    "counties_suppressed_1_11": {
+      "any_service": 0,
+      "dialysis": 9,
+      "home_health": 13,
+      "hospice": 44,
+      "medicare_benes": 0,
+      "oxygen": 6,
+      "power_dependent": 0
+    },
+    "dialysis_centers": 355,
+    "dialysis_live": 18026,
+    "dialysis_patients_per_station": 3.0265,
+    "dialysis_stations": 5956,
+    "facility_esrd_dialysis_any_dme_snapshot": 6009.0,
+    "power_dependent_live": 106561,
+    "power_dependent_snapshot": 92567.0
+  },
+  "rows": {
+    "assisted_living": 1894,
+    "care_facilities": 356,
+    "contraflow_intersections": 32,
+    "dialysis_centers": 355,
+    "evac_orders": 4,
+    "gema_shelter_feed": 0,
+    "hazard_tracts": 2791,
+    "outage_events": 73,
+    "overture_places": 4858,
+    "power_dependent_counties": 159,
+    "shelter_activation_history": 4590,
+    "storm_events": 6934,
+    "storm_history": 192
+  },
+  "shelter_activation_history": {
+    "FL": {
+      "activated": 538,
+      "activated_readiness_unrecorded": 281,
+      "activated_with_population": 62,
+      "population_reported": 3841.0,
+      "shelters": 2798
+    },
+    "GA": {
+      "activated": 205,
+      "activated_readiness_unrecorded": 93,
+      "activated_with_population": 41,
+      "population_reported": 1227.0,
+      "shelters": 1792
+    },
+    "ga_blank_pre_landfall_shelter": 1792,
+    "ga_evac_or_both_in_surge": 21,
+    "ga_never_activated": 1587,
+    "ga_stub_incident_rows": 56
+  },
+  "storm_events": {
+    "events": 6934,
+    "ga_events": 3423,
+    "ga_storms": 77,
+    "match": {
+      "external": 6347,
+      "imputed": 577,
+      "unrecorded": 10
+    },
+    "storms": 128,
+    "years": [
+      1996,
+      2025
+    ]
+  }
+}

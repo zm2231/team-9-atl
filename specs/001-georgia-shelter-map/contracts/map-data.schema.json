@@ -117,7 +117,12 @@
         },
         "households_no_vehicle": { "$ref": "#/$defs/SourcedValue" },
         "share_65_plus": { "$ref": "#/$defs/SourcedValue" },
-        "share_disability": { "$ref": "#/$defs/SourcedValue" }
+        "share_disability": { "$ref": "#/$defs/SourcedValue" },
+        "power_dependent": { "$ref": "#/$defs/SourcedValue" },
+        "oxygen": { "$ref": "#/$defs/SourcedValue" },
+        "dialysis_patients": { "$ref": "#/$defs/SourcedValue" },
+        "nursing_home_beds": { "$ref": "#/$defs/SourcedValue" },
+        "assisted_living_beds": { "$ref": "#/$defs/SourcedValue" }
       }
     }
   }

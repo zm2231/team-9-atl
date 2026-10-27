@@ -1,8 +1,8 @@
 # Deploying the agent
 
-The ADK agent in `agent/` runs on Cloud Run as `evac-readiness-agent` (project `qwiklabs-gcp-04-edc952746633`, region `us-east1`).
+The ADK agent in `agent/` runs on Cloud Run as `georgia-shelter-readiness` (project `qwiklabs-gcp-04-edc952746633`, region `us-east1`).
 
-- Live URL: https://evac-readiness-agent-hcodkdjhka-ue.a.run.app
+- Live URL: https://georgia-shelter-readiness-256576640429.us-east1.run.app (shared password: any username, password in secret `access-password`)
 - It serves the shelter map at `/` and the ADK REST API at `/apps`, `/run` and `/run_sse` (app `readiness_agent`).
 - Every push to `main` that touches `agent/`, `frontend/`, `deploy/`, `Dockerfile` or the workflow redeploys through `.github/workflows/deploy-agent.yml`. It can also be run by hand from the Actions tab.
 
@@ -69,4 +69,6 @@ Runtime settings (both `.env` and Cloud Run): `GOOGLE_GENAI_USE_VERTEXAI=TRUE`, 
 
 The agent reads `evac_prod`, a copy of the team's data that changes only when someone runs `deploy/refresh_evac_prod.sh`. The script copies snapshots of `evacuation_readiness` (`*_clean`, `*_flow_staging`) and all of `hurricane_history` into it; rerun it after either source changes. Tables are copied one at a time, so run it when nobody is mid-demo. Other inputs and model outputs are loaded into `evac_prod` directly, and the refresh script leaves them alone.
 
-The scenario tools read three tables that `refresh_evac_prod.sh` does not create: `scenario_season_county` (one row per county per outlook), `scenario_fix_ranking` and `scenario_batch` (every outlook × switch set × case, statewide and per county). Build or rebuild them with `cd agent && python -m readiness_agent.scenario.build.build_season` (needs BigQuery access; queries are capped at 100 MB billed). Until they exist, `season_county_risk` and `gap_sensitivity` return `status: "error"` with their `source`.
+The scenario tools read three tables that `refresh_evac_prod.sh` does not create: `scenario_season_county` (one row per county per outlook), `scenario_fix_ranking` and `scenario_batch` (every outlook × switch set × case, statewide and per county). Build or rebuild them with `cd agent && python -m readiness_agent.scenario.build.build_season` (needs BigQuery access; queries are capped at 100 MB billed). `gap_sensitivity` returns `status: "error"` with its `source` until they exist. `python -m readiness_agent.scenario.build.build_siting` writes `scenario_siting` (candidate medical-shelter sites ranked by modelled reduction, read by `recommend_sites`), refreshes `data/siting_candidates.json` and creates the empty `scenario_site_updates` table that `record_site_update` writes to; it needs `shapely` and BigQuery access, and its query is capped at 100 MB billed.
+
+Precomputed demo reports live in `scenario_reports` (report contract v1, served by `get_report`). Rebuild them after `build_season` or any model change with `cd agent && CLOUDSDK_PYTHON=$(gcloud info --format='value(basic.python_location)') python -m readiness_agent.scenario.build.build_reports`; `CLOUDSDK_PYTHON` keeps `bq` off the agent's virtualenv.

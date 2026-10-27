@@ -199,3 +199,15 @@ def test_committed_surge_csv_covers_every_shelter():
     lookup = load_surge_lookup()
     assert len(lookup) == 1792
     assert {r["status"] for r in lookup.values()} <= {"inundated", "dry", "levee"}
+
+
+def test_counties_carry_registry_people_with_sources():
+    from readiness_agent.map_data import SRC_EMPOWER
+
+    people = {"13001": {"county_fips": "13001", "power_dependent": 120, "oxygen": 30,
+                        "dialysis_patients": 12, "nursing_home_beds": 80,
+                        "assisted_living_beds": None}}
+    c = {r["county_fips"]: r for r in build_payload([], [], COUNTIES, county_people=people)["counties"]}
+    assert c["13001"]["power_dependent"] == {"value": 120.0, "source": SRC_EMPOWER, "kind": "registry"}
+    assert c["13001"]["assisted_living_beds"]["value"] is None
+    assert c["13157"]["oxygen"] == {"value": None, "source": SRC_EMPOWER, "kind": "registry"}

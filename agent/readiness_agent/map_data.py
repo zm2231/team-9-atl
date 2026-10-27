@@ -7,6 +7,7 @@ a blank record is "nobody wrote it down", never "no" (Constitution I).
 from __future__ import annotations
 
 import csv
+import json
 import time
 from datetime import datetime, timezone
 from functools import cache
@@ -24,6 +25,17 @@ SRC_SHELTERS = "FEMA NSS registry · shelters_clean"
 SRC_ACS = "ACS 5-yr · vulnerability_tracts_clean"
 SRC_SVI = "ACS survey estimate via CDC SVI · vulnerability_tracts_clean"
 SRC_SLOSH = "NOAA NHC storm-surge maps (SLOSH MOM v4, high tide)"
+SRC_EMPOWER = "HHS emPOWER · power_dependent_counties_clean"
+SRC_CMS_BEDS = "CMS certified beds · care_facilities_clean"
+SRC_AL_BEDS = "GA licensed assisted-living beds · ext_ga_assisted_living"
+COUNTY_PEOPLE_JSON = Path(__file__).resolve().parent / "scenario" / "data" / "counties.json"
+REGISTRY_FIELDS = (
+    ("power_dependent", SRC_EMPOWER),
+    ("oxygen", SRC_EMPOWER),
+    ("dialysis_patients", SRC_EMPOWER),
+    ("nursing_home_beds", SRC_CMS_BEDS),
+    ("assisted_living_beds", SRC_AL_BEDS),
+)
 
 # Built by scripts/derive_shelter_surge.py: worst-case surge class within ~100 m of each shelter.
 SURGE_CSV = Path(__file__).resolve().parent / "data" / "shelter_surge_slosh.csv"
@@ -185,18 +197,34 @@ def _people(tracts: list[Row]) -> dict:
     }
 
 
+@cache
+def _county_people() -> dict[str, dict]:
+    rows = json.loads(COUNTY_PEOPLE_JSON.read_text())
+    return {r["county_fips"]: r for r in (rows if isinstance(rows, list) else rows["counties"])}
+
+
+def _registry_people(fips: str, people: Mapping[str, dict]) -> dict:
+    row = people.get(fips, {})
+    return {
+        key: _sourced(float(row[key]) if row.get(key) is not None else None, src, "registry")
+        for key, src in REGISTRY_FIELDS
+    }
+
+
 def build_payload(
     shelter_rows: Iterable[Row],
     tract_rows: Iterable[Row],
     counties: Iterable[tuple[str, str]],
     generated_at: datetime | None = None,
     surge_lookup: SurgeLookup | None = None,
+    county_people: Mapping[str, dict] | None = None,
 ) -> dict:
     """Pure transform from query rows to the map-data/v1 payload. Never edits or drops a row.
 
     surge_lookup defaults to the committed NOAA CSV; pass {} to see registry values only.
     """
     shelters = [shelter_record(r, surge_lookup) for r in shelter_rows]
+    people = _county_people() if county_people is None else county_people
     tracts_by_county: dict[str, list[Row]] = {}
     for t in tract_rows:
         tracts_by_county.setdefault(str(t["geo_id"])[:5], []).append(t)
@@ -222,6 +250,7 @@ def build_payload(
             record[out_name] = _flag_counts(mine, key)
         record["in_surge_from_noaa"] = sum(1 for s in mine if s["in_surge_source"] == "noaa_slosh")
         record.update(_people(tracts_by_county.get(fips, [])))
+        record.update(_registry_people(fips, people))
         county_records.append(record)
 
     return {

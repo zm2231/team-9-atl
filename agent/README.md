@@ -5,8 +5,10 @@ serves the ADK API and the built frontend from one origin. The app is `readiness
 
 - `agent.py`: Gemini 3 with Grounding with Google Maps, the purpose-built BigQuery tools in
   `evacuation_tools.py`, and the Google-managed BigQuery MCP server (read-only `execute_sql_readonly`).
-- `callbacks.py` / `map_data.py`: the frontend sends `LOAD_MAP_DATA v1` and a `before_agent_callback`
-  answers it from BigQuery with no model call. See
+- `map_data.py`: `GET /map-data` (in `server.py`) serves the shelters, tracts and counties for the map
+  from memory, gzipped; it is built from BigQuery when the service starts and refreshed in the
+  background every 10 minutes, with no model call or session. `callbacks.py` answers the
+  `CHECK_WHEELCHAIR v1` command the same way. See
   [`specs/001-georgia-shelter-map`](../specs/001-georgia-shelter-map/) for the contract.
 
 Everything reads dataset `evac_prod` (`EVAC_DATASET`). The runtime identity needs

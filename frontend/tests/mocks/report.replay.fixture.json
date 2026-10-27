@@ -1,0 +1,886 @@
+{
+ "report_version": 1,
+ "scope": "run",
+ "subject": {
+  "storm": "Irma 2017",
+  "sid": "2017242N16333",
+  "replay": true
+ },
+ "season": null,
+ "sections": {
+  "who_cannot_leave": {
+   "status": "not_applicable",
+   "source": "",
+   "figures": [],
+   "items": [],
+   "note": null,
+   "reason": "Ask for a county plan for tracts and facilities."
+  },
+  "power_outage": {
+   "status": "ok",
+   "source": "EAGLE-I observed peak outage per county (ext_eaglei_county_storm_2014_2025) applied to HHS emPOWER, CMS and ACS county counts",
+   "figures": [
+    {
+     "key": "counties_outage25",
+     "label": "Counties with 25%+ outage (observed)",
+     "unit": "count",
+     "provenance": "registry",
+     "source": "EAGLE-I observed peak outage per county (ext_eaglei_county_storm_2014_2025) applied to HHS emPOWER, CMS and ACS county counts",
+     "value": 88,
+     "range": null,
+     "range_kind": null
+    }
+   ],
+   "items": [
+    {
+     "county_fips": "13003",
+     "county_name": "Atkinson",
+     "outage_share": 0.9932
+    },
+    {
+     "county_fips": "13001",
+     "county_name": "Appling",
+     "outage_share": 0.9781
+    },
+    {
+     "county_fips": "13089",
+     "county_name": "Dekalb",
+     "outage_share": 0.9669
+    },
+    {
+     "county_fips": "13039",
+     "county_name": "Camden",
+     "outage_share": 0.9333
+    },
+    {
+     "county_fips": "13125",
+     "county_name": "Glascock",
+     "outage_share": 0.9207
+    },
+    {
+     "county_fips": "13199",
+     "county_name": "Meriwether",
+     "outage_share": 0.9071
+    },
+    {
+     "county_fips": "13161",
+     "county_name": "Jeff Davis",
+     "outage_share": 0.8869
+    },
+    {
+     "county_fips": "13229",
+     "county_name": "Pierce",
+     "outage_share": 0.8761
+    },
+    {
+     "county_fips": "13145",
+     "county_name": "Harris",
+     "outage_share": 0.8449
+    },
+    {
+     "county_fips": "13155",
+     "county_name": "Irwin",
+     "outage_share": 0.8418
+    },
+    {
+     "county_fips": "13273",
+     "county_name": "Terrell",
+     "outage_share": 0.8365
+    },
+    {
+     "county_fips": "13305",
+     "county_name": "Wayne",
+     "outage_share": 0.8245
+    },
+    {
+     "county_fips": "13261",
+     "county_name": "Sumter",
+     "outage_share": 0.7477
+    },
+    {
+     "county_fips": "13133",
+     "county_name": "Greene",
+     "outage_share": 0.7371
+    },
+    {
+     "county_fips": "13249",
+     "county_name": "Schley",
+     "outage_share": 0.7304
+    },
+    {
+     "county_fips": "13141",
+     "county_name": "Hancock",
+     "outage_share": 0.7283
+    },
+    {
+     "county_fips": "13079",
+     "county_name": "Crawford",
+     "outage_share": 0.7234
+    },
+    {
+     "county_fips": "13009",
+     "county_name": "Baldwin",
+     "outage_share": 0.6857
+    },
+    {
+     "county_fips": "13187",
+     "county_name": "Lumpkin",
+     "outage_share": 0.6731
+    },
+    {
+     "county_fips": "13265",
+     "county_name": "Taliaferro",
+     "outage_share": 0.6544
+    },
+    {
+     "county_fips": "13011",
+     "county_name": "Banks",
+     "outage_share": 0.6497
+    },
+    {
+     "county_fips": "13301",
+     "county_name": "Warren",
+     "outage_share": 0.6425
+    },
+    {
+     "county_fips": "13037",
+     "county_name": "Calhoun",
+     "outage_share": 0.6284
+    },
+    {
+     "county_fips": "13267",
+     "county_name": "Tattnall",
+     "outage_share": 0.62
+    },
+    {
+     "county_fips": "13005",
+     "county_name": "Bacon",
+     "outage_share": 0.6065
+    },
+    {
+     "county_fips": "13299",
+     "county_name": "Ware",
+     "outage_share": 0.6018
+    },
+    {
+     "county_fips": "13191",
+     "county_name": "Mcintosh",
+     "outage_share": 0.5961
+    },
+    {
+     "county_fips": "13311",
+     "county_name": "White",
+     "outage_share": 0.5928
+    },
+    {
+     "county_fips": "13319",
+     "county_name": "Wilkinson",
+     "outage_share": 0.5679
+    },
+    {
+     "county_fips": "13159",
+     "county_name": "Jasper",
+     "outage_share": 0.5628
+    },
+    {
+     "county_fips": "13163",
+     "county_name": "Jefferson",
+     "outage_share": 0.5602
+    },
+    {
+     "county_fips": "13315",
+     "county_name": "Wilcox",
+     "outage_share": 0.5518
+    },
+    {
+     "county_fips": "13137",
+     "county_name": "Habersham",
+     "outage_share": 0.5499
+    },
+    {
+     "county_fips": "13243",
+     "county_name": "Randolph",
+     "outage_share": 0.5484
+    },
+    {
+     "county_fips": "13207",
+     "county_name": "Monroe",
+     "outage_share": 0.5417
+    },
+    {
+     "county_fips": "13109",
+     "county_name": "Evans",
+     "outage_share": 0.5402
+    },
+    {
+     "county_fips": "13021",
+     "county_name": "Bibb",
+     "outage_share": 0.5383
+    },
+    {
+     "county_fips": "13227",
+     "county_name": "Pickens",
+     "outage_share": 0.537
+    },
+    {
+     "county_fips": "13043",
+     "county_name": "Candler",
+     "outage_share": 0.53
+    },
+    {
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "outage_share": 0.5291
+    },
+    {
+     "county_fips": "13197",
+     "county_name": "Marion",
+     "outage_share": 0.5196
+    },
+    {
+     "county_fips": "13023",
+     "county_name": "Bleckley",
+     "outage_share": 0.5182
+    },
+    {
+     "county_fips": "13239",
+     "county_name": "Quitman",
+     "outage_share": 0.5146
+    },
+    {
+     "county_fips": "13139",
+     "county_name": "Hall",
+     "outage_share": 0.5064
+    },
+    {
+     "county_fips": "13181",
+     "county_name": "Lincoln",
+     "outage_share": 0.4982
+    },
+    {
+     "county_fips": "13065",
+     "county_name": "Clinch",
+     "outage_share": 0.4973
+    },
+    {
+     "county_fips": "13069",
+     "county_name": "Coffee",
+     "outage_share": 0.495
+    },
+    {
+     "county_fips": "13123",
+     "county_name": "Gilmer",
+     "outage_share": 0.4919
+    },
+    {
+     "county_fips": "13247",
+     "county_name": "Rockdale",
+     "outage_share": 0.488
+    },
+    {
+     "county_fips": "13271",
+     "county_name": "Telfair",
+     "outage_share": 0.482
+    },
+    {
+     "county_fips": "13035",
+     "county_name": "Butts",
+     "outage_share": 0.4819
+    },
+    {
+     "county_fips": "13189",
+     "county_name": "Mcduffie",
+     "outage_share": 0.4728
+    },
+    {
+     "county_fips": "13231",
+     "county_name": "Pike",
+     "outage_share": 0.4626
+    },
+    {
+     "county_fips": "13091",
+     "county_name": "Dodge",
+     "outage_share": 0.4588
+    },
+    {
+     "county_fips": "13135",
+     "county_name": "Gwinnett",
+     "outage_share": 0.4523
+    },
+    {
+     "county_fips": "13103",
+     "county_name": "Effingham",
+     "outage_share": 0.4474
+    },
+    {
+     "county_fips": "13235",
+     "county_name": "Pulaski",
+     "outage_share": 0.4399
+    },
+    {
+     "county_fips": "13131",
+     "county_name": "Grady",
+     "outage_share": 0.426
+    },
+    {
+     "county_fips": "13277",
+     "county_name": "Tift",
+     "outage_share": 0.419
+    },
+    {
+     "county_fips": "13289",
+     "county_name": "Twiggs",
+     "outage_share": 0.415
+    },
+    {
+     "county_fips": "13087",
+     "county_name": "Decatur",
+     "outage_share": 0.406
+    },
+    {
+     "county_fips": "13019",
+     "county_name": "Berrien",
+     "outage_share": 0.4051
+    },
+    {
+     "county_fips": "13259",
+     "county_name": "Stewart",
+     "outage_share": 0.3991
+    },
+    {
+     "county_fips": "13263",
+     "county_name": "Talbot",
+     "outage_share": 0.3872
+    },
+    {
+     "county_fips": "13171",
+     "county_name": "Lamar",
+     "outage_share": 0.3856
+    },
+    {
+     "county_fips": "13225",
+     "county_name": "Peach",
+     "outage_share": 0.3823
+    },
+    {
+     "county_fips": "13059",
+     "county_name": "Clarke",
+     "outage_share": 0.3725
+    },
+    {
+     "county_fips": "13093",
+     "county_name": "Dooly",
+     "outage_share": 0.3703
+    },
+    {
+     "county_fips": "13121",
+     "county_name": "Fulton",
+     "outage_share": 0.3552
+    },
+    {
+     "county_fips": "13063",
+     "county_name": "Clayton",
+     "outage_share": 0.3508
+    },
+    {
+     "county_fips": "13167",
+     "county_name": "Johnson",
+     "outage_share": 0.3462
+    },
+    {
+     "county_fips": "13217",
+     "county_name": "Newton",
+     "outage_share": 0.3301
+    },
+    {
+     "county_fips": "13101",
+     "county_name": "Echols",
+     "outage_share": 0.3234
+    },
+    {
+     "county_fips": "13211",
+     "county_name": "Morgan",
+     "outage_share": 0.319
+    },
+    {
+     "county_fips": "13215",
+     "county_name": "Muscogee",
+     "outage_share": 0.3105
+    },
+    {
+     "county_fips": "13179",
+     "county_name": "Liberty",
+     "outage_share": 0.3081
+    },
+    {
+     "county_fips": "13007",
+     "county_name": "Baker",
+     "outage_share": 0.3076
+    },
+    {
+     "county_fips": "13257",
+     "county_name": "Stephens",
+     "outage_share": 0.2925
+    },
+    {
+     "county_fips": "13031",
+     "county_name": "Bulloch",
+     "outage_share": 0.2909
+    },
+    {
+     "county_fips": "13173",
+     "county_name": "Lanier",
+     "outage_share": 0.2905
+    },
+    {
+     "county_fips": "13085",
+     "county_name": "Dawson",
+     "outage_share": 0.2876
+    },
+    {
+     "county_fips": "13185",
+     "county_name": "Lowndes",
+     "outage_share": 0.2779
+    },
+    {
+     "county_fips": "13255",
+     "county_name": "Spalding",
+     "outage_share": 0.2696
+    },
+    {
+     "county_fips": "13107",
+     "county_name": "Emanuel",
+     "outage_share": 0.2672
+    },
+    {
+     "county_fips": "13177",
+     "county_name": "Lee",
+     "outage_share": 0.2657
+    },
+    {
+     "county_fips": "13149",
+     "county_name": "Heard",
+     "outage_share": 0.2631
+    },
+    {
+     "county_fips": "13209",
+     "county_name": "Montgomery",
+     "outage_share": 0.2586
+    },
+    {
+     "county_fips": "13183",
+     "county_name": "Long",
+     "outage_share": 0.2536
+    },
+    {
+     "county_fips": "13013",
+     "county_name": "Barrow",
+     "outage_share": 0.2366
+    },
+    {
+     "county_fips": "13279",
+     "county_name": "Toombs",
+     "outage_share": 0.2269
+    },
+    {
+     "county_fips": "13175",
+     "county_name": "Laurens",
+     "outage_share": 0.2253
+    },
+    {
+     "county_fips": "13073",
+     "county_name": "Columbia",
+     "outage_share": 0.2233
+    },
+    {
+     "county_fips": "13275",
+     "county_name": "Thomas",
+     "outage_share": 0.219
+    },
+    {
+     "county_fips": "13017",
+     "county_name": "Ben Hill",
+     "outage_share": 0.2188
+    },
+    {
+     "county_fips": "13151",
+     "county_name": "Henry",
+     "outage_share": 0.2179
+    },
+    {
+     "county_fips": "13297",
+     "county_name": "Walton",
+     "outage_share": 0.2135
+    },
+    {
+     "county_fips": "13157",
+     "county_name": "Jackson",
+     "outage_share": 0.2109
+    },
+    {
+     "county_fips": "13245",
+     "county_name": "Richmond",
+     "outage_share": 0.1916
+    },
+    {
+     "county_fips": "13153",
+     "county_name": "Houston",
+     "outage_share": 0.1822
+    },
+    {
+     "county_fips": "13219",
+     "county_name": "Oconee",
+     "outage_share": 0.1822
+    },
+    {
+     "county_fips": "13253",
+     "county_name": "Seminole",
+     "outage_share": 0.1736
+    },
+    {
+     "county_fips": "13075",
+     "county_name": "Cook",
+     "outage_share": 0.1567
+    },
+    {
+     "county_fips": "13195",
+     "county_name": "Madison",
+     "outage_share": 0.1562
+    },
+    {
+     "county_fips": "13321",
+     "county_name": "Worth",
+     "outage_share": 0.154
+    },
+    {
+     "county_fips": "13119",
+     "county_name": "Franklin",
+     "outage_share": 0.1393
+    },
+    {
+     "county_fips": "13285",
+     "county_name": "Troup",
+     "outage_share": 0.1391
+    },
+    {
+     "county_fips": "13029",
+     "county_name": "Bryan",
+     "outage_share": 0.1346
+    },
+    {
+     "county_fips": "13303",
+     "county_name": "Washington",
+     "outage_share": 0.1326
+    },
+    {
+     "county_fips": "13083",
+     "county_name": "Dade",
+     "outage_share": 0.1297
+    },
+    {
+     "county_fips": "13309",
+     "county_name": "Wheeler",
+     "outage_share": 0.1276
+    },
+    {
+     "county_fips": "13077",
+     "county_name": "Coweta",
+     "outage_share": 0.1222
+    },
+    {
+     "county_fips": "13027",
+     "county_name": "Brooks",
+     "outage_share": 0.121
+    },
+    {
+     "county_fips": "13113",
+     "county_name": "Fayette",
+     "outage_share": 0.1187
+    },
+    {
+     "county_fips": "13033",
+     "county_name": "Burke",
+     "outage_share": 0.1167
+    },
+    {
+     "county_fips": "13055",
+     "county_name": "Chattooga",
+     "outage_share": 0.1139
+    },
+    {
+     "county_fips": "13205",
+     "county_name": "Mitchell",
+     "outage_share": 0.1133
+    },
+    {
+     "county_fips": "13283",
+     "county_name": "Treutlen",
+     "outage_share": 0.1073
+    },
+    {
+     "county_fips": "13293",
+     "county_name": "Upson",
+     "outage_share": 0.0811
+    },
+    {
+     "county_fips": "13221",
+     "county_name": "Oglethorpe",
+     "outage_share": 0.0746
+    },
+    {
+     "county_fips": "13317",
+     "county_name": "Wilkes",
+     "outage_share": 0.0648
+    },
+    {
+     "county_fips": "13071",
+     "county_name": "Colquitt",
+     "outage_share": 0.0618
+    },
+    {
+     "county_fips": "13201",
+     "county_name": "Miller",
+     "outage_share": 0.0614
+    },
+    {
+     "county_fips": "13147",
+     "county_name": "Hart",
+     "outage_share": 0.0566
+    },
+    {
+     "county_fips": "13105",
+     "county_name": "Elbert",
+     "outage_share": 0.0549
+    },
+    {
+     "county_fips": "13057",
+     "county_name": "Cherokee",
+     "outage_share": 0.0537
+    },
+    {
+     "county_fips": "13053",
+     "county_name": "Chattahoochee",
+     "outage_share": 0.0516
+    },
+    {
+     "county_fips": "13015",
+     "county_name": "Bartow",
+     "outage_share": 0.0515
+    },
+    {
+     "county_fips": "13165",
+     "county_name": "Jenkins",
+     "outage_share": 0.0415
+    },
+    {
+     "county_fips": "13099",
+     "county_name": "Early",
+     "outage_share": 0.0327
+    },
+    {
+     "county_fips": "13095",
+     "county_name": "Dougherty",
+     "outage_share": 0.032
+    },
+    {
+     "county_fips": "13045",
+     "county_name": "Carroll",
+     "outage_share": 0.0298
+    },
+    {
+     "county_fips": "13115",
+     "county_name": "Floyd",
+     "outage_share": 0.0289
+    },
+    {
+     "county_fips": "13117",
+     "county_name": "Forsyth",
+     "outage_share": 0.0258
+    },
+    {
+     "county_fips": "13143",
+     "county_name": "Haralson",
+     "outage_share": 0.0237
+    },
+    {
+     "county_fips": "13097",
+     "county_name": "Douglas",
+     "outage_share": 0.0222
+    },
+    {
+     "county_fips": "13047",
+     "county_name": "Catoosa",
+     "outage_share": 0.0208
+    },
+    {
+     "county_fips": "13129",
+     "county_name": "Gordon",
+     "outage_share": 0.0196
+    },
+    {
+     "county_fips": "13067",
+     "county_name": "Cobb",
+     "outage_share": 0.0194
+    },
+    {
+     "county_fips": "13295",
+     "county_name": "Walker",
+     "outage_share": 0.018
+    },
+    {
+     "county_fips": "13251",
+     "county_name": "Screven",
+     "outage_share": 0.0155
+    },
+    {
+     "county_fips": "13313",
+     "county_name": "Whitfield",
+     "outage_share": 0.0108
+    },
+    {
+     "county_fips": "13233",
+     "county_name": "Polk",
+     "outage_share": 0.0094
+    },
+    {
+     "county_fips": "13223",
+     "county_name": "Paulding",
+     "outage_share": 0.0088
+    },
+    {
+     "county_fips": "13213",
+     "county_name": "Murray",
+     "outage_share": 0.0028
+    },
+    {
+     "county_fips": "13081",
+     "county_name": "Crisp",
+     "outage_share": 0.0004
+    },
+    {
+     "county_fips": "13111",
+     "county_name": "Fannin",
+     "outage_share": 0.0002
+    },
+    {
+     "county_fips": "13281",
+     "county_name": "Towns",
+     "outage_share": 0.0002
+    },
+    {
+     "county_fips": "13291",
+     "county_name": "Union",
+     "outage_share": 0.0
+    }
+   ],
+   "note": "Observed peak outage share per county in Irma 2017. 11 counties had a capped whole-county reading and are left out, so every figure is a floor."
+  },
+  "people_at_risk": {
+   "status": "ok",
+   "source": "EAGLE-I observed peak outage per county (ext_eaglei_county_storm_2014_2025) applied to HHS emPOWER, CMS and ACS county counts",
+   "figures": [
+    {
+     "key": "power_dependent_at_risk",
+     "label": "Power-dependent residents losing power",
+     "unit": "people",
+     "provenance": "registry",
+     "source": "EAGLE-I observed peak outage per county (ext_eaglei_county_storm_2014_2025) applied to HHS emPOWER, CMS and ACS county counts",
+     "value": 32382,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "oxygen_users_at_risk",
+     "label": "Oxygen users losing power",
+     "unit": "people",
+     "provenance": "registry",
+     "source": "EAGLE-I observed peak outage per county (ext_eaglei_county_storm_2014_2025) applied to HHS emPOWER, CMS and ACS county counts",
+     "value": 8103,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "dialysis_patients_at_risk",
+     "label": "Dialysis patients whose centre is down",
+     "unit": "people",
+     "provenance": "registry",
+     "source": "EAGLE-I observed peak outage per county (ext_eaglei_county_storm_2014_2025) applied to HHS emPOWER, CMS and ACS county counts",
+     "value": 4315,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "facility_beds_exposed",
+     "label": "Nursing-home and assisted-living beds exposed",
+     "unit": "beds",
+     "provenance": "registry",
+     "source": "EAGLE-I observed peak outage per county (ext_eaglei_county_storm_2014_2025) applied to HHS emPOWER, CMS and ACS county counts",
+     "value": 18980,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "needing_transport_no_vehicle",
+     "label": "Needing transport: no vehicle (65+ households)",
+     "unit": "people",
+     "provenance": "registry",
+     "source": "EAGLE-I observed peak outage per county (ext_eaglei_county_storm_2014_2025) applied to HHS emPOWER, CMS and ACS county counts",
+     "value": 2952,
+     "range": null,
+     "range_kind": null
+    }
+   ],
+   "items": [],
+   "note": "Lacking shelter and needing transport are separate needs and are never added: one person can be in both. These figures are planning arithmetic on county totals and stated assumptions (share seeking a seat, Florida inflow, patients per station), not counts of unique people."
+  },
+  "where_they_would_go": {
+   "status": "not_applicable",
+   "source": "",
+   "figures": [],
+   "items": [],
+   "note": null,
+   "reason": "A replay has no drawn track to match destinations."
+  },
+  "what_to_fix": {
+   "status": "not_applicable",
+   "source": "",
+   "figures": [],
+   "items": [],
+   "note": null,
+   "reason": "Compare against a county plan's fix list."
+  },
+  "storm_history": {
+   "status": "ok",
+   "source": "EAGLE-I observed peak outage per county (ext_eaglei_county_storm_2014_2025) applied to HHS emPOWER, CMS and ACS county counts",
+   "figures": [],
+   "items": [],
+   "note": "Stress test: Irma 2017's observed outages applied to today's residents and facilities, with no model. The outage model predicted 11% average outage across its 191 Georgia and Florida counties against 38% observed."
+  },
+  "planner_updates": {
+   "status": "ok",
+   "source": "scenario_site_updates",
+   "figures": [],
+   "items": [],
+   "note": "No planner updates in effect."
+  },
+  "could_not_tell": {
+   "status": "ok",
+   "source": "EAGLE-I observed peak outage per county (ext_eaglei_county_storm_2014_2025) applied to HHS emPOWER, CMS and ACS county counts",
+   "figures": [],
+   "items": [
+    "How long power stayed off; the replay uses each county's peak outage.",
+    "Whether today's grid would fail the same way it did in this storm."
+   ],
+   "note": null
+  },
+  "audit": {
+   "status": "not_applicable",
+   "source": "",
+   "figures": [],
+   "items": [],
+   "note": null,
+   "reason": "The audit compares a county plan's ranked tracts."
+  }
+ },
+ "source": "EAGLE-I observed peak outage per county (ext_eaglei_county_storm_2014_2025) applied to HHS emPOWER, CMS and ACS county counts"
+}

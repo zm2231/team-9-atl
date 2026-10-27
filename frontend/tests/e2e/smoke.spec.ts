@@ -8,11 +8,11 @@ test("demo path: map → hover → hurricane → receiving list → grounded ans
   await expect(page.locator("path.county")).toHaveCount(159);
   await expect(page.locator("circle.shelter").first()).toBeVisible({ timeout: 20_000 });
 
-  // The details panel is collapsed by default; open it explicitly (T086).
-  const showDetails = page.getByRole("button", { name: /Show details/ });
-  await expect(showDetails).toBeVisible();
-  await expect(page.getByTestId("county-summary")).toHaveCount(0);
-  await showDetails.click();
+  // The side panel opens on Chat; Details is a tab (feature 003 FR-009).
+  const detailsTab = page.getByRole("tab", { name: /^Details/ });
+  await expect(page.getByRole("tab", { name: "Chat" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByTestId("county-summary")).toBeHidden();
+  await detailsTab.click();
 
   // 2. Focus a county (keyboard path; same handler as hover) → summary with all three counts.
   await page.locator('path.county[data-fips="13157"]').focus();
@@ -34,15 +34,16 @@ test("demo path: map → hover → hurricane → receiving list → grounded ans
   }
   await page.mouse.up();
 
-  // 4. Affected summary and receiving list, labeled straight-line with the 80 km cutoff.
-  // Drawing did not close the panel the user opened.
-  await expect(page.getByRole("button", { name: "◂ Hide" })).toBeVisible();
+  // 4. Affected summary and receiving list, labeled straight-line with the 50 mi (80 km) cutoff.
+  // Drawing did not switch away from the tab the user opened.
+  await expect(detailsTab).toHaveAttribute("aria-selected", "true");
   await expect(page.getByTestId("affected-summary")).toContainText("Category 3");
   await expect(page.getByTestId("affected-summary")).toContainText("Illustrative scenario — not a forecast");
-  await expect(page.getByText("Within reach:")).toContainText("80 km");
+  await expect(page.getByText("Within reach:")).toContainText("50 mi");
   await expect(page.getByTestId("receiving-list")).toContainText("Straight-line distance");
 
   // 5–6. Ask; sources appear under the live segment and the referenced shelter is highlighted.
+  await page.getByRole("tab", { name: "Chat" }).click();
   await page.getByLabel("Question for the agent").fill("Which of these receiving shelters can actually take a wheelchair?");
   await page.getByRole("button", { name: "Send" }).click();
   const answer = page.getByTestId("answer").last();

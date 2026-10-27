@@ -1,8 +1,9 @@
 import { Fragment, useEffect } from "react";
 import { exclusionNote, flagClass, flagCountsLine, flagLabel, formatNumber, NOAA_SURGE_SOURCE } from "../../lib/flags";
-import { capacitySummary, listFlagCounts } from "../../lib/simulation";
+import { capacitySummary, listFlagCounts, reasonFor } from "../../lib/simulation";
 import { useWheelchairChecker } from "../../lib/useWheelchairChecker";
 import type { HurricaneScenario, Shelter, WheelchairCheck } from "../../lib/types";
+import { formatDistance, unitLabel, type DistanceUnit } from "../../lib/units";
 import { useStore } from "../../state/store";
 import { useScenario } from "../../state/scenario";
 import { MapsWheelchair, SurgeFlag } from "../FlagNotes";
@@ -16,6 +17,7 @@ export const MAPS_AUTO_CHECK = 3;
 export function ReceivingListView({
   scenario,
   shelterById,
+  unit,
   onSelect,
   wheelchairChecks = new Map(),
   onCheckWheelchair,
@@ -24,6 +26,7 @@ export function ReceivingListView({
 }: {
   scenario: HurricaneScenario;
   shelterById: Map<string, Shelter>;
+  unit: DistanceUnit;
   onSelect: (id: string) => void;
   wheelchairChecks?: Map<string, WheelchairCheck>;
   onCheckWheelchair?: (ids: string[]) => void;
@@ -50,12 +53,12 @@ export function ReceivingListView({
       <h2>Where people would go</h2>
       {rows.length === 0 ? (
         <p data-testid="receiving-empty">
-          No shelters within {scenario.cutoff_km} km outside the affected area — try raising the reach cutoff.
+          No shelters within {formatDistance(scenario.cutoff_km, unit)} outside the affected area — try raising the reach cutoff.
         </p>
       ) : (
         <>
           <p className="small" data-testid="receiving-header">
-            {rows.length} shelters within {scenario.cutoff_km} km outside the affected area · wheelchair access:{" "}
+            {rows.length} shelters within {formatDistance(scenario.cutoff_km, unit)} outside the affected area · wheelchair access:{" "}
             {flagCountsLine(listFlagCounts(shelters, "wheelchair_accessible"))}
           </p>
           {checked > 0 && (
@@ -92,7 +95,7 @@ export function ReceivingListView({
                 <th>#</th>
                 <th>Shelter</th>
                 <th>Capacity</th>
-                <th title="Distance (straight-line)">km*</th>
+                <th title="Distance (straight-line)">{unitLabel(unit)}*</th>
                 <th>Records</th>
               </tr>
             </thead>
@@ -109,7 +112,7 @@ export function ReceivingListView({
                     <div className="muted">{s.county_name}</div>
                   </td>
                   <td>{s.evacuation_capacity === null ? "Not recorded" : formatNumber(s.evacuation_capacity)}</td>
-                  <td>{Math.round(r.distance_km.value ?? 0)} km</td>
+                  <td>{formatDistance(r.distance_km.value ?? 0, unit)}</td>
                   <td className="receiving__flags">
                     <div>
                       <span className="muted">Wheelchair</span>{" "}
@@ -130,7 +133,7 @@ export function ReceivingListView({
                 </tr>
                 <tr onClick={() => onSelect(s.shelter_id)} className="receiving__reason">
                   <td />
-                  <td colSpan={4}>{r.reason}</td>
+                  <td colSpan={4}>{reasonFor(s, r, scenario.cutoff_km, unit)}</td>
                 </tr>
                 </Fragment>
                 );
@@ -153,7 +156,7 @@ export function ReceivingListView({
 
 /** Receiving shelters: within reach, sorted by capacity (FR-018a–d). */
 export default function ReceivingList() {
-  const { dispatch, shelterById } = useStore();
+  const { state, dispatch, shelterById } = useStore();
   const scenario = useScenario();
   const { checks, checking, error, check, checkOnce } = useWheelchairChecker();
 
@@ -172,6 +175,7 @@ export default function ReceivingList() {
     <ReceivingListView
       scenario={scenario}
       shelterById={shelterById}
+      unit={state.unit}
       onSelect={(id) => dispatch({ type: "selectShelter", id })}
       wheelchairChecks={checks}
       onCheckWheelchair={check}
