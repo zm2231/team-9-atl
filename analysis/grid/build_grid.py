@@ -5,40 +5,61 @@ from pathlib import Path
 
 import duckdb
 
+import storm_outages
+
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "out"
 EXT = Path(os.environ.get("GRID_EXTDATA", Path.home() / "work/extdata"))
 C4 = Path(os.environ.get("GRID_C4DATA", Path.home() / "work/c4data"))
 
-STORM_SUMMARY = EXT / "eagle_i/ga_fl_storm_outage_summary.parquet"
+OUTAGES = EXT / "eagle_i/ga_fl_outages_15min.parquet"
+COUNTY_CUSTOMERS = EXT / "eagle_i/ga_fl_county_customers.parquet"
+IBTRACS = EXT / "ibtracs/ibtracs_na_within800km_ga.parquet"
 EIA_RELIABILITY = EXT / "eia861/eia861_reliability_ga_fl.parquet"
 EIA_TERRITORY = EXT / "eia861/eia861_service_territory_ga_fl.parquet"
 OE417 = EXT / "oe417/oe417_ga_fl_weather_events.csv"
 COUNTIES = C4 / "GA/power_dependent_counties/data.parquet"
-INPUTS = (STORM_SUMMARY, EIA_RELIABILITY, EIA_TERRITORY, OE417, COUNTIES)
+INPUTS = (OUTAGES, COUNTY_CUSTOMERS, IBTRACS, EIA_RELIABILITY, EIA_TERRITORY, OE417, COUNTIES)
 
 HIT_SHARE = 0.10
-MILTON_ARRIVAL_UTC = "2024-10-10 00:00:00"
+STORM_SEASONS = (2018, 2025)
+STORM_DISTANCE_KM = 250
+WINDOW_TAIL_DAYS = 7
+ONGOING_SHARE = 0.5
+PEAK_AFTER_PASSAGE_HOURS = 24
 EIA_YEARS = (2018, 2024)
 LOW_SHARE, LOW_HOURS = 0.50, 72.0
 HIGH_SHARE, HIGH_HOURS = 0.25, 24.0
 
 STATUSES = ("recorded", "derived", "low_data", "suspect", "unrecorded", "baseline_only")
 RULES = {
+    "ibtracs_storm_list": (
+        f"Named storm (IBTrACS v04r01, main track) from seasons {STORM_SEASONS[0]}-{STORM_SEASONS[1]} with a track "
+        f"point within {STORM_DISTANCE_KM} km of the Georgia state polygon. Window (local Eastern dates): from the "
+        "date of the first track point within 800 km of Georgia's centroid to the date of the last such point "
+        f"plus {WINDOW_TAIL_DAYS} days. The peak is searched only during passage: from the window start to "
+        f"{PEAK_AFTER_PASSAGE_HOURS} h after the last track point within 800 km. EAGLE-I coverage ends 2025-12-31."),
     "eaglei_storm_window": (
-        "EAGLE-I county value for the named-storm window as computed in ga_fl_storm_outage_summary "
-        "(15-minute county outages, window in local dates converted to UTC). Status suspect on rows never used."),
+        "EAGLE-I 15-minute county outages over the storm window (local dates converted to UTC). A timestamp with "
+        "no GA/FL record at all is a collection gap, and a record with a null value is unknown: both carry the "
+        "county's last value forward; other missing intervals are 0. Peak = first interval at the maximum during passage. "
+        f"Hours to 90% restored = peak to first interval at or below 10% of peak, searched to "
+        f"{storm_outages.RESTORE_SEARCH_DAYS} days after the window; censored if not reached. "
+        "Status suspect on rows never used."),
+    "eaglei_restore_censored_lower_bound": (
+        f"Outages never fell to 10% of peak within {storm_outages.RESTORE_SEARCH_DAYS} days after the window: "
+        "hours from peak to the end of that search, a lower bound on the true restore time."),
     "eaglei_share_capped": (
         "peak_customers_out / EAGLE-I 2024 total customers, capped at 1. Status suspect where the uncapped "
         "share exceeds 1 (denominator below the attributed outages) and on rows never used."),
     "eaglei_hours_above_10pct": (
-        "Hours with customers out >= 10% of EAGLE-I 2024 total customers. Status suspect where the peak share "
-        "exceeds 1 (same too-small denominator) and on rows never used."),
-    "eaglei_pre2018_excluded": "Storm before 2018: EAGLE-I has no data-quality index and known overcounts; kept, never used.",
-    "milton_helene_carryover": (
-        f"Milton row whose peak precedes Milton's arrival ({MILTON_ARRIVAL_UTC} UTC): the Helene and Milton "
-        "windows overlap, so the peak is Helene's outage still being restored; kept, never used."),
-    "storm_hit": f"Usable storm row (2018+, not Helene carryover) with capped peak share >= {HIT_SHARE}.",
+        "Hours in the window with customers out >= 10% of EAGLE-I 2024 total customers. Status suspect where "
+        "the peak share exceeds 1 (same too-small denominator) and on rows never used."),
+    "prior_storm_carryover": (
+        f"Would-be hit (capped peak share >= {HIT_SHARE}) whose peak precedes the storm's first track point "
+        f"within 800 km of Georgia, or whose county already had >= {ONGOING_SHARE:.0%} of that peak out when "
+        "the window opened: the outage is an earlier event still being restored; kept, never used."),
+    "storm_hit": f"Usable storm row (not prior-storm carryover) with capped peak share >= {HIT_SHARE}.",
     "storm_not_hit": f"Usable storm row with capped peak share < {HIT_SHARE}: the storm did not test this county's grid.",
     "hit_storm_count": "Number and list of the county's hit storms.",
     "hit_storm_median": (
@@ -47,10 +68,10 @@ RULES = {
     "hit_storm_worst": (
         "Maximum across the county's hit storms (and the storm it came from). suspect when the maximum comes "
         "from a suspect row; low_data when only one storm hit."),
-    "no_hit_storm": f"No 2018+ storm took {HIT_SHARE:.0%} or more of the county's customers out: no measurement.",
+    "no_hit_storm": f"No listed storm took {HIT_SHARE:.0%} or more of the county's customers out: no measurement.",
     "usable_storm_max": (
-        "Maximum capped peak share across all usable storm rows (2018+, not Helene carryover), hit or not: "
-        "the worst share of customers out the county has recorded since 2018."),
+        "Maximum capped peak share across all usable storm rows (not prior-storm carryover), hit or not: "
+        "the worst share of customers out the county has recorded in a listed storm."),
     "eia_customer_per_county_weight": (
         f"Mean over {EIA_YEARS[0]}-{EIA_YEARS[1]} utility-years with both IEEE SAIDI values, across utilities "
         "whose 2024 EIA-861 service territory includes the county. Each utility weighted by its mean customers / "
@@ -76,7 +97,8 @@ RULES = {
 }
 
 KEYS = {
-    "county_storm_outages": {"fips_code", "county", "storm", "window_start_local", "window_end_local"},
+    "county_storm_outages": {"fips_code", "county", "state", "sid", "storm", "season",
+                             "window_start_local", "window_end_local"},
     "county_grid_reliability": {"fips_code", "county"},
 }
 PROVENANCE_GROUPS = {
@@ -84,6 +106,10 @@ PROVENANCE_GROUPS = {
     "eaglei_total_customers_2024": "eaglei_record",
     "peak_time_utc": "eaglei_record",
     "restore_censored": "eaglei_record",
+    "n_records_window": "eaglei_record",
+    "gap_intervals": "eaglei_record",
+    "null_value_intervals": "eaglei_record",
+    "customers_out_at_window_start": "eaglei_record",
     "peak_share_uncapped": "peak_share",
     "tier_composite_score": "tier_alt_terciles",
     "storms_hit": "n_storms_hit",
@@ -91,7 +117,7 @@ PROVENANCE_GROUPS = {
     "n_utilities_reporting": "n_utilities",
     "baseline_composite_score": "baseline_tier",
 }
-EXCLUDED = "storm_use_rule IN ('eaglei_pre2018_excluded', 'milton_helene_carryover')"
+EXCLUDED = "storm_use_rule = 'prior_storm_carryover'"
 
 
 def check(cond: bool, msg: str) -> None:
@@ -143,23 +169,47 @@ def build(con: duckdb.DuckDBPyConnection) -> dict:
           "counties: expected 159 unique fips_code")
 
     con.execute(f"""
+    CREATE TABLE storm_list AS
+    SELECT SID AS sid, upper(NAME[1]) || lower(NAME[2:]) AS storm, any_value(SEASON) AS season,
+      round(min(dist_ga_km), 1) AS closest_km_to_ga, max(USA_WIND) AS max_wind_kt,
+      min(ISO_TIME) FILTER (within800) AS first_within_800km,
+      max(ISO_TIME) FILTER (within800) AS last_within_800km,
+      strftime(timezone('America/New_York', min(ISO_TIME) FILTER (within800)), '%Y-%m-%d') AS window_start_local,
+      strftime(timezone('America/New_York', max(ISO_TIME) FILTER (within800)) + INTERVAL {WINDOW_TAIL_DAYS} DAY,
+               '%Y-%m-%d') AS window_end_local
+    FROM read_parquet('{IBTRACS}')
+    WHERE SEASON BETWEEN {STORM_SEASONS[0]} AND {STORM_SEASONS[1]} AND TRACK_TYPE = 'main'
+    GROUP BY SID, NAME HAVING min(dist_ga_km) <= {STORM_DISTANCE_KM}
+    ORDER BY first_within_800km""")
+    check(scalar(con, "SELECT count(*) - count(DISTINCT storm) FROM storm_list") == 0, "storm names not unique")
+    check(scalar(con, "SELECT count(*) FROM storm_list WHERE first_within_800km IS NULL") == 0, "storm never within 800 km")
+    storm_outages.load_customers(con, COUNTY_CUSTOMERS)
+    storm_outages.window_utc(
+        con, "storm_list",
+        f"timezone('UTC', last_within_800km)::TIMESTAMP + INTERVAL {PEAK_AFTER_PASSAGE_HOURS} HOUR")
+    storm_outages.compute(con, OUTAGES)
+    con.execute(f"""
     CREATE TABLE storm AS
     WITH s AS (
-      SELECT storm, window_start_local, window_end_local, fips AS fips_code, county,
-             peak_customers_out, eaglei_total_customers_2024, peak_time_utc, peak_share AS peak_share_uncapped,
-             LEAST(peak_share, 1.0) AS peak_share, share_gt_1, hours_above_10pct,
-             hours_peak_to_90pct_restored AS restore_90_hours, restore_censored, data_quality_era
-      FROM read_parquet('{STORM_SUMMARY}') WHERE fips LIKE '13%')
-    SELECT *,
-      CASE WHEN data_quality_era <> '2018+' THEN 'eaglei_pre2018_excluded'
-           WHEN storm = 'Milton' AND peak_time_utc < TIMESTAMP '{MILTON_ARRIVAL_UTC}' THEN 'milton_helene_carryover'
+      SELECT c.fips AS fips_code, c.county, c.state, w.sid, w.storm, w.season, w.window_start_local,
+             w.window_end_local, w.first_within_800km,
+             m.n_records_window, m.gap_intervals, m.null_value_intervals, m.customers_out_at_window_start,
+             m.peak_customers_out, m.eaglei_total_customers_2024, m.peak_time_utc,
+             m.peak_share AS peak_share_uncapped, LEAST(m.peak_share, 1.0) AS peak_share, m.share_gt_1,
+             m.hours_above_10pct, m.hours_peak_to_90pct_restored AS restore_90_hours, m.restore_censored
+      FROM storm_county_metrics m JOIN storm_windows w USING (storm) JOIN county_customers c USING (fips))
+    SELECT * EXCLUDE (first_within_800km),
+      CASE WHEN peak_share >= {HIT_SHARE} AND (peak_time_utc < timezone('UTC', first_within_800km)::TIMESTAMP
+                OR customers_out_at_window_start >= {ONGOING_SHARE} * peak_customers_out)
+             THEN 'prior_storm_carryover'
            WHEN peak_share >= {HIT_SHARE} THEN 'storm_hit'
            ELSE 'storm_not_hit' END AS storm_use_rule
     FROM s""")
     con.execute(f"""
     CREATE TABLE county_storm_outages AS
-    SELECT fips_code, county, storm, window_start_local, window_end_local,
+    SELECT fips_code, county, state, sid, storm, season, window_start_local, window_end_local,
       peak_customers_out, eaglei_total_customers_2024, peak_time_utc, restore_censored,
+      n_records_window, gap_intervals, null_value_intervals, customers_out_at_window_start,
         CASE WHEN {EXCLUDED} THEN 'suspect' ELSE 'recorded' END AS eaglei_record_status,
         'eaglei_storm_window' AS eaglei_record_rule,
       peak_share, peak_share_uncapped,
@@ -169,20 +219,23 @@ def build(con: duckdb.DuckDBPyConnection) -> dict:
         CASE WHEN share_gt_1 OR {EXCLUDED} THEN 'suspect' ELSE 'recorded' END AS hours_above_10pct_status,
         'eaglei_hours_above_10pct' AS hours_above_10pct_rule,
       restore_90_hours,
-        CASE WHEN restore_censored THEN 'unrecorded' WHEN {EXCLUDED} THEN 'suspect' ELSE 'recorded' END
+        CASE WHEN {EXCLUDED} THEN 'suspect' WHEN restore_censored THEN 'derived' ELSE 'recorded' END
           AS restore_90_hours_status,
-        'eaglei_storm_window' AS restore_90_hours_rule,
+        CASE WHEN restore_censored THEN 'eaglei_restore_censored_lower_bound' ELSE 'eaglei_storm_window' END
+          AS restore_90_hours_rule,
       storm_use_rule = 'storm_hit' AS used_in_tier,
         CASE WHEN {EXCLUDED} THEN 'suspect' ELSE 'derived' END AS used_in_tier_status,
         storm_use_rule AS used_in_tier_rule
     FROM storm ORDER BY fips_code, window_start_local""")
-    check(scalar(con, "SELECT count(*) FROM county_storm_outages") == 159 * 9, "storm rows: expected 159 x 9")
-    check(scalar(con, "SELECT count(*) FROM county_storm_outages WHERE used_in_tier AND restore_censored") == 0,
-          "a censored restore time feeds a tier")
-    check(scalar(con, f"""SELECT count(*) FROM county_storm_outages WHERE storm = 'Milton'
-                           AND peak_time_utc < TIMESTAMP '{MILTON_ARRIVAL_UTC}'
-                           AND used_in_tier_rule <> 'milton_helene_carryover'""") == 0,
-          "pre-arrival Milton row not marked carryover")
+    n_storms = scalar(con, "SELECT count(*) FROM storm_list")
+    check(scalar(con, "SELECT count(*) FROM county_storm_outages") == 226 * n_storms, "storm rows: expected 226 x storms")
+    check(scalar(con, "SELECT count(DISTINCT fips_code) FROM county_storm_outages WHERE fips_code LIKE '13%'") == 159,
+          "storm rows: expected 159 Georgia counties")
+    check(scalar(con, "SELECT count(DISTINCT fips_code) FROM county_storm_outages WHERE fips_code LIKE '12%'") == 67,
+          "storm rows: expected 67 Florida counties")
+    check(scalar(con, f"""SELECT count(*) FROM county_storm_outages
+                           WHERE used_in_tier AND restore_censored AND restore_90_hours < {LOW_HOURS}""") == 0,
+          "a censored restore lower bound below the LOW threshold feeds a tier")
 
     con.execute("""
     CREATE TABLE eaglei_county AS
@@ -195,13 +248,14 @@ def build(con: duckdb.DuckDBPyConnection) -> dict:
       arg_max(peak_share_status, peak_share) = 'suspect' AS share_suspect_worst,
       bool_or(hours_above_10pct_status = 'suspect') AS hours_suspect_any,
       arg_max(hours_above_10pct_status, hours_above_10pct) = 'suspect' AS hours_suspect_worst
-    FROM county_storm_outages WHERE used_in_tier GROUP BY fips_code""")
+    FROM county_storm_outages WHERE used_in_tier AND fips_code LIKE '13%' GROUP BY fips_code""")
 
     con.execute("""
     CREATE TABLE exposure AS
     SELECT fips_code, max(peak_share) AS peak_share_max_2018plus,
       arg_max(peak_share_status, peak_share) AS peak_share_max_2018plus_status
-    FROM county_storm_outages WHERE used_in_tier_rule IN ('storm_hit', 'storm_not_hit') GROUP BY fips_code""")
+    FROM county_storm_outages WHERE used_in_tier_rule IN ('storm_hit', 'storm_not_hit') AND fips_code LIKE '13%'
+    GROUP BY fips_code""")
     check(scalar(con, "SELECT count(*) FROM exposure") == 159, "exposure: expected 159 counties")
 
     con.execute(f"""
@@ -375,15 +429,34 @@ def summarize(con) -> dict:
         "unknown_max_share": rows(con, f"""
           SELECT round(max(peak_share_max_2018plus), 3) AS max, round(median(peak_share_max_2018plus), 3) AS median
           FROM {g} WHERE reliability_tier = 'UNKNOWN'""")[0],
-        "unknown_irma_hit": scalar(con, f"""
-          SELECT count(DISTINCT s.fips_code) FROM county_storm_outages s JOIN {g} USING (fips_code)
-          WHERE reliability_tier = 'UNKNOWN' AND storm = 'Irma' AND peak_share >= {HIT_SHARE}"""),
+        "storm_list": rows(con, """
+          SELECT sid, storm, season, closest_km_to_ga, max_wind_kt, window_start_local, window_end_local,
+                 strftime(timezone('UTC', last_within_800km), '%Y-%m-%d %H:%M') AS last_within_800km_utc
+          FROM storm_list ORDER BY first_within_800km"""),
+        "storm_rows": rows(con, """
+          SELECT state, count(*) AS rows, count(DISTINCT fips_code) AS counties, count(DISTINCT sid) AS storms
+          FROM county_storm_outages GROUP BY 1 ORDER BY 1"""),
+        "storm_totals": rows(con, """
+          SELECT count(*) FILTER (used_in_tier) AS hits,
+                 count(*) FILTER (used_in_tier AND state = 'Georgia') AS ga_hits,
+                 count(*) FILTER (used_in_tier AND state = 'Florida') AS fl_hits,
+                 count(*) FILTER (used_in_tier_rule = 'prior_storm_carryover') AS carryover,
+                 count(*) FILTER (used_in_tier AND peak_share_uncapped > 1) AS hits_share_capped,
+                 count(*) FILTER (used_in_tier AND peak_share_uncapped > 1 AND state = 'Georgia') AS ga_hits_share_capped,
+                 count(*) FILTER (used_in_tier AND restore_censored) AS hits_restore_censored,
+                 count(*) FILTER (used_in_tier AND null_value_intervals > 0) AS hits_with_null_values,
+                 max(null_value_intervals) FILTER (used_in_tier) AS max_null_value_intervals_in_hit
+          FROM county_storm_outages""")[0],
         "storm_hits": rows(con, f"""
-          SELECT storm, count(*) FILTER (used_in_tier) AS counties_hit,
-                 count(*) FILTER (used_in_tier_rule = 'milton_helene_carryover') AS helene_carryover,
-                 count(*) FILTER (used_in_tier_rule = 'milton_helene_carryover' AND peak_share >= {HIT_SHARE}) AS helene_carryover_hit,
-                 count(*) FILTER (used_in_tier AND peak_share_uncapped > 1) AS share_capped
-          FROM county_storm_outages GROUP BY storm ORDER BY min(window_start_local)"""),
+          SELECT storm, season,
+                 count(*) FILTER (used_in_tier AND state = 'Georgia') AS ga_counties_hit,
+                 count(*) FILTER (used_in_tier AND state = 'Florida') AS fl_counties_hit,
+                 count(*) FILTER (used_in_tier_rule = 'prior_storm_carryover') AS carryover,
+                 count(*) FILTER (used_in_tier_rule = 'prior_storm_carryover' AND peak_share >= {HIT_SHARE}) AS carryover_hit,
+                 count(*) FILTER (used_in_tier AND peak_share_uncapped > 1) AS share_capped,
+                 count(*) FILTER (restore_censored) AS restore_censored,
+                 sum(null_value_intervals) AS null_value_intervals, sum(gap_intervals) AS gap_intervals
+          FROM county_storm_outages GROUP BY storm, season ORDER BY min(window_start_local)"""),
         "eia": rows(con, f"""
           SELECT (SELECT count(DISTINCT utility_number) FROM eia_territory) AS ga_territory_utilities,
                  (SELECT count(DISTINCT t.utility_number) FROM eia_territory t JOIN eia_utility USING (utility_number))
@@ -427,12 +500,15 @@ def summarize(con) -> dict:
             SELECT storm_window AS storm, count(*) AS oe417_ga_filings,
                    sum(TRY_CAST("Number of Customers Affected" AS BIGINT)) AS oe417_customers
             FROM read_csv('{OE417}') WHERE state_ga AND storm_window IS NOT NULL GROUP BY 1),
-          e AS (SELECT storm, sum(peak_customers_out) AS eaglei_sum_county_peaks FROM county_storm_outages GROUP BY 1)
+          e AS (SELECT storm, sum(peak_customers_out) AS eaglei_sum_county_peaks FROM county_storm_outages
+                WHERE state = 'Georgia' GROUP BY 1)
           SELECT storm, oe417_ga_filings, oe417_customers, eaglei_sum_county_peaks
           FROM o LEFT JOIN e USING (storm) ORDER BY storm"""),
         "params": {"hit_share": HIT_SHARE, "low_share": LOW_SHARE, "low_hours": LOW_HOURS,
                    "high_share": HIGH_SHARE, "high_hours": HIGH_HOURS, "eia_years": list(EIA_YEARS),
-                   "milton_arrival_utc": MILTON_ARRIVAL_UTC},
+                   "storm_seasons": list(STORM_SEASONS), "storm_distance_km": STORM_DISTANCE_KM,
+                   "window_tail_days": WINDOW_TAIL_DAYS, "peak_after_passage_hours": PEAK_AFTER_PASSAGE_HOURS, "ongoing_share": ONGOING_SHARE,
+                   "restore_search_days": storm_outages.RESTORE_SEARCH_DAYS},
         "rules": RULES,
     }
 
