@@ -337,6 +337,7 @@ UNKNOWNS = {
     ),
 }
 SOBOL_BINS = 20
+CATEGORICAL_UNKNOWNS = ("unrecorded_generators",)
 
 
 def generator_prior(ev: dict[str, np.ndarray]) -> dict[str, Any]:
@@ -369,7 +370,7 @@ def sampled_seasons(
         "no_vehicle_share": rng.uniform(0.0, 1.0, size=n),
     }
     gen = rng.random((n, len(unknown_gen))) < prior["p"]
-    params["unrecorded_generators"] = (gen * ev["shelter_seats"][unknown_gen]).sum(axis=1)
+    params["unrecorded_generators"] = gen @ (2 ** np.arange(gen.shape[1]))
 
     picks = draws["picks"]
     s_of = np.repeat(np.arange(n), draws["k"])
@@ -422,18 +423,29 @@ def unknown_ranges(ev: dict[str, np.ndarray]) -> dict[str, str]:
     }
 
 
-def first_order(y: np.ndarray, x: np.ndarray, bins: int = SOBOL_BINS) -> dict[str, float]:
-    var = float(y.var())
+def first_order(
+    y: np.ndarray, x: np.ndarray, bins: int = SOBOL_BINS, categorical: bool = False
+) -> dict[str, float]:
+    var = float(y.var()) if len(y) > 1 else 0.0
     if var <= 0:
         return {"sobol_first_order": 0.0, "correlation_squared": 0.0}
-    order = np.argsort(x, kind="stable")
-    groups = np.array_split(order, bins)
+    if categorical:
+        _, codes = np.unique(x, return_inverse=True)
+        groups = [np.flatnonzero(codes == c) for c in range(codes.max() + 1)]
+    else:
+        groups = np.array_split(np.argsort(x, kind="stable"), bins)
+    groups = [g for g in groups if len(g)]
     means = np.array([y[g].mean() for g in groups])
     sizes = np.array([len(g) for g in groups])
     between = float((sizes * (means - y.mean()) ** 2).sum() / len(y))
-    between = max(0.0, between - var * (bins - 1) / len(y))
-    corr = float(np.corrcoef(x, y)[0, 1]) if x.std() > 0 else 0.0
-    return {"sobol_first_order": round(between / var, 4), "correlation_squared": round(corr**2, 4)}
+    between = max(0.0, between - var * (len(groups) - 1) / len(y))
+    corr = 0.0
+    if not categorical and x.std() > 0:
+        corr = float(np.corrcoef(x, y)[0, 1])
+    return {
+        "sobol_first_order": round(between / var, 4),
+        "correlation_squared": None if categorical else round(corr**2, 4),
+    }
 
 
 def spread_attribution(seasons: dict[str, np.ndarray], params: dict[str, np.ndarray]) -> dict:
@@ -446,7 +458,7 @@ def spread_attribution(seasons: dict[str, np.ndarray], params: dict[str, np.ndar
         sd = float(y.std())
         rows = {}
         for name, x in params.items():
-            fo = first_order(y, x)
+            fo = first_order(y, x, categorical=name in CATEGORICAL_UNKNOWNS)
             left = max(0.0, 1 - fo["sobol_first_order"])
             rows[name] = {
                 **fo,
@@ -751,9 +763,11 @@ def run_season(
             "spread_attribution": spread_attribution(seasons, params),
             "note": "Each simulated season draws its own value for every unknown; case does "
             "not apply. Spread attribution: share of the variance of the statewide total "
-            "explained by each unknown alone (first-order Sobol from 20 equal-count bins, less "
-            "the (bins - 1) / seasons bias a pure-noise input would show, with the squared "
-            "correlation alongside); the rest is the storms themselves.",
+            "explained by each unknown alone (first-order Sobol: between-group variance over 20 "
+            "equal-count bins, or over every distinct on/off pattern of the unrecorded "
+            "generators, less the (groups - 1) / seasons bias a pure-noise input would show, "
+            "with the squared correlation alongside for numeric unknowns); the rest is the "
+            "storms themselves.",
         }
     else:
         values = per_event(

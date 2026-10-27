@@ -647,12 +647,14 @@ def county_plan(
     no_request = site_updates.request_overrides(None, None, None, {})
     planner_kwargs = site_updates.season_kwargs(planner, no_request)
 
-    def run_season(name: str, assume_generator: list[str] | None = None) -> dict[str, Any]:
+    def run_season(
+        name: str, assume_generator: list[str] | None = None, mode: str | None = None
+    ) -> dict[str, Any]:
         return season.run_season(
             name,
             sites_off=planner["sites_off"],
             assume_generator=assume_generator or (),
-            uncertainty=uncertainty,
+            uncertainty=mode or uncertainty,
             **planner_kwargs,
         )
 
@@ -680,8 +682,8 @@ def county_plan(
             for s in data.sites().get("medical_shelters", [])
             if s.get("generator") == "UNRECORDED"
         ]
-        base = run_season(outlook)
-        fixed = run_season(outlook, assume_generator=unrecorded)
+        base = run_season(outlook, mode="fixed")
+        fixed = run_season(outlook, assume_generator=unrecorded, mode="fixed")
         return {
             "switch": "every medical shelter without a recorded generator assumed to have one",
             "shelters_switched": len(unrecorded),
@@ -695,6 +697,7 @@ def county_plan(
             },
             "reading": "Shortfalls count a shelter as powered only when a generator is recorded; "
             "the truth lies between recorded_only and all_assumed.",
+            "unknowns": "fixed values in this section, whatever the plan's uncertainty mode",
         }
 
     plan: dict[str, Any] = {
