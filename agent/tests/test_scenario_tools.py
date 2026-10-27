@@ -271,3 +271,14 @@ def test_state_plan_report(monkeypatch):
     assert rep["sections"]["audit"]["status"] == "not_applicable"
     assert rep["sections"]["storm_history"]["status"] == "not_determined"
     assert rep["sections"]["who_cannot_leave"]["items"]
+
+
+def test_report_figures_always_carry_a_value_or_a_range():
+    from readiness_agent.report import section
+
+    s = section("x", figures=[
+        {"key": "a", "value": None, "range": None},
+        {"key": "b", "value": 0, "range": None},
+        {"key": "c", "value": None, "range": {"p10": 1, "p50": 2, "p90": 3}},
+    ])
+    assert [f["key"] for f in s["figures"]] == ["b", "c"]

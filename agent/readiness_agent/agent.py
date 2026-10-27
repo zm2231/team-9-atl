@@ -27,6 +27,7 @@ from .scenario_tools import (
     county_plan,
     county_storm_profile,
     gap_sensitivity,
+    get_report,
     run_scenario,
     season_county_risk,
     state_plan,
@@ -94,7 +95,8 @@ Tools:
   an outside forecast input: name NOAA's August 2026 outlook as its source.
 - Reports come in four scopes with one shape (report.sections): county_plan for a county,
   state_plan for Georgia, run_scenario with run_index for one simulated run, and run_scenario
-  with draws=N for N runs. Write reports from report.sections only, with each figure's
+  with draws=N for N runs. Prepared reports load instantly with get_report(report_id); call
+  get_report() with no id to list them. Write reports from report.sections only, with each figure's
   provenance and range; say "not determined" for a section marked not_determined.
 - For a county's season plan (outage frequency, outlooks, generator what-ifs), call county_plan
   once. It already contains build_readiness_brief's result, so do not call both. Write from its
@@ -208,6 +210,7 @@ root_agent = Agent(
         season_county_risk,
         gap_sensitivity,
         county_plan,
+        get_report,
         state_plan,
         county_storm_profile,
     ],

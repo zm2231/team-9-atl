@@ -24,7 +24,8 @@ def figure(key: str, label: str, unit: str, provenance: str, source: str, *,
 
 def section(source: str, *, figures: list | None = None, items: list | None = None,
             note: str | None = None, status: str = "ok") -> dict[str, Any]:
-    return {"status": status, "source": source, "figures": figures or [],
+    figures = [f for f in figures or [] if f["value"] is not None or f["range"] is not None]
+    return {"status": status, "source": source, "figures": figures,
             "items": items or [], "note": note}
 
 

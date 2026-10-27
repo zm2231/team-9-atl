@@ -28,6 +28,7 @@ SOURCES = {
         f"EAGLE-I labels ({MODEL_FACTS}) (scenario_season_county)"
     ),
     "gaps": "Simulated · season model rerun with each unknown set low and high (scenario_fix_ranking)",
+    "reports": "Precomputed · scenario_reports, built by scenario/build/build_reports.py",
     "audit": "Survey · ACS 2020-2024 B03002, audit only, never a model input (ext_ga_acs_race_tract)",
 }
 NOT_DETERMINED = "not_determined"
@@ -641,3 +642,28 @@ def county_storm_profile(county_fips: str, outlook: str = "long_run") -> dict[st
     if result["status"] != "ok":
         return _status("unknown_county", "No Georgia county has that FIPS code.")
     return {**result, "source": SOURCES["scenario"]}
+
+
+def get_report(report_id: str | None = None) -> dict[str, Any]:
+    """Return a precomputed report (same shape as county_plan, state_plan and run_scenario reports) by report_id, or list the available ones when report_id is empty. Use it when the planner asks for one of the prepared reports; run the live tools for anything else.
+    """
+    from google.api_core.exceptions import GoogleAPIError
+    from google.auth.exceptions import GoogleAuthError
+    from google.cloud import bigquery
+
+    table = f"`{_project_id()}.{_dataset_name()}.scenario_reports`"
+    try:
+        if not report_id:
+            rows = _run_query(f"SELECT report_id, scope, title, built_at FROM {table} "
+                              "ORDER BY report_id", [])
+            return {"reports": rows, "source": SOURCES["reports"]}
+        rows = _run_query(f"SELECT * FROM {table} WHERE report_id = @id",
+                          [bigquery.ScalarQueryParameter("id", "STRING", report_id)])
+    except (GoogleAPIError, GoogleAuthError, RuntimeError) as exc:
+        return {"status": "error", "message": type(exc).__name__, "source": SOURCES["reports"]}
+    if not rows:
+        return _status("unknown_report", "No precomputed report has that id; call get_report() "
+                       "with no id to list them.")
+    row = rows[0]
+    return {"report_id": row["report_id"], "title": row["title"], "built_at": str(row["built_at"]),
+            "report": json.loads(row["report_json"]), "source": SOURCES["reports"]}
