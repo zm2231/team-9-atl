@@ -3,8 +3,9 @@ import math
 import os
 import urllib.error
 import urllib.request
+from collections.abc import Callable
 from datetime import datetime, timezone
-from functools import lru_cache
+from functools import lru_cache, wraps
 from typing import Any
 
 from dotenv import load_dotenv
@@ -63,15 +64,46 @@ def _bigquery_client():
     return _bigquery().Client(project=_project_id())
 
 
+class QueryTooLargeError(RuntimeError):
+    pass
+
+
+def query_capped(tool: Callable[..., dict[str, Any]]) -> Callable[..., dict[str, Any]]:
+    @wraps(tool)
+    def run(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        try:
+            return tool(*args, **kwargs)
+        except QueryTooLargeError as exc:
+            return {
+                "status": "query_too_large",
+                "message": str(exc),
+                "source": "BigQuery per-query billing cap",
+            }
+
+    return run
+
+
 def _run_query(sql: str, params: list[Any] | None = None) -> list[dict[str, Any]]:
+    from google.api_core.exceptions import GoogleAPICallError
+
+    from .scenario.build.limits import MAX_BYTES_BILLED
+
     bigquery = _bigquery()
     client = _bigquery_client()
-    job_config = bigquery.QueryJobConfig()
+    job_config = bigquery.QueryJobConfig(maximum_bytes_billed=MAX_BYTES_BILLED)
     if params:
         job_config.query_parameters = params
 
-    rows = client.query(sql, job_config=job_config)
-    return [dict(row) for row in rows.result()]
+    try:
+        rows = client.query(sql, job_config=job_config)
+        return [dict(row) for row in rows.result()]
+    except GoogleAPICallError as exc:
+        reasons = {e.get("reason") for e in (getattr(exc, "errors", None) or [])}
+        if "bytesBilledLimitExceeded" in reasons:
+            raise QueryTooLargeError(
+                f"Query would bill more than {MAX_BYTES_BILLED:,} bytes; not run"
+            ) from exc
+        raise
 
 
 def _scalar(name: str, type_: str, value: Any):

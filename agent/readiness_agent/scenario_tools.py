@@ -4,7 +4,7 @@ from datetime import date as Date
 from pathlib import Path
 from typing import Any
 
-from .evacuation_tools import _dataset_name, _project_id, _run_query
+from .evacuation_tools import QueryTooLargeError, _dataset_name, _project_id, _run_query
 
 CONTEXT_PREFIX = "CONTEXT v1 "
 _MODEL = json.loads(
@@ -40,7 +40,6 @@ CATEGORY_FLOOR_KT = {0: 34, 1: 64, 2: 83, 3: 96, 4: 113, 5: 137}
 RELOCATION_SHARE = {"low": 0.10, "base": 0.20, "high": 0.40}
 SITE_UPDATES_TABLE = "scenario_site_updates"
 SITING_TABLE = "scenario_siting"
-MAX_BYTES_BILLED = 100_000_000
 SITING_POOL = 60
 SOURCES["planner"] = (
     "Planner-reported site updates (scenario_site_updates), shown next to the registry"
@@ -128,18 +127,9 @@ def _status(status: str, message: str, **extra: Any) -> dict[str, Any]:
     return {"status": status, "message": message, **extra, "source": SOURCES["scenario"]}
 
 
-def _capped_query(sql: str, params: list[Any]) -> list[dict[str, Any]]:
-    from google.cloud import bigquery
-
-    from .evacuation_tools import _bigquery_client
-
-    config = bigquery.QueryJobConfig(maximum_bytes_billed=MAX_BYTES_BILLED, query_parameters=params)
-    return [dict(r) for r in _bigquery_client().query(sql, job_config=config).result()]
-
-
 def _fetch_site_updates() -> list[dict[str, Any]]:
     table = f"`{_project_id()}.{_dataset_name()}.{SITE_UPDATES_TABLE}`"
-    rows = _capped_query(
+    rows = _run_query(
         f"SELECT update_id, site_kind, site_id, field, value, entered_by, entered_at, note "
         f"FROM {table} ORDER BY entered_at",
         [],
@@ -471,9 +461,10 @@ def _season_query(sql: str, params: list[Any], key: str, source: str) -> dict[st
     try:
         rows = _run_query(sql, params)
     except (GoogleAPIError, GoogleAuthError, RuntimeError) as exc:
+        detail = str(exc) if isinstance(exc, QueryTooLargeError) else type(exc).__name__
         return {
-            "status": "error",
-            "message": f"Could not read the season table: {type(exc).__name__}",
+            "status": "query_too_large" if isinstance(exc, QueryTooLargeError) else "error",
+            "message": f"Could not read the season table: {detail}",
             key: [],
             "source": source,
         }
@@ -565,7 +556,7 @@ def season_outlook_note(outlook: str) -> str:
             f"Back-test 2018-2025 conditioning each year on its ENSO state: {enso:.1%} of "
             f"counties inside the range against {long_run:.1%} long-run "
             f"({round(enso * counties)} vs {round(long_run * counties)} of {counties} counties), "
-            f"{change}, still short of the 80% target."
+            f"{change}, {'meeting' if enso >= 0.8 else 'still short of'} the 80% target."
         )
     if outlook == "noaa_aug_2026":
         return (
@@ -758,16 +749,19 @@ def record_site_update(
         bigquery.ScalarQueryParameter("note", "STRING", note),
     ]
     try:
-        _capped_query(
+        _run_query(
             f"INSERT INTO {table} (update_id, site_kind, site_id, field, value, entered_by, "
             "entered_at, note) VALUES (@update_id, @site_kind, @site_id, @field, @value, "
             "@entered_by, CURRENT_TIMESTAMP(), @note)",
             params,
         )
     except (GoogleAPIError, GoogleAuthError, RuntimeError) as exc:
+        too_large = isinstance(exc, QueryTooLargeError)
         return {
-            "status": "error",
-            "message": f"Could not record the update: {type(exc).__name__}",
+            "status": "query_too_large" if too_large else "error",
+            "message": str(exc)
+            if too_large
+            else f"Could not record the update: {type(exc).__name__}",
             "source": SOURCES["planner"],
         }
     return {
@@ -787,7 +781,7 @@ def _siting_pool() -> list[dict[str, Any]] | None:
 
     table = f"`{_project_id()}.{_dataset_name()}.{SITING_TABLE}`"
     try:
-        rows = _capped_query(
+        rows = _run_query(
             f"SELECT candidate_id, kind, name, county_fips, shelter_id, lat, lon, seats_assumed, "
             f"lacking_shelter_1in10_reduction FROM {table} "
             "ORDER BY lacking_shelter_1in10_reduction DESC LIMIT @n",
@@ -862,7 +856,10 @@ def county_storm_profile(county_fips: str, outlook: str = "long_run") -> dict[st
         return _status("needs_county", "Give a Georgia county_fips, for example 13275.")
     if outlook not in season.OUTLOOKS:
         outlook = "long_run"
-    result = profile.county_storm_profile(county_fips, outlook)
+    try:
+        result = profile.county_storm_profile(county_fips, outlook)
+    except (OSError, KeyError, ValueError, IndexError) as exc:
+        return _status("error", f"Could not build the county profile: {type(exc).__name__}")
     if result["status"] != "ok":
         return _status("unknown_county", "No Georgia county has that FIPS code.")
     return {**result, "source": SOURCES["scenario"]}
