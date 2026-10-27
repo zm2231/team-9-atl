@@ -389,6 +389,11 @@ def _count(value: Any) -> int | None:
     return int(n)
 
 
+@cache
+def known_fips() -> frozenset[str]:
+    return frozenset(c["county_fips"] for c in data.counties())
+
+
 def new_site(raw: Any, index: int) -> dict | None:
     if not isinstance(raw, dict):
         return None
@@ -423,6 +428,7 @@ def new_site(raw: Any, index: int) -> dict | None:
             "lat": lat,
             "lon": lon,
             "stations": stations,
+            "county_fips": fips if (fips := str(raw.get("county_fips"))) in known_fips() else None,
         }
     return None
 
@@ -434,6 +440,7 @@ def site_inputs(
     stations_override: Any = None,
     generator_override: Any = None,
     location_override: Any = None,
+    dialysis_county_override: Any = None,
     add_sites: Any = (),
 ) -> tuple[dict[str, np.ndarray], list[str], list[dict]]:
     out = dict(ev)
@@ -480,6 +487,14 @@ def site_inputs(
         else:
             ignored.append(f"{sid} location={loc!r}")
 
+    dialysis_county = ev["dialysis_county"].astype(np.int16).copy()
+    fips_index = {str(f): i for i, f in enumerate(ev["county_fips"])}
+    for ccn, fips in (dialysis_county_override or {}).items():
+        if ccn in ccns and str(fips) in fips_index:
+            dialysis_county[ccns.index(ccn)] = fips_index[str(fips)]
+        else:
+            ignored.append(f"{ccn} county_fips={fips!r}")
+
     added: list[dict] = []
     if add_sites is not None and not isinstance(add_sites, list | tuple):
         ignored.append(repr(add_sites))
@@ -517,9 +532,9 @@ def site_inputs(
     )
     out["dialysis_county"] = np.concatenate(
         [
-            ev["dialysis_county"],
+            dialysis_county,
             np.array(
-                [int(_distance_km(clat, clon, a["lat"], a["lon"]).argmin()) for a in new_d],
+                [_county_index(a, clat, clon, fips_index) for a in new_d],
                 np.int16,
             ),
         ]
@@ -529,6 +544,13 @@ def site_inputs(
         a["surge"] = ADDED_SURGE_NOTE
         a["counties_in_reach"] = int(reach_of(a["lat"], a["lon"]).sum())
     return out, ignored, added
+
+
+def _county_index(site: dict, clat: np.ndarray, clon: np.ndarray, fips_index: dict) -> int:
+    fips = site.get("county_fips")
+    if fips in fips_index:
+        return fips_index[fips]
+    return int(_distance_km(clat, clon, site["lat"], site["lon"]).argmin())
 
 
 def _prepare(
@@ -574,6 +596,7 @@ def run_season(
     stations_override: Any = None,
     generator_override: Any = None,
     location_override: Any = None,
+    dialysis_county_override: Any = None,
     add_sites: Any = (),
     as_of_date: Any = None,
     custom: Any = None,
@@ -589,6 +612,7 @@ def run_season(
             "stations_override": stations_override,
             "generator_override": generator_override,
             "location_override": location_override,
+            "dialysis_county_override": dialysis_county_override,
             "add_sites": add_sites,
         },
     )

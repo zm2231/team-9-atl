@@ -20,7 +20,7 @@ SITE_UPDATES_SCHEMA = [
     ("value", "STRING", "Validated value as text"),
     ("entered_by", "STRING", "Request user, or planner"),
     ("entered_at", "TIMESTAMP", "When the change was recorded"),
-    ("note", "STRING", "Planner's note"),
+    ("note", "STRING", "Source of the fact and its date, from a fixed list; no free text"),
 ]
 UPDATES_DESCRIPTION = (
     "Planner-reported site updates, one row per change; the latest row per site and field "

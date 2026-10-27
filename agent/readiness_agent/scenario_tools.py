@@ -882,21 +882,19 @@ def record_site_update(
     site_id: str,
     field: str,
     value: str,
-    note: str | None = None,
+    source: str = "planner_review",
+    source_date: str | None = None,
     tool_context: Any = None,
 ) -> dict[str, Any]:
-    """Record one thing a planner knows about a medical shelter or dialysis centre, so every later scenario, season and county plan uses it. site_kind is medical_shelter or dialysis; site_id is the shelter_id or ccn, or a new id for a site not in the registry (a new medical shelter needs lat, lon, seats and generator, one update each); field is generator (YES, NO, UNRECORDED), seats, stations, open (true or false), lat, lon, name or county_fips. Registry values are never overwritten; results show both."""
+    """Record one fact a planner knows about a medical shelter (shelter_id) or dialysis centre (ccn); later scenario, season and plan results show it next to the registry value. field: generator (YES, NO, UNRECORDED), seats, stations, open (true or false), lat, lon, name or county_fips. A new site id needs lat, lon and seats with generator (shelter) or stations (dialysis), one call each. source and source_date say where the fact came from; no free text is stored."""
     from .scenario import site_updates
 
     clean, reason = site_updates.validate(site_kind, site_id, field, value)
     if clean is None:
         return {"status": "invalid", "message": reason, "source": SOURCES["planner"]}
-    if note is not None and (not isinstance(note, str) or len(note) > 500):
-        return {
-            "status": "invalid",
-            "message": "note: text of at most 500 characters",
-            "source": SOURCES["planner"],
-        }
+    note, reason = site_updates.source_note(source, source_date)
+    if note is None:
+        return {"status": "invalid", "message": reason, "source": SOURCES["planner"]}
     import uuid
 
     from google.api_core.exceptions import GoogleAPIError
