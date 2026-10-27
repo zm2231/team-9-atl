@@ -10,8 +10,7 @@ from pathlib import Path
 import numpy as np
 
 from .. import data, engine, season, storms
-from ..season import allocate as allocate
-from ..season import worst_per_season as worst_per_season
+from ..season import worst_per_season
 from ..windfield import TrackPoint
 from .limits import MAX_BYTES_BILLED
 
@@ -28,6 +27,8 @@ NEAR_GA_KM = 300.0
 SAFFIR_KT = (64.0, 83.0, 96.0, 113.0, 137.0)
 MAJOR_KT = 96.0
 BACKTEST_YEARS = (2018, 2025)
+STABILITY_SEEDS = 20
+STABILITY_SEASONS = 5000
 SWITCH_SETS = ("baseline", "all_unrecorded_generators_yes", "coastal_shelters_off")
 
 SWINGS = [
@@ -185,12 +186,12 @@ def build(seed: int = SEED) -> dict:
     return {"ev": ev, "outage": outage, "peak": peak, "counties": counties}
 
 
-def statewide_lacking(ev: dict, outlook: str = "long_run", **params) -> float:
+def statewide_lacking(ev: dict, outlook: str = "long_run", **params) -> np.ndarray:
     params.setdefault("relocation_share", season.RELOCATION_SHARE["base"])
     values = {"x": season.per_event(ev, **params)["lacking_shelter"]}
-    rate = season.event_rates(outlook, ev["storm_season"], ev["storm_of_event"])
+    rate = season.outlook_event_rates(outlook)
     seasons = worst_per_season(values, rate, np.random.default_rng(SEED), N_SEASONS_TABLE)
-    return float(np.quantile(seasons["x"].sum(1), 0.9))
+    return seasons["x"].sum(1)
 
 
 def fix_ranking(ctx: dict, ev: dict) -> list[dict]:
@@ -219,20 +220,106 @@ def fix_ranking(ctx: dict, ev: dict) -> list[dict]:
     }
     rows = []
     for sw in SWINGS:
-        lo, hi = sorted(pairs[sw["gap"]])
+        a, b = pairs[sw["gap"]]
+        worse, better = (a, b) if np.quantile(a, 0.9) >= np.quantile(b, 0.9) else (b, a)
+        lo, hi = float(np.quantile(better, 0.9)), float(np.quantile(worse, 0.9))
+        paired = sw["gap"] != "storm_rates"
+        diff = worse - better
         rows.append(
             {
                 **sw,
                 "uncovered_1in10_low": round(lo),
                 "uncovered_1in10_high": round(hi),
                 "swing": round(hi - lo),
+                "p_helps": round(float((diff >= 1).mean()), 4) if paired else None,
+                "expected_reduction_per_year": round(float(diff.mean()), 1) if paired else None,
             }
         )
     return sorted(rows, key=lambda r: -r["swing"])
 
 
+def stability(seeds: int = STABILITY_SEEDS, n: int = STABILITY_SEASONS) -> dict:
+    values = [
+        season.run_season(n_seasons=n, seed=SEED + k)["statewide"]["lacking_shelter"]["total"][
+            "one_in_10"
+        ]
+        for k in range(seeds)
+    ]
+    return {
+        "seeds": seeds,
+        "seasons_per_run": n,
+        "min": int(min(values)),
+        "median": float(np.median(values)),
+        "max": int(max(values)),
+    }
+
+
+def stability_text(st: dict) -> str:
+    return (
+        f"Stability: statewide lacking shelter in a 1-in-10 season across {st['seeds']} seeds of "
+        f"{st['seasons_per_run']:,} simulated seasons: min {st['min']:,}, median "
+        f"{st['median']:,.0f}, max {st['max']:,}."
+    )
+
+
+def season_p_rows(outlook: str) -> list[dict]:
+    r = season.run_season(outlook, n_seasons=N_SEASONS_TABLE)
+
+    def row(scope: str, fips, name, p: dict) -> dict:
+        return {
+            "outlook": outlook,
+            "scope": scope,
+            "county_fips": fips,
+            "county_name": name,
+            **{k: v for k, v in p.items() if k != "label"},
+        }
+
+    return [row("statewide", None, None, r["statewide"]["probability"])] + [
+        row("county", c["county_fips"], c["county_name"], c["probability"]) for c in r["counties"]
+    ]
+
+
+def severity_backtest(ev: dict, observed: dict[str, int], long_run_share: float) -> dict:
+    years = list(range(BACKTEST_YEARS[0], BACKTEST_YEARS[1] + 1))
+    base = season.outlook_event_rates("long_run")
+    cat = ev["category"]
+    storm_cat = np.zeros(len(ev["storm_season"]), int)
+    storm_cat[ev["storm_of_event"]] = cat
+    out25 = ev["out25"].astype(np.float64)
+    count_only, severity = np.zeros(out25.shape[1]), np.zeros(out25.shape[1])
+    for y in years:
+        mine = ev["storm_season"] == y
+        n = int(mine.sum())
+        if n == 0:
+            continue
+        h = float((storm_cat[mine] >= 1).mean())
+        m = float((storm_cat[mine] >= 3).mean())
+        count_only += (base * n / base.sum()) @ out25
+        heavy = season.reweight(base, cat, h, m)
+        severity += (heavy * n / heavy.sum()) @ out25
+    fips = ev["county_fips"]
+    c = coverage(count_only, observed, fips)
+    s = coverage(severity, observed, fips)
+    better = s["share_inside"] > c["share_inside"]
+    return {
+        "method": "hindsight upper bound: each year uses its own observed count of storms near "
+        "Georgia (count only), or its count plus its observed Cat 1+ and Cat 3+ shares "
+        "(severity). No past forecasts are used, so this bounds what a perfect outlook could add.",
+        "count_only_share_inside": c["share_inside"],
+        "severity_share_inside": s["share_inside"],
+        "count_only_statewide": c["statewide"],
+        "severity_statewide": s["statewide"],
+        "long_run_share_inside": long_run_share,
+        "verdict": (
+            f"Severity reweighting {'improves' if better else 'does not improve'} "
+            f"on count only: {s['share_inside']:.1%} vs {c['share_inside']:.1%} of counties inside "
+            f"(long run {long_run_share:.1%})."
+        ),
+    }
+
+
 def county_lambda(ev: dict, outlook: str) -> np.ndarray:
-    rate = season.event_rates(outlook, ev["storm_season"], ev["storm_of_event"])
+    rate = season.outlook_event_rates(outlook)
     return rate @ ev["out25"].astype(np.float64)
 
 
@@ -299,6 +386,7 @@ def backtest(ev: dict, observed: dict[str, int], long_run_state: dict) -> dict:
             ),
         },
         "long_run_statewide": long_run_state,
+        "severity_hindsight": severity_backtest(ev, observed, long_run["share_inside"]),
         "rows": long_run["rows"],
     }
 
@@ -357,7 +445,7 @@ def flat(r: dict) -> dict:
 
 def season_rows(ev: dict, outlook: str) -> list[dict]:
     r = season.run_season(outlook, n_seasons=N_SEASONS_TABLE)
-    rate = season.event_rates(outlook, ev["storm_season"], ev["storm_of_event"])
+    rate = season.outlook_event_rates(outlook)
     d = worst_per_season(
         {"d": ev["displaced"]}, rate, np.random.default_rng(SEED), N_SEASONS_TABLE
     )["d"]
@@ -426,7 +514,8 @@ NOTE = (
     "Season risk uses every storm track 1950-2025 within 250 km of Georgia for exposure; "
     "the outage model behind it is labelled on 2018+ storms only. Outlooks reweight those "
     "storms: long_run (default), recent (2000-2025), la_nina / neutral / el_nino (years by "
-    "Aug-Oct ONI), noaa_aug_2026 (outside forecast input: NOAA CPC August 2026 outlook, "
+    "Aug-Oct ONI), noaa_aug_2026 (outside forecast input: NOAA CPC August 2026 outlook, count "
+    "and Cat 1+ / Cat 3+ shares scaled to its midpoints, "
     f"{season.NOAA_URL})."
 )
 TYPICAL = "median season (worst storm of the season)"
@@ -474,6 +563,29 @@ FIX_SCHEMA = [
     ("uncovered_1in10_low", "INTEGER", "Statewide lacking shelter in a 1-in-10 season, lower"),
     ("uncovered_1in10_high", "INTEGER", "Statewide lacking shelter in a 1-in-10 season, higher"),
     ("swing", "INTEGER", "high minus low"),
+    (
+        "p_helps",
+        "FLOAT",
+        (
+            "Share of simulated seasons in which the better setting leaves at least 1 fewer "
+            "person lacking shelter; same seasons for both settings; null for storm_rates, "
+            "whose two settings simulate different seasons"
+        ),
+    ),
+    ("expected_reduction_per_year", "FLOAT", "Mean difference across the same seasons"),
+]
+SEASON_P_SCHEMA = [
+    OUTLOOK_FIELD,
+    ("scope", "STRING", "statewide or county"),
+    ("county_fips", "STRING", "Census county FIPS; null for statewide"),
+    ("county_name", "STRING", "County name; null for statewide"),
+    ("p_lacking_shelter_any", "FLOAT", "Share of simulated seasons with anyone lacking shelter"),
+    ("p_lacking_shelter_50", "FLOAT", "Share of simulated seasons with 50 or more"),
+    (
+        "p_no_dialysis_chair_any",
+        "FLOAT",
+        "Share of simulated seasons with any dialysis patient without a chair",
+    ),
 ]
 BATCH_SCHEMA = [
     OUTLOOK_FIELD,
@@ -546,6 +658,8 @@ def main() -> None:
     ev = season.events()
     counties = [r for o in season.OUTLOOKS for r in season_rows(ev, o)]
     ranking = fix_ranking(ctx, ev)
+    p_rows = [r for o in season.OUTLOOKS for r in season_p_rows(o)]
+    stable = stability()
     long_run = season.run_season("long_run", n_seasons=N_SEASONS_TABLE)["statewide"]
     bt = backtest(ev, observed_counts(), long_run)
     (DATA / "season_backtest.json").write_text(json.dumps(bt, separators=(",", ":")))
@@ -558,11 +672,19 @@ def main() -> None:
             "Per-county hurricane season risk per outlook from 2,000 simulated storms. " + NOTE,
         )
         load(
+            "scenario_season_county_p",
+            p_rows,
+            SEASON_P_SCHEMA,
+            f"Probabilities per outlook as shares of {N_SEASONS_TABLE:,} simulated seasons "
+            "(worst storm of each season). " + stability_text(stable) + " " + NOTE,
+        )
+        load(
             "scenario_fix_ranking",
             ranking,
             FIX_SCHEMA,
             "Unknowns ranked by how much each moves statewide people lacking shelter in a "
-            "1-in-10 season (long_run outlook). " + NOTE,
+            "1-in-10 season (long_run outlook), with p_helps and expected reduction per year "
+            "over the same simulated seasons. " + stability_text(stable) + " " + NOTE,
         )
         if batch:
             load(
@@ -585,6 +707,12 @@ def main() -> None:
                 "long_run_statewide": long_run,
                 "backtest": {k: v for k, v in bt.items() if k != "rows"},
                 "ranking": ranking,
+                "stability": stable,
+                "severity": {
+                    o: season.severity_shares(season.outlook_event_rates(o), ev["category"])
+                    for o in season.OUTLOOKS
+                },
+                "p_rows": len(p_rows),
                 "season_rows": len(counties),
                 "batch_rows": len(batch),
             },

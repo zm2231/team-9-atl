@@ -114,10 +114,7 @@ def reweight(
 
 
 def _check_custom(custom: Any) -> dict[str, Any]:
-    if not isinstance(custom, dict):
-        raise ValueError(
-            "custom must be a dict with storms_per_year, hurricane_share, major_share and source"
-        )
+    custom = custom if isinstance(custom, dict) else {}
     try:
         n = float(custom["storms_per_year"])
         h = float(custom["hurricane_share"])
@@ -289,8 +286,8 @@ def summarize(
         one_in_10 = np.quantile(x, 0.9, axis=axis)
         return typical, one_in_10
 
-    county = {k: pair(v) for k, v in seasons.items()}
-    state = {k: pair(v.sum(axis=1)) for k, v in seasons.items()}
+    county: dict[str, Any] = {k: pair(v) for k, v in seasons.items()}
+    state: dict[str, Any] = {k: pair(v.sum(axis=1)) for k, v in seasons.items()}
     county["p"] = exceedance(seasons["lacking_shelter"], seasons["no_dialysis_chair"])
     state["p"] = exceedance(
         seasons["lacking_shelter"].sum(axis=1), seasons["no_dialysis_chair"].sum(axis=1)
@@ -584,7 +581,13 @@ def run_season(
             "add_sites": add_sites,
         },
     )
-    values = per_event(ev, relocation_share=RELOCATION_SHARE[case], **masks)
+    values = per_event(
+        ev,
+        relocation_share=RELOCATION_SHARE[case],
+        shelter_open=masks["shelter_open"],
+        shelter_powered=masks["shelter_powered"],
+        dialysis_open=masks["dialysis_open"],
+    )
     s = summarize(values, rate, ev["out25"], n_seasons, seed)
     fips, names = ev["county_fips"], ev["county_name"]
     return {
@@ -634,7 +637,13 @@ def siting_base(
 ) -> dict:
     rate = outlook_event_rates(outlook, custom, as_of_date)
     ev, masks, meta = _prepare(sites_off, assume_generator, case, site_kwargs)
-    values = per_event(ev, relocation_share=RELOCATION_SHARE[case], **masks)
+    values = per_event(
+        ev,
+        relocation_share=RELOCATION_SHARE[case],
+        shelter_open=masks["shelter_open"],
+        shelter_powered=masks["shelter_powered"],
+        dialysis_open=masks["dialysis_open"],
+    )
     keep = 1.0 - FLORIDA_INFLOW
     cats = ev["category"][:, None]
     seats = ev["shelter_seats"] * masks["shelter_powered"] * masks["shelter_open"] * keep

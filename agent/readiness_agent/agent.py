@@ -23,7 +23,14 @@ from .evacuation_tools import (
     record_live_check,
 )
 from .readiness_brief import build_readiness_brief
-from .scenario_tools import county_plan, gap_sensitivity, run_scenario, season_county_risk
+from .scenario_tools import (
+    county_plan,
+    gap_sensitivity,
+    recommend_sites,
+    record_site_update,
+    run_scenario,
+    season_county_risk,
+)
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-edc952746633")
 DATASET_ID = os.getenv("EVAC_DATASET", "evac_prod")
@@ -92,6 +99,12 @@ Tools:
   (no vehicle, cannot arrive before the winds) as separate figures. Never add them together.
 - Operator what-ifs (a site switched off, a generator assumed) go in sites_off and
   assume_generator. Report the baseline, the result with the switches, and the difference.
+- When a planner states a fact about a site (a generator confirmed, seats changed, a site closed
+  or added), call record_site_update once per field. Later results show it as planner-reported
+  next to the registry value; say both.
+- For where a new or upgraded medical shelter would help most, call recommend_sites. Quote its
+  label, say that reductions do not add up across sites, and give the best combination of 3.
+- Probabilities are shares of simulated seasons; say so when you quote one.
 - Every number you state comes from a tool. Do not compute or estimate figures yourself.
 - For ad hoc BigQuery access, use only the read-only MCP tool against project `{PROJECT_ID}` and
   dataset `{DATASET_ID}`, tables ending in `_clean`.
@@ -166,5 +179,7 @@ root_agent = Agent(
         season_county_risk,
         gap_sensitivity,
         county_plan,
+        record_site_update,
+        recommend_sites,
     ],
 )

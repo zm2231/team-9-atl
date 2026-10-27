@@ -1,3 +1,5 @@
+from typing import Any
+
 import numpy as np
 import pytest
 
@@ -71,11 +73,13 @@ def test_bigquery_failure_falls_back_to_registry(monkeypatch):
 
 
 def test_malformed_overrides_go_to_ignored_ids():
+    stations: Any = "many"
+    sites: Any = [{"lat": 99, "lon": -83, "seats": 50, "generator": "YES"}, "x"]
     r = scenario_tools.season_county_risk(
         county_fips="13051",
         seats_override={"nope": 5, UNRECORDED: -3},
-        stations_override="many",
-        add_sites=[{"lat": 99, "lon": -83, "seats": 50, "generator": "YES"}, "x"],
+        stations_override=stations,
+        add_sites=sites,
     )
     ignored = " ".join(r["ignored_ids"])
     for bad in ("nope=5", f"{UNRECORDED}=-3", "'many'", "'lat': 99", "'x'"):
