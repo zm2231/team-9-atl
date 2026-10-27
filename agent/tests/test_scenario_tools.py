@@ -5,7 +5,10 @@ from readiness_agent.scenario_tools import _context, _track_lonlats, run_scenari
 
 
 def ctx(payload):
-    parts = [SimpleNamespace(text="What happens here?"), SimpleNamespace(text=f"CONTEXT v1 {json.dumps(payload)}")]
+    parts = [
+        SimpleNamespace(text="What happens here?"),
+        SimpleNamespace(text=f"CONTEXT v1 {json.dumps(payload)}"),
+    ]
     return SimpleNamespace(user_content=SimpleNamespace(parts=parts))
 
 
@@ -15,15 +18,22 @@ def test_context_is_read_from_the_second_part():
 
 def test_missing_or_bad_context_is_empty():
     assert _context(None) == {}
-    bad = SimpleNamespace(user_content=SimpleNamespace(parts=[SimpleNamespace(text="CONTEXT v1 {")]))
+    bad = SimpleNamespace(
+        user_content=SimpleNamespace(parts=[SimpleNamespace(text="CONTEXT v1 {")])
+    )
     assert _context(bad) == {}
 
 
 def test_track_accepts_linestring_feature_and_point():
     line = {"type": "LineString", "coordinates": [[-85.0, 29.0], [-84.0, 31.0]]}
     assert _track_lonlats({"track": line}) == [(-85.0, 29.0), (-84.0, 31.0)]
-    assert _track_lonlats({"track": {"type": "Feature", "geometry": line}}) == [(-85.0, 29.0), (-84.0, 31.0)]
-    assert _track_lonlats({"track": {"type": "Point", "coordinates": [-81.1, 32.0]}}) == [(-81.1, 32.0)]
+    assert _track_lonlats({"track": {"type": "Feature", "geometry": line}}) == [
+        (-85.0, 29.0),
+        (-84.0, 31.0),
+    ]
+    assert _track_lonlats({"track": {"type": "Point", "coordinates": [-81.1, 32.0]}}) == [
+        (-81.1, 32.0)
+    ]
     assert _track_lonlats({}) == []
 
 
@@ -53,7 +63,12 @@ def test_malformed_geometry_is_dropped():
 
 def test_bad_scenario_and_category_still_run():
     track = {"type": "LineString", "coordinates": [[-85.6, 29.0], [-84.3, 31.6]]}
-    for scenario in [[], "x", {"track": track, "category": "huge"}, {"track": track, "category": 9}]:
+    for scenario in [
+        [],
+        "x",
+        {"track": track, "category": "huge"},
+        {"track": track, "category": 9},
+    ]:
         result = run_scenario(tool_context=ctx({"scenario": scenario, "county_fips": 7}))
         assert result["source"]
 
@@ -65,7 +80,9 @@ def test_bad_date_returns_status_with_source():
 
 
 def test_no_matching_storms_returns_status_with_source():
-    result = run_scenario(lat=10.0, lon=-30.0, heading_deg=180, date="2026-02-01", tool_context=ctx({}))
+    result = run_scenario(
+        lat=10.0, lon=-30.0, heading_deg=180, date="2026-02-01", tool_context=ctx({})
+    )
     assert result["status"] == "no_matching_past_storms"
     assert result["source"]
 
@@ -74,8 +91,13 @@ def test_drawn_scenario_contract(monkeypatch):
     from readiness_agent.scenario import movement
 
     monkeypatch.setattr(movement, "_session", lambda: (_ for _ in ()).throw(OSError("offline")))
-    track = {"type": "LineString", "coordinates": [[-86.5, 27.0], [-85.2, 30.5], [-84.3, 31.6], [-82.0, 34.0]]}
-    result = run_scenario(tool_context=ctx({"county_fips": "13095", "scenario": {"track": track, "category": 4}}))
+    track = {
+        "type": "LineString",
+        "coordinates": [[-86.5, 27.0], [-85.2, 30.5], [-84.3, 31.6], [-82.0, 34.0]],
+    }
+    result = run_scenario(
+        tool_context=ctx({"county_fips": "13095", "scenario": {"track": track, "category": 4}})
+    )
     assert result["source"]
     selected = next(r for r in result["counties"] if r["county_fips"] == "13095")
     assert {"patients", "centres", "stations", "centres_down"} <= set(selected["dialysis_patients"])
@@ -83,7 +105,9 @@ def test_drawn_scenario_contract(monkeypatch):
     assert "modelled" in selected["status"]
     shelter_ids = {r["shelter_id"] for r in result["receiving"]["sites"] if "shelter_id" in r}
     assert set(result["receiving_top"]) <= shelter_ids
-    assert result["statewide"]["counties_affected_in_most_draws"] == len(result["affected_county_fips"])
+    assert result["statewide"]["counties_affected_in_most_draws"] == len(
+        result["affected_county_fips"]
+    )
 
 
 def test_zero_length_track_returns_status_with_source():
@@ -102,11 +126,12 @@ def test_season_tools_return_sourced_error_when_bigquery_fails(monkeypatch):
         raise Forbidden("denied")
 
     monkeypatch.setattr(scenario_tools, "_run_query", fail)
+    monkeypatch.setattr(scenario_tools, "_fetch_site_updates", fail)
     risk = scenario_tools.season_county_risk("13051")
     gaps = scenario_tools.gap_sensitivity()
-    assert risk["status"] == gaps["status"] == "error"
-    assert risk["counties"] == [] and gaps["gaps"] == []
-    assert risk["source"] and gaps["source"]
+    assert gaps["status"] == "error" and gaps["gaps"] == [] and gaps["source"]
+    assert risk["planner_updates"]["status"] == "registry_only"
+    assert [c["county_fips"] for c in risk["counties"]] == ["13051"]
 
 
 def test_switches_merge_context_and_arguments():
@@ -121,11 +146,22 @@ def test_switches_merge_context_and_arguments():
 
 
 def test_malformed_switches_leave_baseline_and_are_reported():
-    track = {"type": "LineString", "coordinates": [[-86.5, 27.0], [-85.2, 30.5], [-84.3, 31.6], [-82.0, 34.0]]}
-    base = run_scenario(tool_context=ctx({"county_fips": "13095", "scenario": {"track": track, "category": 4}}))
+    track = {
+        "type": "LineString",
+        "coordinates": [[-86.5, 27.0], [-85.2, 30.5], [-84.3, 31.6], [-82.0, 34.0]],
+    }
+    base = run_scenario(
+        tool_context=ctx({"county_fips": "13095", "scenario": {"track": track, "category": 4}})
+    )
     for off in ["140058", [123], {"x": 1}]:
-        r = run_scenario(tool_context=ctx({"county_fips": "13095", "scenario": {
-            "track": track, "category": 4, "site_overrides": {"off": off}}}))
+        r = run_scenario(
+            tool_context=ctx(
+                {
+                    "county_fips": "13095",
+                    "scenario": {"track": track, "category": 4, "site_overrides": {"off": off}},
+                }
+            )
+        )
         assert r["receiving"]["lacking_shelter"] == base["receiving"]["lacking_shelter"]
         assert r["receiving"]["ignored_ids"]
         assert "delta" not in r["receiving"]
@@ -149,7 +185,7 @@ def test_season_with_switches_runs_live_and_reports_ignored_ids():
     from readiness_agent.scenario_tools import season_county_risk
 
     r = season_county_risk(county_fips="13127", outlook="el_nino", sites_off=["nope"])
-    assert r["run"] == "live" and r["ignored_ids"] == ["nope"]
+    assert r["ignored_ids"] == ["nope"]
     assert len(r["counties"]) == 1
     assert "a small improvement" in r["outlook_note"] and "115 vs 113" in r["outlook_note"]
 
@@ -176,8 +212,10 @@ def test_county_plan_marks_failed_sections_not_determined(monkeypatch):
     assert plan["audit"]["status"] == "not_determined"
     assert plan["power_outage_frequency"]["by_outlook"]["long_run"]["county_fips"] == "13127"
     eff = plan["generator_switch_effect"]
-    assert eff["statewide_lacking_shelter"]["all_assumed"]["one_in_10"] <= (
-        eff["statewide_lacking_shelter"]["recorded_only"]["one_in_10"])
+    assert (
+        eff["statewide_lacking_shelter"]["all_assumed"]["one_in_10"]
+        <= (eff["statewide_lacking_shelter"]["recorded_only"]["one_in_10"])
+    )
 
 
 def test_county_plan_rejects_non_georgia():
