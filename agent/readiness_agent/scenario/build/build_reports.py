@@ -2,7 +2,12 @@ import json
 from datetime import UTC, datetime
 from types import SimpleNamespace
 
+import numpy as np
+
+from ... import report
 from ... import scenario_tools as st
+from ...evacuation_tools import _dataset_name, _project_id, _run_query
+from .. import data, engine
 from .build_season import load
 
 SAVANNAH_TRACK = {"type": "LineString",
@@ -10,6 +15,9 @@ SAVANNAH_TRACK = {"type": "LineString",
 DEMO_COUNTY = "13051"
 DEMO_RUNS = 20
 DEMO_RUN_INDEX = 7
+IRMA = "2017242N16333"
+REPLAY_SOURCE = ("EAGLE-I observed peak outage per county (ext_eaglei_county_storm_2014_2025) "
+                 "applied to HHS emPOWER, CMS and ACS county counts")
 REPORTS = (
     ("state_long_run", "Georgia, long-run season", lambda: st.state_plan()),
     ("county_chatham", "Chatham County season plan", lambda: st.county_plan(DEMO_COUNTY)),
@@ -17,6 +25,7 @@ REPORTS = (
      lambda: _run(draws=DEMO_RUNS)),
     ("run_chatham_savannah_cat3", f"Gulf-to-Savannah category 3, run {DEMO_RUN_INDEX}",
      lambda: _run(draws=DEMO_RUNS, run_index=DEMO_RUN_INDEX)),
+    ("replay_irma_2017", "Irma 2017 replayed on today's Georgia", lambda: replay(IRMA)),
 )
 SCHEMA = [
     ("report_id", "STRING", "Stable id the agent and frontend request"),
@@ -34,6 +43,34 @@ def _run(**kw):
              SimpleNamespace(text=f"CONTEXT v1 {json.dumps(payload)}")]
     ctx = SimpleNamespace(user_content=SimpleNamespace(parts=parts))
     return st.run_scenario(county_fips=DEMO_COUNTY, tool_context=ctx, **kw)
+
+
+def replay(sid: str) -> dict:
+    from google.cloud import bigquery
+
+    obs = _run_query(
+        f"""SELECT fips_code, peak_share_total, peak_share_status
+            FROM `{_project_id()}.{_dataset_name()}.ext_eaglei_county_storm_2014_2025`
+            WHERE sid = @sid AND STARTS_WITH(fips_code, '13')""",
+        [bigquery.ScalarQueryParameter("sid", "STRING", sid)])
+    shares = {r["fips_code"]: float(r["peak_share_total"]) for r in obs
+              if r["peak_share_status"] == "recorded" and r["peak_share_total"] is not None}
+    skipped = sum(1 for r in obs if r["peak_share_status"] != "recorded")
+    counties = data.counties()
+    share = np.array([[shares.get(c["county_fips"], 0.0) for c in counties]])
+    people = {k: float(v.sum()) for k, v in
+              engine.people_at_risk(SimpleNamespace(outage=share), counties).items()}
+    people = {"power_dependent_at_risk": people["power_dependent"],
+              "oxygen_users_at_risk": people["oxygen"],
+              "dialysis_patients_at_risk": people["dialysis"],
+              "facility_beds_exposed": people["facility_beds"],
+              "needing_transport_no_vehicle": people["no_vehicle"]}
+    rows = [{"county_fips": c["county_fips"], "county_name": c["county_name"],
+             "outage_share": round(shares[c["county_fips"]], 4)}
+            for c in counties if c["county_fips"] in shares]
+    storm = next(s for s in st._MODEL["per_storm"] if s["sid"] == sid)
+    storm = {**storm, "name": storm["storm"]}
+    return {"report": report.replay_report(storm, people, rows, skipped, REPLAY_SOURCE)}
 
 
 def main() -> None:

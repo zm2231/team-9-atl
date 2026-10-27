@@ -34,3 +34,7 @@ figure  = {key, label, unit, provenance: "registry" | "survey" | "simulated" | "
 - `items` are section-specific records: tracts and facilities, destinations, fix lists, labelled storms, worst events, audit rows. Render them as tables; every row carries its own fields.
 
 Fixtures, from real runs on 27 Oct 2026 (Chatham, long_run; Gulf-to-Savannah track, category 3, `draws=20`, `run_index=7`): `frontend/tests/mocks/report.{county,state,run,runs}.fixture.json`.
+
+## Replay reports
+
+`replay_irma_2017` is a `run`-scope report with `subject.replay: true`: a past storm's observed EAGLE-I peak outage per county applied to today's county counts, with no model. Its figures are single values with provenance `registry`; counties with a capped whole-county reading are left out, so the figures are floors. `where_they_would_go`, `what_to_fix`, `who_cannot_leave` and `audit` are `not_applicable`.
