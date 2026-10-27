@@ -275,7 +275,7 @@ def run_scenario(
                 "affected_threshold_share": AFFECTED_SHARE,
                 "affected_county_rule": "at least 10% outage in at least half of the draws",
                 "dialysis_down_share": DIALYSIS_DOWN_SHARE,
-                "relocation_share": RELOCATION_SHARE[case],
+                "share_of_power_dependent_at_risk_seeking_a_powered_seat": RELOCATION_SHARE[case],
                 "case": case,
             },
         },
