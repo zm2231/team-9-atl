@@ -20,7 +20,7 @@
     "origin": "gulf",
     "case": "low",
     "volume_to_capacity": 0.0,
-    "route_source": "TIGER I-95 (not in the GDOT layer)",
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
     "status": "assumption"
   },
   {
@@ -44,7 +44,7 @@
     "origin": "gulf",
     "case": "base",
     "volume_to_capacity": 0.0,
-    "route_source": "TIGER I-95 (not in the GDOT layer)",
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
     "status": "assumption"
   },
   {
@@ -68,7 +68,7 @@
     "origin": "gulf",
     "case": "high",
     "volume_to_capacity": 0.0,
-    "route_source": "TIGER I-95 (not in the GDOT layer)",
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
     "status": "assumption"
   },
   {
@@ -92,7 +92,7 @@
     "origin": "florida_peninsula",
     "case": "low",
     "volume_to_capacity": 0.167,
-    "route_source": "TIGER I-95 (not in the GDOT layer)",
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
     "status": "assumption"
   },
   {
@@ -116,7 +116,7 @@
     "origin": "florida_peninsula",
     "case": "base",
     "volume_to_capacity": 0.936,
-    "route_source": "TIGER I-95 (not in the GDOT layer)",
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
     "status": "assumption"
   },
   {
@@ -140,7 +140,7 @@
     "origin": "florida_peninsula",
     "case": "high",
     "volume_to_capacity": 3.61,
-    "route_source": "TIGER I-95 (not in the GDOT layer)",
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
     "status": "assumption"
   },
   {
@@ -164,7 +164,7 @@
     "origin": "atlantic_ga",
     "case": "low",
     "volume_to_capacity": 0.073,
-    "route_source": "TIGER I-95 (not in the GDOT layer)",
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
     "status": "assumption"
   },
   {
@@ -188,7 +188,7 @@
     "origin": "atlantic_ga",
     "case": "base",
     "volume_to_capacity": 0.288,
-    "route_source": "TIGER I-95 (not in the GDOT layer)",
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
     "status": "assumption"
   },
   {
@@ -212,7 +212,7 @@
     "origin": "atlantic_ga",
     "case": "high",
     "volume_to_capacity": 0.857,
-    "route_source": "TIGER I-95 (not in the GDOT layer)",
+    "route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)",
     "status": "assumption"
   }
 ]

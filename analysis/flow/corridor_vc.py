@@ -14,7 +14,7 @@ LANE_FLOW_VPH = {"low": 1800, "base": 1500, "high": 1200}
 CORRIDORS = {
     "I-75 S": {"route_source": "GDOT SR 401 (FL line to Macon)", "lanes": 3, "contraflow_lanes": 0},
     "I-16": {"route_source": "GDOT SR 404 + GDOT contraflow route", "lanes": 2, "contraflow_lanes": 2},
-    "I-95": {"route_source": "TIGER I-95 (not in the GDOT layer)", "lanes": 3, "contraflow_lanes": 0},
+    "I-95": {"route_source": "I-95 corridor approximation in common.py (I-95 is not in the GDOT layer)", "lanes": 3, "contraflow_lanes": 0},
 }
 # Share of each origin county's leaving vehicles on each corridor's busiest Georgia segment.
 # A vehicle that takes I-95 north to I-16 west counts on both.
