@@ -242,11 +242,11 @@ def fit(feats, fips, sids, share, cust, county_ids):
 
     tau_c, tau_s = 0.70, 0.80
     coef, cov, sigma = solve(tau_c, tau_s)
-    for _ in range(EM_ITERS - 1):
+    for _ in range(EM_ITERS):
+        coef, cov, sigma = solve(tau_c, tau_s)
         diag = np.diag(cov)
         tau_c = float(np.sqrt(np.mean(coef[k:k + nc] ** 2 + diag[k:k + nc])))
         tau_s = float(np.sqrt(np.mean(coef[k + nc:] ** 2 + diag[k + nc:])))
-        coef, cov, sigma = solve(tau_c, tau_s)
     keep = np.arange(k + nc)
     return {
         "mu": mu, "sd": sd, "mean": coef[keep], "cov": cov[np.ix_(keep, keep)],
