@@ -80,7 +80,7 @@ result carries a `source` naming its dataset and table (Constitution III):
 | `get_shelters(shelter_ids)` | `{shelters: shelter_record[], source}`, in the order given, at most 25 | The `CONTEXT v1` `shelter_id`, scenario `receiving_top` and `affected_shelter_ids` |
 | `find_vulnerable_tracts(state, county, county_fips, limit)` | `{tracts: [...], source}` | Highlighting (`county_fips`) |
 | `find_power_dependent_counties(state, county, county_fips, limit)` | `{counties: [...], source}` | Highlighting (`county_fips`). County-level only |
-| `build_readiness_brief(state, county, county_fips, …)` | `{vulnerable_tracts, shelters_to_verify, medical_dependency, sources, could_not_tell}` | Highlighting, counted "what we could not tell you" |
+| `build_readiness_brief(county_fips, tract_limit, destination_limit)` | `{county_fips, who_cannot_leave, where_they_would_go, what_to_fix, could_not_tell}` | Highlighting (`shelter_id` in destinations), counted "what we could not tell you" |
 | `record_live_check(shelter_id, status, place_id)` | `{live_check: {...}}` | The discrepancy marker (spec edge case, FR-008) |
 
 `shelter_record` is the same shape as a map-data `Shelter` (`agent/readiness_agent/map_data.py`),
