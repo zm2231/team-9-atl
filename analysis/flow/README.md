@@ -33,7 +33,7 @@ Storm-scenario origin → route → host results are in [SCENARIOS.md](SCENARIOS
 
 ## Cleaning rules applied (`common.py`)
 
-Applied from the team's Georgia checklist. Each rule is an analysis choice, and FEMA's values are
+Applied from the project's Georgia checklist. Each rule is an analysis choice, and FEMA's values are
 never overwritten:
 
 | Rule | Effect on Georgia (`capacity.py`, `out/numbers.json → capacity.flags`) |
@@ -266,7 +266,7 @@ with better clerical practice.
   tract 13001950201, `total_pop` is 2,276 while `svi_total_pop` and ACS 2022 are both 2,392.
   Hypothesis: `total_pop` comes from a different ACS release. Rates here use `total_pop`; audit
   shares use B03002.
-- ACS margins of error on carless households are large in many tracts (team checklist). The top-20
+- ACS margins of error on carless households are large in many tracts (project checklist). The top-20
   list is a single ranking; robustness across MOE draws is not done here.
 - The coastal-tract rule (`CFLD_EXPP > 0`) includes tracts with tiny exposure (Folkston's is 0.3%).
   The exposure-weighted counts carry that information; the tract list does not.
