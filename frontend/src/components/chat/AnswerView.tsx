@@ -1,3 +1,4 @@
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { segmentAnswer } from "../../lib/grounding";
@@ -13,9 +14,17 @@ import SourceList from "./SourceList";
  * Accepted limitation (T045): the live/registry split is applied per segment, so a markdown table
  * or list that spans a segment boundary renders as separate blocks.
  */
+const CHIP_LIMIT = 8;
+
 export default function AnswerView({ exchange, onRetry }: { exchange: ChatExchange; onRetry: () => void }) {
   const { dispatch, shelterById, countyByFips } = useStore();
   const segments = segmentAnswer(exchange.text, exchange.groundingMetadata);
+  const [allRefs, setAllRefs] = useState(false);
+  const refCount = exchange.referenced_county_fips.length + exchange.referenced_shelter_ids.length;
+  const countyRefs = allRefs ? exchange.referenced_county_fips : exchange.referenced_county_fips.slice(0, CHIP_LIMIT);
+  const shelterRefs = allRefs
+    ? exchange.referenced_shelter_ids
+    : exchange.referenced_shelter_ids.slice(0, Math.max(0, CHIP_LIMIT - countyRefs.length));
 
   return (
     <div className="answer" data-testid="answer">
@@ -61,16 +70,21 @@ export default function AnswerView({ exchange, onRetry }: { exchange: ChatExchan
 
       {(exchange.referenced_shelter_ids.length > 0 || exchange.referenced_county_fips.length > 0) && (
         <div className="chips" style={{ padding: "4px 0" }}>
-          {exchange.referenced_county_fips.map((f) => (
+          {countyRefs.map((f) => (
             <button key={f} type="button" className="chip" onClick={() => dispatch({ type: "selectCounty", fips: f })}>
               {countyByFips.get(f)?.name ?? f} County
             </button>
           ))}
-          {exchange.referenced_shelter_ids.map((id) => (
+          {shelterRefs.map((id) => (
             <button key={id} type="button" className="chip" onClick={() => dispatch({ type: "selectShelter", id })}>
               {shelterById.get(id)?.name ?? id}
             </button>
           ))}
+          {refCount > CHIP_LIMIT && (
+            <button type="button" className="chip" onClick={() => setAllRefs((v) => !v)}>
+              {allRefs ? "Show fewer" : `+${refCount - CHIP_LIMIT} more`}
+            </button>
+          )}
         </div>
       )}
     </div>
