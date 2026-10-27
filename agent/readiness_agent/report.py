@@ -1,5 +1,7 @@
 from typing import Any
 
+from .scenario import data
+
 REPORT_VERSION = 1
 SECTIONS = (
     "who_cannot_leave",
@@ -95,10 +97,14 @@ PEOPLE_NOTE = ("Lacking shelter and needing transport are separate needs and are
                "one person can be in both. These figures are planning arithmetic on county "
                "totals and stated assumptions (share seeking a seat, Florida inflow, patients per "
                "station), not counts of unique people.")
-SEASON_NOTE = ("Season figures are a planning stress test, not a forecast. Back-testing 2018-2025, "
-               "the model expected 119 county outages of 25%+ statewide against 200 observed, and "
-               "it under-predicts major storms (Irma 2017: 38% observed, 11% modelled); read the "
-               "1-in-10 and 1-in-100 figures as floors for a major storm.")
+def season_note() -> str:
+    sw = data.season_backtest()["statewide"]
+    irma = next(s for s in data.outage_metrics()["per_storm"] if s["storm"] == "Irma 2017")
+    return (f"Season figures are a planning stress test, not a forecast. Back-testing 2018-2025, "
+            f"the model expected {sw['expected']:.0f} county outages of 25%+ statewide against "
+            f"{sw['observed']} observed, and it under-predicts major storms (Irma 2017: "
+            f"{irma['observed_mean']:.0%} observed, {irma['predicted_mean']:.0%} modelled); read "
+            f"the 1-in-10 and 1-in-100 figures as floors for a major storm.")
 
 
 def county_report(plan: dict, profile: dict | None) -> dict[str, Any]:
@@ -144,7 +150,7 @@ def county_report(plan: dict, profile: dict | None) -> dict[str, Any]:
         s["power_outage"] = section(src, figures=[figure(
             "p_outage25_per_year", "Chance per year of a 25%+ customer outage", "share",
             "simulated", src, value=p25)], note=" ".join(
-            x for x in (row.get("note"), SEASON_NOTE) if x))
+            x for x in (row.get("note"), season_note()) if x))
         s["people_at_risk"] = section(src, figures=_people_season(row, src), note=PEOPLE_NOTE)
     else:
         s["power_outage"] = missing(freq.get("reason", "season model unavailable"))
@@ -216,7 +222,7 @@ def state_report(run: dict, worst: list[dict] | None, gaps: dict | None) -> dict
     s["power_outage"] = section(src, figures=[figure(
         "p_any_county_outage25_per_year",
         "Chance per year that any Georgia county has a 25%+ customer outage", "share",
-        "simulated", src, value=sw.get("p_any_county_outage25_per_year"))], note=SEASON_NOTE)
+        "simulated", src, value=sw.get("p_any_county_outage25_per_year"))], note=season_note())
     s["people_at_risk"] = section(src, figures=_people_season(sw, src), note=PEOPLE_NOTE)
     s["where_they_would_go"] = not_applicable(
         "Destinations are matched per county; ask for a county plan.")
@@ -314,6 +320,46 @@ def run_report(result: dict) -> dict[str, Any]:
                "runs": runs, "scenario": {k: sc.get(k) for k in
                                           ("source", "origin", "category", "month")}}
     return _wrap(scope, subject, None, s, result.get("source", ""))
+
+
+def replay_report(storm: dict, people: dict, rows: list[dict], skipped: int,
+                  source: str) -> dict[str, Any]:
+    s: dict[str, Any] = {}
+
+    def fig(key, label, unit):
+        return figure(key, label, unit, "registry", source, value=round(people[key]))
+
+    affected = [r for r in rows if r["outage_share"] >= 0.25]
+    s["power_outage"] = section(source, figures=[
+        figure("counties_outage25", "Counties with 25%+ outage (observed)", "count", "registry",
+               source, value=len(affected))],
+        items=sorted(rows, key=lambda r: -r["outage_share"]),
+        note=f"Observed peak outage share per county in {storm['name']}. {skipped} counties "
+             "had a capped whole-county reading and are left out, so every figure is a floor.")
+    s["people_at_risk"] = section(source, figures=[
+        fig("power_dependent_at_risk", "Power-dependent residents losing power", "people"),
+        fig("oxygen_users_at_risk", "Oxygen users losing power", "people"),
+        fig("dialysis_patients_at_risk", "Dialysis patients whose centre is down", "people"),
+        fig("facility_beds_exposed", "Nursing-home and assisted-living beds exposed", "beds"),
+        fig("needing_transport_no_vehicle", "Needing transport: no vehicle (65+ households)",
+            "people"),
+    ], note=PEOPLE_NOTE)
+    s["storm_history"] = section(source, note=(
+        f"Stress test: {storm['name']}'s observed outages applied to today's residents and "
+        f"facilities, with no model. The outage model predicted {storm['predicted_mean']:.0%} "
+        f"average outage across its {storm['counties']} Georgia and Florida counties against "
+        f"{storm['observed_mean']:.0%} observed."))
+    for k, why in (("who_cannot_leave", "Ask for a county plan for tracts and facilities."),
+                   ("where_they_would_go", "A replay has no drawn track to match destinations."),
+                   ("what_to_fix", "Compare against a county plan's fix list."),
+                   ("audit", "The audit compares a county plan's ranked tracts.")):
+        s[k] = not_applicable(why)
+    s["planner_updates"] = section("scenario_site_updates", note="No planner updates in effect.")
+    s["could_not_tell"] = section(source, items=[
+        "How long power stayed off; the replay uses each county's peak outage.",
+        "Whether today's grid would fail the same way it did in this storm."])
+    subject = {"storm": storm["name"], "sid": storm["sid"], "replay": True}
+    return _wrap("run", subject, None, s, source)
 
 
 def _wrap(scope: str, subject: dict, outlook: dict | None, sections: dict,
