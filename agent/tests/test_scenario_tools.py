@@ -151,7 +151,7 @@ def test_season_with_switches_runs_live_and_reports_ignored_ids():
     r = season_county_risk(county_fips="13127", outlook="el_nino", sites_off=["nope"])
     assert r["run"] == "live" and r["ignored_ids"] == ["nope"]
     assert len(r["counties"]) == 1
-    assert "a small improvement" in r["outlook_note"] and "115 vs 113" in r["outlook_note"]
+    assert "of 159 counties" in r["outlook_note"] and "80% target" in r["outlook_note"]
 
 
 def test_outlook_notes_state_backtest_honestly():
