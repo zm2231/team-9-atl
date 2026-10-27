@@ -322,7 +322,7 @@ interface StoreValue {
 
 const StoreContext = createContext<StoreValue | null>(null);
 
-function browserStorage(): Storage | null {
+export function browserStorage(): Storage | null {
   try {
     return window.localStorage;
   } catch {

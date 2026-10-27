@@ -1,14 +1,6 @@
 import { useEffect, useRef } from "react";
 import { STORAGE_KEY, loadHistory, saveHistory } from "../lib/history";
-import { useStore } from "./store";
-
-function browserStorage(): Storage | null {
-  try {
-    return window.localStorage;
-  } catch {
-    return null;
-  }
-}
+import { browserStorage, useStore } from "./store";
 
 /**
  * The only code that touches localStorage (feature 002, research R1/R2). Loads once, then writes

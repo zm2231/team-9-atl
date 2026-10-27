@@ -91,6 +91,11 @@ button {
   color: var(--muted);
   font-size: 12px;
 }
+.topbar__help {
+  margin-left: auto;
+  font-size: 12px;
+  flex-shrink: 0;
+}
 .banner {
   padding: 8px 16px;
   font-size: 13px;
@@ -493,6 +498,11 @@ table.receiving .flag {
   border-radius: 6px;
   padding: 3px 10px;
 }
+.btn--primary {
+  background: var(--fg);
+  color: var(--panel);
+  border-color: var(--fg);
+}
 .btn[aria-pressed="true"] {
   background: var(--track);
   color: #fff;
@@ -802,4 +812,86 @@ table.receiving .flag {
 .report__counties th:not(:first-child) {
   text-align: right;
   font-variant-numeric: tabular-nums;
+}
+
+.tour {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+.tour__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+.tour__spot {
+  position: absolute;
+  border-radius: 8px;
+  outline: 2px solid var(--county-selected);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+.tour__card {
+  position: absolute;
+  width: min(360px, calc(100vw - 32px));
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--fg);
+  font-size: 14px;
+  line-height: 1.45;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
+}
+.tour__card--center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.tour__card p {
+  margin: 0 0 12px;
+}
+.tour__card .tour__count {
+  margin-bottom: 4px;
+}
+.tour__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tour__nav {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+.tour__nav .btn {
+  padding: 5px 14px;
+}
+.tour__nav .btn[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+.tour__actions .link-btn {
+  font-size: 13px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tour__spot,
+  .tour__card {
+    transition:
+      top 0.2s ease,
+      left 0.2s ease,
+      width 0.2s ease,
+      height 0.2s ease;
+  }
+}
+@media (max-width: 600px) {
+  .tour__card {
+    width: calc(100vw - 24px);
+  }
+  .tour__card--center {
+    top: auto;
+    bottom: 12px;
+    left: 12px;
+    transform: none;
+  }
 }
