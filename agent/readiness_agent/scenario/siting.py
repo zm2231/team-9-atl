@@ -16,7 +16,7 @@ SCORE_KEYS = (
 )
 LABEL = (
     "modelled reduction; assumes {n} powered seats for new or converted sites and the recorded "
-    "seats for upgraded medical shelters; straight-line reach of {km:.0f} km"
+    "seats for upgraded medical shelters; straight-line reach of {km:.0f} km ({mi:.0f} mi)"
 )
 NOT_ADDITIVE = (
     "Reductions do not add up across sites: two sites can serve the same people. The combination "
@@ -139,7 +139,7 @@ def recommend(
         "outlook": outlook,
         "county_fips": county_fips,
         "scope": "county" if county is not None else "statewide",
-        "label": LABEL.format(n=NEW_SITE_SEATS, km=season.RECEIVE_KM),
+        "label": LABEL.format(n=NEW_SITE_SEATS, km=season.RECEIVE_KM, mi=season.RECEIVE_KM * 0.621371),
         "note": NOT_ADDITIVE,
         "candidates_from": source,
         "lacking_shelter_1in10_now": round(

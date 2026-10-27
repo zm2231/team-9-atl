@@ -27,7 +27,7 @@ PROBABILITY_LABEL = "share of simulated seasons"
 NOAA_URL = "https://www.cpc.ncep.noaa.gov/products/outlooks/hurricane2026/August/hurricane.shtml"
 
 OUTLOOKS = {
-    "long_run": "Every storm 1950-2025 that came within 250 km of Georgia",
+    "long_run": "Every storm 1950-2025 that came within 250 km (155 mi) of Georgia",
     "recent": "Storms 2000-2025 only",
     "la_nina": "Storms in La Nina years (Aug-Oct ONI <= -0.5)",
     "neutral": "Storms in ENSO-neutral years (Aug-Oct ONI between -0.5 and 0.5)",

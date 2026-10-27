@@ -295,7 +295,7 @@ def season_conditions(as_of_date: dt.date | str | None = None) -> dict:
             "selected": m["selected"],
         },
         "method": (
-            "Storms per year are counted within 250 km of Georgia; shares are of those storms. "
+            "Storms per year are counted within 250 km (155 mi) of Georgia; shares are of those storms. "
             "The conditions model uses a predictor only where its leave-one-season-out back-test "
             "beat the long-run rate; otherwise that part is the 1950-2025 long-run value. NOAA's "
             "basin counts are converted to Georgia by their ratio to the 1991-2020 average and "
