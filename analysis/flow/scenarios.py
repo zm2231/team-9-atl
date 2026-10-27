@@ -16,6 +16,8 @@ from common import (
 
 EXTDATA = Path(os.environ.get("EXTDATA", Path.home() / "work" / "extdata"))
 IBTRACS = EXTDATA / "ibtracs" / "ibtracs_na_within300km_ga.parquet"
+GDOT = EXTDATA / "gdot_evac"
+GEMA_CONTRAFLOW = EXTDATA / "gema" / "contraflow_intersections.geojson"
 TIGER = EXTDATA / "tiger_roads" / "tl_2023_13_prisecroads.shp"
 BUF = CORRIDOR_BUFFER_KM * 1000
 LEVELS = ("low", "base", "high")
@@ -23,10 +25,9 @@ LEVELS = ("low", "base", "high")
 GA_COAST = ("13051", "13029", "13179", "13191", "13127", "13039")
 GA_COASTAL_FLOOD = GA_COAST + ("13025", "13049", "13103", "13183", "13251", "13305")
 
-# Assumption: the coastal exit network is the Interstates and US highways that leave the six coastal
-# counties inland or cross the Florida line into southeast Georgia, south of Macon and Augusta.
-EXIT_NETWORK = r"^(I- (16|75)|US Hwy (1|23|25|80|82|84|280|301|341))( |$)"
-EXIT_NETWORK_MAX_LAT = 33.0
+# GDOT route ids encode the state route number: SR 401 is I-75, SR 404 is I-16.
+GDOT_I75 = "1000100040100INC"
+GDOT_I16 = "1000100040400INC"
 MACON_LAT = 32.84
 ATLANTA_LON = -84.40
 
@@ -39,14 +40,14 @@ SCENARIOS = {
     "a_ga_coast": {
         "label": "(a) Atlantic hit on the Georgia coast",
         "origins": {"GA": {"counties": GA_COAST, "to_ga": {"low": 0.60, "base": 0.75, "high": 0.90}}},
-        "routes": "exit_network",
+        "routes": "gdot_network",
         "entry": "origin",
         "exclude_hosts": GA_COAST,
     },
     "a_ga_coast_wider_hosts_excluded": {
         "label": "(a') as (a), with all 12 coastal-flood counties unavailable as hosts",
         "origins": {"GA": {"counties": GA_COAST, "to_ga": {"low": 0.60, "base": 0.75, "high": 0.90}}},
-        "routes": "exit_network",
+        "routes": "gdot_network",
         "entry": "origin",
         "exclude_hosts": GA_COASTAL_FLOOD,
     },
@@ -57,7 +58,7 @@ SCENARIOS = {
                    "to_ga": {"low": 0.20, "base": 0.35, "high": 0.50}},
             "GA": {"counties": GA_COAST, "to_ga": {"low": 0.60, "base": 0.75, "high": 0.90}},
         },
-        "routes": "exit_network",
+        "routes": "gdot_network",
         "entry": "origin",
         "exclude_hosts": GA_COAST,
     },
@@ -146,35 +147,54 @@ con.execute(f"""
 """)
 assert one(con, "SELECT COUNT(*) FROM roads WHERE route = 'I- 75'") > 0
 
+con.execute(f"""
+    CREATE TABLE gdot_lines AS
+    SELECT ROUTE_ID AS route_id, geom AS geom_ll, ST_Transform(geom, {PROJ}) AS geom
+    FROM ST_Read('{GDOT / 'hurricane_evacuation_routes.geojson'}')
+    UNION ALL
+    SELECT 'contraflow ' || TITLE, geom, ST_Transform(geom, {PROJ})
+    FROM ST_Read('{GDOT / 'hurricane_evacuation_contraflow_route.geojson'}')
+""")
+assert one(con, "SELECT COUNT(*) FROM gdot_lines") == 110
+con.execute(f"""CREATE TABLE contraflow_points AS
+                SELECT ST_Transform(geom, {PROJ}) AS geom FROM ST_Read('{GEMA_CONTRAFLOW}')""")
+assert one(con, "SELECT COUNT(*) FROM contraflow_points") == 32
+
 
 def linestring(pts):
     return f"ST_Transform(ST_GeomFromText('LINESTRING({', '.join(f'{x} {y}' for x, y in pts)})'), {PROJ})"
 
 
-route_sql = {
-    "exit_network": f"""SELECT geom FROM roads
-                        WHERE regexp_matches(route, '{EXIT_NETWORK}') AND lat < {EXIT_NETWORK_MAX_LAT}""",
-    "i75": "SELECT geom FROM roads WHERE route = 'I- 75'",
-    "i20": f"SELECT geom FROM roads WHERE route = 'I- 20' AND lon > {ATLANTA_LON}",
+# GDOT's hurricane layer is the official corridor geometry; TIGER fills only what it does not cover.
+ROUTES = {
+    "gdot_network": ("GDOT hurricane evacuation routes + contraflow", "SELECT geom FROM gdot_lines"),
+    "i75": ("GDOT SR 401 (FL line to Macon) + TIGER I-75 north of Macon",
+            f"""SELECT geom FROM gdot_lines WHERE route_id = '{GDOT_I75}'
+                UNION ALL SELECT geom FROM roads WHERE route = 'I- 75' AND lat >= {MACON_LAT}"""),
+    "i20": ("TIGER I-20 east of Atlanta (not in the GDOT layer)",
+            f"SELECT geom FROM roads WHERE route = 'I- 20' AND lon > {ATLANTA_LON}"),
 }
-for name, sql in route_sql.items():
-    print(name, "segments:", one(con, f"SELECT COUNT(*) FROM ({sql})"))
+route_segments = {name: one(con, f"SELECT COUNT(*) FROM ({sql})") for name, (_, sql) in ROUTES.items()}
+print("route segments:", route_segments)
 
 check = {}
-for route, max_lat, name in (("I- 75", MACON_LAT, "I-75 south (FL line to Macon)"),
-                             ("I- 16", 90, "I-16 (Savannah to Macon)")):
-    km = con.execute(f"""
-        WITH v AS (
-            SELECT ST_Transform(p, {PROJ}) AS p FROM (
-                SELECT UNNEST(ST_Dump(ST_Points(geom_ll))).geom AS p FROM roads WHERE route = '{route}'
-            ) WHERE ST_Y(p) < {max_lat}
-        )
-        SELECT max(ST_Distance(p, {linestring(CORRIDORS[name])})) / 1000,
-               quantile_cont(ST_Distance(p, {linestring(CORRIDORS[name])}), 0.5) / 1000
-        FROM v
-    """).fetchall()[0]
-    check[name] = {"max_km": km[0], "median_km": km[1]}
-    print(f"{name}: TIGER vertices within max {km[0]:.1f} km, median {km[1]:.1f} km of the approximation")
+for tiger_route, gdot_id, name in (("I- 75", GDOT_I75, "I-75 south (FL line to Macon)"),
+                                   ("I- 16", GDOT_I16, "I-16 (Savannah to Macon)")):
+    max_lat = MACON_LAT if tiger_route == "I- 75" else 90
+    for source, lines in (("gdot", f"SELECT geom_ll FROM gdot_lines WHERE route_id = '{gdot_id}'"),
+                          ("tiger", f"SELECT geom_ll FROM roads WHERE route = '{tiger_route}'")):
+        km = con.execute(f"""
+            WITH v AS (
+                SELECT ST_Transform(p, {PROJ}) AS p FROM (
+                    SELECT UNNEST(ST_Dump(ST_Points(geom_ll))).geom AS p FROM ({lines})
+                ) WHERE ST_Y(p) < {max_lat}
+            )
+            SELECT max(ST_Distance(p, {linestring(CORRIDORS[name])})) / 1000,
+                   quantile_cont(ST_Distance(p, {linestring(CORRIDORS[name])}), 0.5) / 1000
+            FROM v
+        """).fetchall()[0]
+        check.setdefault(name, {})[source] = {"max_km": km[0], "median_km": km[1]}
+        print(f"{name}: {source} vertices within max {km[0]:.1f} km, median {km[1]:.1f} km of the approximation")
 
 
 def total(df, *cols) -> float:
@@ -223,7 +243,7 @@ for key, sc in SCENARIOS.items():
         ey = sum(total(d, "pop", "lat") for d in origin_frames.values()) / tot
     excl = ", ".join(f"'{c}'" for c in sc["exclude_hosts"]) or "''"
     hosts = con.execute(f"""
-        WITH r AS ({route_sql[sc['routes']]}),
+        WITH r AS ({ROUTES[sc['routes']][1]}),
         s AS (
             SELECT h.* FROM host_shelters h
             WHERE h.county_fips NOT IN ({excl})
@@ -238,6 +258,8 @@ for key, sc in SCENARIOS.items():
     """)
     cols = [d[0] for d in hosts.description]
     hosts = [dict(zip(cols, row)) for row in hosts.fetchall()]
+    contraflow = one(con, f"""SELECT COUNT(*) FROM contraflow_points c WHERE EXISTS (
+                                  SELECT 1 FROM ({ROUTES[sc['routes']][1]}) r WHERE ST_DWithin(c.geom, r.geom, 1000))""")
     route_capacity = float(sum(h["general_capacity"] for h in hosts))
     route_medical = float(sum(h["medical_seats"] or 0 for h in hosts))
     route_wheelchair = float(sum(h["wheelchair_yes_seats"] or 0 for h in hosts))
@@ -285,7 +307,7 @@ for key, sc in SCENARIOS.items():
             if take > 0:
                 reached = round(km, 1)
         summary.append({
-            "scenario": key, "label": sc["label"], "level": lvl,
+            "scenario": key, "label": sc["label"], "level": lvl, "route_source": ROUTES[sc["routes"]][0],
             "evacuation_rate": ev, "shelter_use": su, "carless_shelter_use": csu,
             "to_ga_share": "; ".join(f"{st} {o['to_ga'][lvl]}" for st, o in sc["origins"].items()),
             "people_leaving_origin": round(leave), "people_into_ga_hosts": round(into_ga),
@@ -293,7 +315,7 @@ for key, sc in SCENARIOS.items():
             "carless_georgians_needing_transport": round(carless_into),
             "carless_out_of_state_not_arriving": round(carless_stay),
             "shelter_seekers": round(seekers),
-            "route_host_counties": len(hosts), "route_general_capacity": route_capacity,
+            "route_contraflow_intersections": contraflow, "route_host_counties": len(hosts), "route_general_capacity": route_capacity,
             "route_medical_seats": route_medical, "route_medical_seats_by_county": medical_counties,
             "route_wheelchair_yes_seats": route_wheelchair,
             "load_on_route_general_capacity": round(seekers / route_capacity, 3),
@@ -330,7 +352,8 @@ save_numbers("scenarios", {
     "storms_since_1950_hurricane_within_300km": one(con, "SELECT COUNT(*) FROM storms"),
     "storm_classes": {c: {"storms": n, "names": names} for c, n, names in storm_counts},
     "ga_coast_offshore_near_misses": {"storms": near_miss[0], "names": near_miss[1], "km": NEAR_MISS_KM},
-    "corridor_check_vs_tiger": check,
+    "corridor_check": check,
+    "route_segments": route_segments,
     "ga_coast_usable_shelters": coast[0],
     "ga_coast_clean_seats": coast[1],
     "ga_coast_shelters_in_surge": coast[2],

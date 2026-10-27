@@ -10,9 +10,15 @@ Inputs beyond the snapshot. `EXTDATA` overrides the root (default `~/work/extdat
 
 - NOAA IBTrACS v04r01, North Atlantic, storms within 300 km of Georgia (`ibtracs/`). Cite Knapp et
   al. 2010 and Gahtan et al. 2024, doi:10.25921/82ty-9e16. 2026 tracks are provisional.
+- Georgia DOT hurricane evacuation routes and the I-16 contraflow route (`gdot_evac/`), the official
+  corridor layer. Source: Georgia Department of Transportation (GDOT) EGIS, Office of Transportation
+  Data. No licence is stated; the event organizers cleared Georgia state agency data for use with
+  attribution on 2026-10-27.
 - US Census Bureau TIGER/Line 2023 primary and secondary roads, Georgia
-  (`tiger_roads/tl_2023_13_prisecroads.shp`), public domain. Routes are selected by name. The GDOT
-  evacuation-route layer states no licence and is not used.
+  (`tiger_roads/tl_2023_13_prisecroads.shp`, public domain), only where the GDOT layer has no route:
+  I-75 north of Macon and I-20.
+- GEMA I-16 contraflow intersections (`gema/contraflow_intersections.geojson`). Source: Georgia
+  Emergency Management and Homeland Security Agency (GEMA/HS); cleared with attribution as above.
 - Origin populations come from the Florida, South Carolina and Georgia snapshots (`vulnerability_tracts`,
   `power_dependent_counties`).
 
@@ -53,19 +59,23 @@ as (b) even though it later struck near Savannah. Full list: `out/scenario_storm
 
 | Scenario | Origin (counties) | Georgia route | Host exclusions | Fill starts at |
 |---|---|---|---|---|
-| (a) Atlantic hit on GA coast | 6 GA coastal counties | coastal exit network: TIGER I-16, I-75 and US 1, 23, 25, 80, 82, 84, 280, 301, 341, segments whose centroid is south of 33.0° N (557 segments) | the 6 origin counties | origin population centroid |
+| (a) Atlantic hit on GA coast | 6 GA coastal counties | GDOT hurricane evacuation network (98 segments, incl. I-16 SR 404) + I-16 contraflow | the 6 origin counties | origin population centroid |
 | (a′) same, wider exclusion | same | same | all 12 counties with NRI coastal-flood exposure | same |
-| (b) NE Florida / Jacksonville | Nassau, Duval, St Johns, Flagler, plus the 6 GA coastal counties (assumption: as in Irma 2017, Georgia's coast is ordered out too) | coastal exit network | the 6 GA coastal counties | origin population centroid |
-| (c) FL west coast, Milton-type | Pinellas, Hillsborough, Pasco, Manatee, Sarasota, Hernando, Citrus | TIGER I-75, Florida line to Tennessee (49 segments) | none | I-75 at the Florida line |
-| (d) Carolinas | SC: Beaufort, Jasper, Colleton, Charleston, Dorchester, Berkeley, Georgetown, Horry | TIGER I-20, SC line to Atlanta (segment centroids east of 84.40° W; 22 segments) | none | I-20 at the SC line |
+| (b) NE Florida / Jacksonville | Nassau, Duval, St Johns, Flagler, plus the 6 GA coastal counties (assumption: as in Irma 2017, Georgia's coast is ordered out too) | GDOT network | the 6 GA coastal counties | origin population centroid |
+| (c) FL west coast, Milton-type | Pinellas, Hillsborough, Pasco, Manatee, Sarasota, Hernando, Citrus | I-75: GDOT SR 401 to Macon + TIGER I-75 north of Macon (segment centroids at or above 32.84° N) | none | I-75 at the Florida line |
+| (d) Carolinas | SC: Beaufort, Jasper, Colleton, Charleston, Dorchester, Berkeley, Georgetown, Horry | TIGER I-20, segment centroids east of 84.40° W (not in the GDOT layer) | none | I-20 at the SC line |
 
-A host shelter is any usable shelter within 15 km of the scenario's route lines. **Assumption:** the
-coastal exit network is the Interstates and US highways that leave the six coastal counties inland or
-cross the Florida line into southeast Georgia, keeping segments whose centroid is south of 33.0° N
-(south of Macon and Augusta). The list
-is in `scenarios.py: EXIT_NETWORK`. The hand-drawn corridors used in the README sit close to the
-TIGER geometry: TIGER I-75 vertices south of Macon (32.84° N) are within a median 1.8 km of the I-75
-south polyline (max 5.8 km), and I-16 vertices within a median 3.0 km (max 7.6 km).
+`route_source` in `out/scenario_summary.csv` names the layer each scenario uses. A host shelter is
+any usable shelter within 15 km of the scenario's route lines. `route_contraflow_intersections`
+counts GEMA I-16 contraflow intersections within 1 km of the route: all 32 for (a), (a′) and (b),
+none for (c) and (d).
+
+The hand-drawn corridors used in the README sit close to both layers. GDOT I-75 vertices south of
+Macon are within a median 1.8 km (max 5.7 km) of the I-75 south polyline, and TIGER's within 1.8 km
+(max 5.8 km). For I-16 the medians are 2.8 km (GDOT) and 3.0 km (TIGER), both max 7.6 km.
+
+The SR 401 = I-75 and SR 404 = I-16 reading of GDOT route ids is from GDOT's route numbering. It
+matches the geometry: Florida line to Macon, and Savannah to Macon.
 
 ## Assumptions (all labelled, low / base / high)
 
@@ -101,17 +111,17 @@ Further assumptions:
 
 | Scenario | Level | Into GA hosts | Shelter seekers | Route general seats | Load | Counties filled | First full | Farthest host used | Power-dependent arriving | Medical seats on route | per seat |
 |---|---|---:|---:|---:|---:|---:|---|---:|---:|---:|---:|
-| (a) GA coast | low | 65,183 | 2,518 | 158,100 | 1.6% | 1 | Long | 52 km | 524 | 2,415 | 0.22 |
-| | base | 142,588 | 11,398 | 158,100 | 7.2% | 4 | Long | 77 km | 1,146 | 2,415 | 0.47 |
-| | high | 244,437 | 34,201 | 158,100 | 21.6% | 14 | Long | 117 km | 1,964 | 2,415 | 0.81 |
-| (a′) wider exclusion | base | 142,588 | 11,398 | 148,832 | 7.7% | 3 | Evans | 98 km | 1,146 | 2,415 | 0.47 |
-| | high | 244,437 | 34,201 | 148,832 | 23.0% | 10 | Evans | 128 km | 1,964 | 2,415 | 0.81 |
-| (b) NE Florida + GA coast | low | 118,053 | 3,575 | 158,100 | 2.3% | 2 | Charlton | 105 km | 1,031 | 2,415 | 0.43 |
-| | base | 304,503 | 19,494 | 158,100 | 12.3% | 8 | Charlton | 150 km | 2,701 | 2,415 | **1.12** |
-| | high | 574,875 | 67,245 | 158,100 | 42.5% | 33 | Charlton | 250 km | 5,138 | 2,415 | **2.13** |
-| (c) FL west coast | low | 38,859 | 777 | 194,950 | 0.4% | 0 | none | 23 km | 388 | 1,398 | 0.28 |
-| | base | 204,008 | 10,200 | 194,950 | 5.2% | 3 | Lowndes | 97 km | 2,035 | 1,398 | **1.46** |
-| | high | 582,880 | 58,288 | 194,950 | 29.9% | 11 | Lowndes | 306 km | 5,813 | 1,398 | **4.16** |
+| (a) GA coast | low | 65,183 | 2,518 | 162,967 | 1.5% | 1 | Long | 58 km | 524 | 2,415 | 0.22 |
+| | base | 142,588 | 11,398 | 162,967 | 7.0% | 4 | Long | 77 km | 1,146 | 2,415 | 0.47 |
+| | high | 244,437 | 34,201 | 162,967 | 21.0% | 14 | Long | 117 km | 1,964 | 2,415 | 0.81 |
+| (a′) wider exclusion | base | 142,588 | 11,398 | 150,737 | 7.6% | 3 | Evans | 98 km | 1,146 | 2,415 | 0.47 |
+| | high | 244,437 | 34,201 | 150,737 | 22.7% | 10 | Evans | 128 km | 1,964 | 2,415 | 0.81 |
+| (b) NE Florida + GA coast | low | 118,053 | 3,575 | 162,967 | 2.2% | 2 | Charlton | 105 km | 1,031 | 2,415 | 0.43 |
+| | base | 304,503 | 19,494 | 162,967 | 12.0% | 7 | Charlton | 138 km | 2,701 | 2,415 | **1.12** |
+| | high | 574,875 | 67,245 | 162,967 | 41.3% | 28 | Charlton | 214 km | 5,138 | 2,415 | **2.13** |
+| (c) FL west coast | low | 38,859 | 777 | 194,688 | 0.4% | 0 | none | 23 km | 388 | 1,398 | 0.28 |
+| | base | 204,008 | 10,200 | 194,688 | 5.2% | 3 | Lowndes | 97 km | 2,035 | 1,398 | **1.46** |
+| | high | 582,880 | 58,288 | 194,688 | 29.9% | 11 | Lowndes | 306 km | 5,813 | 1,398 | **4.16** |
 | (d) Carolinas | low | 8,291 | 166 | 144,899 | 0.1% | 0 | none | 7 km | 73 | 504 | 0.14 |
 | | base | 38,691 | 1,935 | 144,899 | 1.3% | 0 | none | 7 km | 340 | 504 | 0.68 |
 | | high | 103,635 | 10,364 | 144,899 | 7.2% | 0 | none | 7 km | 912 | 504 | **1.81** |
@@ -121,12 +131,12 @@ No scenario exhausts its route's general seats, even at high (`unplaced_seekers`
 **What runs out first** (`out/scenario_host_fill.csv`, counties with their general seats and distance
 from the entry point):
 
-- **(a) GA coast:** Long (900 seats, 41 km), Effingham (1,705, 52 km), Wayne (2,499, 58 km) and Evans
+- **(a) GA coast:** Long (900 seats, 41 km), Wayne (2,499, 58 km), Effingham (4,707, 64 km) and Evans
   (2,890, 73 km) fill at base. Long, Wayne and Effingham are among the 12 counties with coastal-flood
   exposure. If they are unavailable (a′), the load moves to Evans, Tattnall and Bulloch, 73–89 km
   inland.
 - **(b) NE Florida:** Charlton (400 seats, 73 km from the origin centroid) and Brantley (2,629) fill at
-  low. At base, Pierce, Ware (8,810), Wayne, Long, Clinch and Bacon fill too.
+  low. At base, Pierce, Ware (8,810), Wayne, Long and Clinch fill too.
 - **(c) Milton-type:** Lowndes, the first Georgia county on I-75, has 1,379 general seats and fills at
   base, followed by Brooks (273) and Cook (2,305). At high, the fill runs through Tift, Turner, Dooly,
   Houston and Peach to Bibb (Macon, 26,728), Jones and Monroe, 277 km in.
@@ -135,7 +145,7 @@ from the entry point):
 ## What this says (hypotheses, from the numbers above)
 
 1. **General seats hold. Medical seats do not.** Even the high scenarios load the route's general
-   seats at 43% or less. In (b) and (c), power-dependent arrivals exceed the medical-needs seats on
+   seats at 41% or less. In (b) and (c), power-dependent arrivals exceed the medical-needs seats on
    the route from the base scenario up. (c) puts 2,035 power-dependent Floridians (base) on a route
    whose only medical shelter is in Cobb, 391 km past the Florida line.
 2. **The pressure lands on small counties at the door.** Every first-full county is small and close
