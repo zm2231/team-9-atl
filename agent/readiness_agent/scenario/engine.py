@@ -45,11 +45,8 @@ def run(tracks: list[list[TrackPoint]], n_draws: int = 400, seed: int = 20261027
         feats = np.column_stack([e[f] for f in FEATURES])
         outage.append(model.sample(feats, rng, int(k)))
         owner.append(np.full(int(k), i))
-    arrival_arr = np.array(arrival)
-    with np.errstate(all="ignore"):
-        ts = np.where(
-            np.isnan(arrival_arr).all(axis=0), np.nan, np.nanmedian(arrival_arr, axis=0)
-        )
+    ts = np.median(np.nan_to_num(np.array(arrival), nan=np.inf), axis=0)
+    ts[~np.isfinite(ts)] = np.nan
     return Result(
         outage=np.vstack(outage),
         track_of_draw=np.concatenate(owner),

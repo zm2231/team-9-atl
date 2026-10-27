@@ -1,5 +1,6 @@
 import math
 from dataclasses import dataclass
+from functools import cache
 
 import numpy as np
 
@@ -15,6 +16,9 @@ LAND_KM = 35.0
 DECAY_BASE_KT = 26.7
 DECAY_RATE_PER_H = 0.095
 LANDFALL_FACTOR = 0.9
+PATTERN_TRACK_KM = 150.0
+PATTERN_RANGE_Q = (0.1, 0.9)
+EXAMPLE_STORMS = 5
 
 
 @dataclass(frozen=True)
@@ -60,6 +64,14 @@ def _ga_centroids() -> tuple[np.ndarray, np.ndarray]:
     return np.array([r["lat"] for r in rows]), np.array([r["lon"] for r in rows])
 
 
+def peak_near_ga(track: list[TrackPoint]) -> float:
+    lats, lons = _ga_centroids()
+    near = [
+        p.vmax_kt for p in track if _dist_km(p.lat, p.lon, lats, lons).min() < NEAR_GA_KM
+    ]
+    return max(near) if near else max((p.vmax_kt for p in track), default=0.0)
+
+
 def near_ga_km(lat: float, lon: float) -> float:
     lats, lons = _ga_centroids()
     return float(_dist_km(lat, lon, lats, lons).min())
@@ -98,9 +110,7 @@ def origin_of(track: list[TrackPoint]) -> str | None:
 
 def support(track: list[TrackPoint]) -> str:
     origin = origin_of(track)
-    lats, lons = _ga_centroids()
-    near = [p.vmax_kt for p in track if _dist_km(p.lat, p.lon, lats, lons).min() < NEAR_GA_KM]
-    peak = max(near) if near else max((p.vmax_kt for p in track), default=0.0)
+    peak = peak_near_ga(track)
     limit = data.tracks()["labelled_max_kt"].get(origin or "")
     if limit is None or peak > limit + 10.0:
         return "outside_labeled_support"
@@ -120,22 +130,20 @@ def analog_tracks(
     max_tracks: int = 40,
 ) -> list[Analog]:
     hits = []
-    for s in data.tracks()["storms"]:
-        pts = np.array(s["points"], float)
-        if len(pts) < 2:
-            continue
-        plat, plon, vmax, months = pts[:, 1], pts[:, 2], pts[:, 3], pts[:, 6]
-        heading = np.empty(len(pts))
-        heading[:-1] = _bearing(plat[:-1], plon[:-1], plat[1:], plon[1:])
-        heading[-1] = heading[-2]
-        d = _dist_km(lat, lon, plat, plon)
-        month_gap = np.minimum(np.abs(months - month), 12 - np.abs(months - month))
-        ok = (d <= MATCH_KM) & (_angle_diff(heading, heading_deg) <= HEADING_DEG) & (month_gap <= 1)
+    for s, pts, heading in _storm_arrays():
+        d = _dist_km(lat, lon, pts[:, 1], pts[:, 2])
+        gap = np.abs(pts[:, 6] - month)
+        ok = (
+            (d <= MATCH_KM)
+            & (_angle_diff(heading, heading_deg) <= HEADING_DEG)
+            & (np.minimum(gap, 12 - gap) <= 1)
+        )
         if intensity_kt is not None:
-            ok &= np.abs(vmax - intensity_kt) <= INTENSITY_KT
-        if not ok[:-1].any():
+            ok &= np.abs(pts[:, 3] - intensity_kt) <= INTENSITY_KT
+        ok[-1] = False
+        if not ok.any():
             continue
-        idx = int(np.where(ok[:-1], d, np.inf).argmin())
+        idx = int(np.where(ok, d, np.inf).argmin())
         hits.append((float(d[idx]), s, idx))
     hits.sort(key=lambda h: (h[0], h[1]["sid"]))
     hits = hits[:max_tracks]
@@ -209,12 +217,7 @@ def climatology() -> list[Analog]:
 
 def rescale(analog: Analog, category: int) -> Analog:
     target = CATEGORY_KT[int(category)]
-    lats, lons = _ga_centroids()
-    near = [
-        p.vmax_kt for p in analog.track
-        if _dist_km(p.lat, p.lon, lats, lons).min() < NEAR_GA_KM
-    ]
-    peak = max(near) if near else max((p.vmax_kt for p in analog.track), default=0.0)
+    peak = peak_near_ga(analog.track)
     if peak <= 0:
         return analog
     f = target / peak
@@ -228,3 +231,106 @@ def rescale(analog: Analog, category: int) -> Analog:
         weight=analog.weight, intensity_kt_at_match=analog.intensity_kt_at_match * f,
         reached_ga_100km=analog.reached_ga_100km,
     )
+
+
+@cache
+def _storm_arrays() -> list[tuple[dict, np.ndarray, np.ndarray]]:
+    out = []
+    for s in data.tracks()["storms"]:
+        pts = np.array(s["points"], float)
+        if len(pts) < 2:
+            continue
+        heading = np.empty(len(pts))
+        heading[:-1] = _bearing(pts[:-1, 1], pts[:-1, 2], pts[1:, 1], pts[1:, 2])
+        heading[-1] = heading[-2]
+        out.append((s, pts, heading))
+    return out
+
+
+def _poisson_quantile(mean: float, q: float) -> int:
+    k, term = 0, math.exp(-mean)
+    total = term
+    while total < q:
+        k += 1
+        term *= mean / k
+        total += term
+    return k
+
+
+def _track_matches(
+    track: list[TrackPoint], min_intensity_kt: float | None
+) -> list[dict]:
+    lats, lons = _ga_centroids()
+    pts = np.array([[p.lat, p.lon] for p in track])
+    head = np.empty(len(pts))
+    head[:-1] = _bearing(pts[:-1, 0], pts[:-1, 1], pts[1:, 0], pts[1:, 1])
+    head[-1] = head[-2]
+    near = np.array([_dist_km(la, lo, lats, lons).min() < NEAR_GA_KM for la, lo in pts])
+    if near.any():
+        pts, head = pts[near], head[near]
+    out = []
+    for s, sp, sh in _storm_arrays():
+        d = np.stack([_dist_km(la, lo, pts[:, 0], pts[:, 1]) for la, lo in sp[:, 1:3]])
+        nearest = d.argmin(axis=1)
+        close = d.min(axis=1) <= PATTERN_TRACK_KM
+        ok = close & (_angle_diff(sh, head[nearest]) <= HEADING_DEG)
+        if not ok.any():
+            continue
+        if min_intensity_kt is not None and sp[close, 3].max() < min_intensity_kt:
+            continue
+        out.append(s)
+    return out
+
+
+def _position_matches(
+    lat: float,
+    lon: float,
+    heading_deg: float | None,
+    month: int | None,
+    min_intensity_kt: float | None,
+) -> list[dict]:
+    out = []
+    for s, sp, sh in _storm_arrays():
+        ok = _dist_km(lat, lon, sp[:, 1], sp[:, 2]) <= MATCH_KM
+        if heading_deg is not None:
+            ok &= _angle_diff(sh, heading_deg) <= HEADING_DEG
+        if month is not None:
+            gap = np.abs(sp[:, 6] - month)
+            ok &= np.minimum(gap, 12 - gap) <= 1
+        if min_intensity_kt is not None:
+            ok &= sp[:, 3] >= min_intensity_kt
+        if ok.any():
+            out.append(s)
+    return out
+
+
+def pattern_frequency(
+    *,
+    track: list[TrackPoint] | None = None,
+    lat: float | None = None,
+    lon: float | None = None,
+    heading_deg: float | None = None,
+    month: int | None = None,
+    min_intensity_kt: float | None = None,
+) -> dict:
+    if track:
+        hits = _track_matches(track, min_intensity_kt)
+    elif lat is not None and lon is not None:
+        hits = _position_matches(lat, lon, heading_deg, month, min_intensity_kt)
+    else:
+        raise ValueError("pattern_frequency needs a track or a lat/lon position")
+    first, last = data.tracks()["years"]
+    years = last - first + 1
+    n = len(hits)
+    per_year = n / years
+    lo, hi = (_poisson_quantile(n, q) / years for q in PATTERN_RANGE_Q)
+    recent = sorted(hits, key=lambda s: (-s["season"], s["sid"]))[:EXAMPLE_STORMS]
+    return {
+        "matching_storms": n,
+        "years": [first, last],
+        "per_year": round(per_year, 4),
+        "return_period_years": round(1 / per_year, 1) if n else None,
+        "p_at_least_one_per_season": round(1 - math.exp(-per_year), 4),
+        "per_year_range80": [round(lo, 4), round(hi, 4)],
+        "example_storms": [f"{s['name']} {s['season']}" for s in recent],
+    }

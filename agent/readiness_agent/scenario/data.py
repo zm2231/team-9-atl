@@ -26,3 +26,7 @@ def tracks() -> dict:
 
 def model_npz() -> Path:
     return DATA_DIR / "outage_model.npz"
+
+
+def clear_cache() -> None:
+    _json.cache_clear()
