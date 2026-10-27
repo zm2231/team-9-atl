@@ -3,6 +3,7 @@ import remarkGfm from "remark-gfm";
 import { segmentAnswer } from "../../lib/grounding";
 import type { ChatExchange } from "../../lib/types";
 import { useStore } from "../../state/store";
+import ReportView from "./ReportView";
 import SourceList from "./SourceList";
 
 /**
@@ -32,6 +33,19 @@ export default function AnswerView({ exchange, onRetry }: { exchange: ChatExchan
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{seg.text}</ReactMarkdown>
           </div>
         ),
+      )}
+
+      {exchange.report && <ReportView report={exchange.report} />}
+
+      {exchange.tools_used && exchange.tools_used.length > 0 && (
+        <div className="tools-used" data-testid="tools-used">
+          <span className="tools-used__label">Tools called</span>
+          {exchange.tools_used.map((t) => (
+            <code key={t} className="tools-used__tool">
+              {t}
+            </code>
+          ))}
+        </div>
       )}
 
       {exchange.status === "pending" && <div className="status">Asking the agent…</div>}

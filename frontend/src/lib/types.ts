@@ -162,6 +162,40 @@ export interface ChatExchange {
   error?: string;
   referenced_shelter_ids: string[];
   referenced_county_fips: string[];
+  tools_used?: string[];
+  report?: Report;
+}
+
+export type ReportScope = "state" | "county" | "run" | "runs";
+export type SectionStatus = "ok" | "not_determined" | "not_applicable";
+
+export interface ReportFigure {
+  key: string;
+  label: string;
+  unit: string;
+  provenance: string;
+  source: string;
+  value: number | null;
+  range: Record<string, number> | null;
+  range_kind: "season" | "runs" | null;
+}
+
+export interface ReportSection {
+  status: SectionStatus;
+  source: string;
+  figures: ReportFigure[];
+  items: unknown[];
+  note: string | null;
+  reason?: string;
+}
+
+export interface Report {
+  report_version: number;
+  scope: ReportScope;
+  subject: Record<string, unknown>;
+  season: { label?: string; note?: string } | null;
+  sections: Record<string, ReportSection>;
+  source: string;
 }
 
 /** The subset of ADK/Gemini grounding metadata the UI reads (contracts §3). */

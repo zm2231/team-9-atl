@@ -65,6 +65,8 @@ export default function ChatPanel() {
             groundingMetadata: acc.grounding,
             referenced_shelter_ids: acc.shelterIds,
             referenced_county_fips: acc.countyFips,
+            tools_used: acc.tools,
+            report: acc.report,
           });
         },
       });

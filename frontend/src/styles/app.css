@@ -629,3 +629,50 @@ table.receiving .flag {
 .earlier__toggle {
   margin-top: 6px;
 }
+.tools-used {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+.tools-used__tool {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--fg);
+}
+.report {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0;
+  font-size: 12px;
+}
+.report__head {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.report__season {
+  font-weight: 400;
+  color: var(--muted);
+}
+.report__section {
+  padding: 4px 0;
+  border-top: 1px solid var(--border);
+}
+.report__title {
+  font-weight: 600;
+}
+.report__figure {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  align-items: baseline;
+}
+.report__prov {
+  font-size: 10px;
+  color: var(--muted);
+}
