@@ -73,8 +73,9 @@ utilities reporting. The median multiplier is 3.41 (p10 2.71, p90 3.83).
 MED and the storm multiplier: the top third is LOW, the bottom third HIGH. The status is `baseline_only`
 and the rule text begins "Baseline only, no storm test". It gives every county with EIA data a labelled
 value, including the storm-UNKNOWN counties, but it never replaces `reliability_tier`. It is annual and
-utility-wide. Georgia Power, the only investor-owned utility in the extract, appears in 155 of the 159
-counties' territory lists. Our hypothesis, not yet tested, is that county differences mostly reflect
+utility-wide. The utility with the largest territory is Georgia Power (EIA utility 7140), the only
+investor-owned utility in the Georgia reliability extract. It appears in 155 of the 159 counties'
+territory lists (`eia_largest_territory` in `summary.json`). Our hypothesis, not yet tested, is that county differences mostly reflect
 which EMCs and municipals share a county with it. Chatham has no baseline. The 2024 EIA-861
 territory lists only Canoochee EMC for Chatham, and Canoochee files no SAIDI. Georgia Power's 2024
 territory list omits Chatham, Union, Towns and Fannin.
@@ -94,8 +95,8 @@ Two alternatives are reported per county for sensitivity:
 `tier_stable` is true when all three rules agree.
 
 **4. Power-dependent residents.** `power_dependent_dme` comes from the team's c4data Georgia
-`power_dependent_counties` snapshot (emPOWER, 92,567 statewide). Live emPOWER is higher (106,561 per the
-team checklist), so these per-tier sums use the snapshot vintage.
+`power_dependent_counties` snapshot (emPOWER, 92,567 statewide). The live HHS emPOWER service reports a
+different, higher total; the per-tier sums here use the snapshot.
 
 ## Results
 

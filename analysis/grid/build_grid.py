@@ -266,9 +266,7 @@ def build(con: duckdb.DuckDBPyConnection) -> dict:
       {storm_metric("COALESCE(t.tier_terciles, 'UNKNOWN')", 'tier_alt_terciles', 'e.share_suspect_worst', 'tier_terciles')},
       t.composite AS tier_composite_score,
       {storm_metric("COALESCE(t.tier_median, 'UNKNOWN')", 'tier_alt_median', 'e.share_suspect_any', 'tier_median_thresholds')},
-      t.tier = t.tier_terciles AND t.tier = t.tier_median AS tier_stable,
-        CASE WHEN t.tier IS NULL THEN 'unrecorded' ELSE 'derived' END AS tier_stable_status,
-        {storm_rule('tier_stable_all_rules')} AS tier_stable_rule,
+      {storm_metric('t.tier = t.tier_terciles AND t.tier = t.tier_median', 'tier_stable', 'e.share_suspect_any', 'tier_stable_all_rules')},
       COALESCE(e.n_storms_hit, 0) AS n_storms_hit, e.storms_hit,
         'derived' AS n_storms_hit_status, 'hit_storm_count' AS n_storms_hit_rule,
       x.peak_share_max_2018plus, x.peak_share_max_2018plus_status, 'usable_storm_max' AS peak_share_max_2018plus_rule,
@@ -396,6 +394,19 @@ def summarize(con) -> dict:
                  round(quantile_cont(storm_multiplier, 0.1), 2) AS p10_multiplier,
                  round(quantile_cont(storm_multiplier, 0.9), 2) AS p90_multiplier
           FROM {g}""")[0],
+        "eia_largest_territory": rows(con, f"""
+          WITH u AS (
+            SELECT utility_number, count(DISTINCT fips_code) AS counties FROM eia_territory
+            GROUP BY 1 ORDER BY counties DESC, utility_number LIMIT 1)
+          SELECT u.utility_number, u.counties,
+                 (SELECT any_value(ownership) FROM read_parquet('{EIA_RELIABILITY}') r
+                   WHERE r.utility_number = u.utility_number AND r.state = 'GA') AS ownership,
+                 (SELECT list(k.county ORDER BY k.county) FROM counties k
+                   WHERE k.fips_code NOT IN (SELECT fips_code FROM eia_territory t WHERE t.utility_number = u.utility_number))
+                   AS counties_not_listed,
+                 (SELECT count(DISTINCT utility_number) FROM read_parquet('{EIA_RELIABILITY}')
+                   WHERE state = 'GA' AND ownership = 'Investor Owned') AS ga_investor_owned_utilities
+          FROM u""")[0],
         "eia_multiplier_by_tier": rows(con, f"""
           SELECT reliability_tier AS tier, round(median(storm_multiplier), 2) AS median_multiplier,
                  count(storm_multiplier) AS counties_with_multiplier

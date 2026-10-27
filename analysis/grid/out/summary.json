@@ -473,6 +473,18 @@
     "p10_multiplier": 2.71,
     "p90_multiplier": 3.83
   },
+  "eia_largest_territory": {
+    "utility_number": 7140,
+    "counties": 155,
+    "ownership": "Investor Owned",
+    "counties_not_listed": [
+      "Chatham",
+      "Fannin",
+      "Towns",
+      "Union"
+    ],
+    "ga_investor_owned_utilities": 1
+  },
   "eia_multiplier_by_tier": [
     {
       "tier": "LOW",
