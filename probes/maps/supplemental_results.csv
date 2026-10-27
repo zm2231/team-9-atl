@@ -1,0 +1,11 @@
+question_type,origin,destination,maps_source,place_id,answer_status,latency_ms,prompt_tokens,output_tokens,error
+area_accessibility,"Chatham County, GA",,yes,ChIJbYEKMyOe-4gR1aGTQXIDitU;ChIJwzoid3qe-4gRoozW265HqVg;ChIJMykCTVye-4gRlHjTGRuBc6w;ChIJFzdA2zye-4gRdWudsmweSQU;ChIJNdhfs2-e-4gRP7hmOKO0q4w;ChIJv4VKHT6e-4gR-cZwmgBiGnI;ChIJKxiUZGme-4gR7hZeHTy4ZCk,answered,15047,44,745,
+routing,"tract 13039010604 centroid (30.75481, -81.55454)",Georgia World Congress Center,yes,,answered,2539,101,61,
+routing,"tract 13039010604 centroid (30.75481, -81.55454)",Dacula Park Activity Building,yes,,answered,4791,102,75,
+routing,"tract 13039010604 centroid (30.75481, -81.55454)",Macon Coliseum,yes,,answered,3079,96,79,
+routing,"tract 13051001200 centroid (32.06509, -81.11027)",Georgia World Congress Center,yes,,answered,2596,101,64,
+routing,"tract 13051001200 centroid (32.06509, -81.11027)",Dacula Park Activity Building,yes,,answered,2802,102,75,
+routing,"tract 13051001200 centroid (32.06509, -81.11027)",Macon Coliseum,yes,,answered,2899,96,79,
+routing,"tract 13127000900 centroid (31.13753, -81.46490)",Georgia World Congress Center,yes,,answered,3154,101,74,
+routing,"tract 13127000900 centroid (31.13753, -81.46490)",Dacula Park Activity Building,yes,,answered,2757,102,103,
+routing,"tract 13127000900 centroid (31.13753, -81.46490)",Macon Coliseum,yes,,answered,2741,96,100,

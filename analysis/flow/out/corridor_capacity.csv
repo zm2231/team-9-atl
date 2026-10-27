@@ -1,0 +1,6 @@
+corridor,tracts,resident_pop,carless_households,pop_65_plus,resident_pop_coastal_flood_exposed,evac_buildings,reported_capacity,clean_capacity,clean_capacity_wheelchair_yes,clean_capacity_in_surge_area,medical_shelters,clean_per_1000_residents
+I-16 (Savannah to Macon),179,595215.0,19033.0,86067.0,73265.0,108,45993.0,45986.0,11297.0,4009.0,8,77.3
+I-75 north (Macon to TN line),804,2965461.0,89641.0,376188.0,0.0,250,167679.0,167648.0,32112.0,89.0,1,56.5
+I-75 south (FL line to Macon),156,564102.0,18618.0,81205.0,0.0,122,53828.0,53815.0,3697.0,,0,95.4
+I-85 (AL line to SC line),820,3041850.0,86423.0,357864.0,0.0,207,635472.0,135960.0,30565.0,361.0,0,44.7
+I-95 (FL line to SC line),124,425948.0,11663.0,62033.0,97995.0,31,11128.0,11123.0,4156.0,4806.0,0,26.1

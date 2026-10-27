@@ -1,0 +1,15 @@
+[project]
+name = "gaclean"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["duckdb==2.0.0"]
+
+[dependency-groups]
+dev = ["pytest"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

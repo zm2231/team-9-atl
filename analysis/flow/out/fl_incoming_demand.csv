@@ -1,0 +1,10 @@
+scenario,region,evacuation_rate,fl_to_ga_share,shelter_use_rate,people_into_ga,pop_65_plus_into_ga,power_dependent_into_ga,carless_households_upper_bound,shelter_seekers_into_ga
+low,central FL (27.5-29.5),0.3,0.05,0.02,16345,3834,167,385,327
+low,north FL (lat >= 29.5),0.3,0.15,0.02,15380,3062,160,278,308
+low,south FL (lat < 27.5),0.3,0.02,0.02,26682,5742,204,724,534
+base,central FL (27.5-29.5),0.5,0.15,0.05,81727,19168,836,1926,4086
+base,north FL (lat >= 29.5),0.5,0.3,0.05,51265,10205,532,927,2563
+base,south FL (lat < 27.5),0.5,0.05,0.05,111176,23925,852,3015,5559
+high,central FL (27.5-29.5),0.7,0.3,0.1,228836,53671,2340,5394,22884
+high,north FL (lat >= 29.5),0.7,0.5,0.1,119619,23812,1242,2163,11962
+high,south FL (lat < 27.5),0.7,0.15,0.1,466938,100486,3578,12663,46694
