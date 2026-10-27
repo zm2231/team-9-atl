@@ -36,3 +36,13 @@ Licence bar: public domain, CC0, US Government work, Georgia state data cleared 
 | `places/` | 2 | 2.9 MB | Socrata metadata `license` field: "Public Domain" (licenseId `PUBLIC_DOMAIN`) for both yjkw-uj5s and cwsq-ngmh |
 | `slosh/` | 11 | 72.2 MB | NOAA/NWS, U.S. Government work (public domain). NWS disclaimer: "The information on National Weather Service ( |
 | `tiger/` | 1 | 2.2 MB |  |
+
+## Scenario work
+
+| File | What |
+|---|---|
+| `data/SCOPE.md` | Problem, in and out of scope, movement and congestion layers, longitudinal effects |
+| `data/FRONTEND_ALIGNMENT.md` | What changes in the frontend and agent to show the modelled scenario |
+| `data/CLAIMS.md` | What the data supports and what it does not |
+| `data/INVENTORY.md` | Every BigQuery table and local source |
+| `data/scenario/` | County x storm exposure and outage table, model test results, build scripts |
