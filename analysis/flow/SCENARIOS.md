@@ -155,6 +155,46 @@ from the entry point):
    same southeast Georgia hosts and the same four medical counties (2.1 power-dependent per seat at
    high).
 
+## Storm library (`storm_library.py`, `out/storm_library.csv`)
+
+One row per Atlantic storm whose track came within 800 km of Georgia (IBTrACS v04r01): 731 storms,
+1851-2026. **Assumption:** origin class is the first US mainland or Keys landfall at tropical-storm
+strength (34 kt or more), in the same boxes as the scenarios above (`common.py: LANDFALL_CLASS`).
+
+| Origin class | Storms | Since 1950 | With a Georgia lead time | Median watch lead (h) | Median warning lead (h) |
+|---|---:|---:|---:|---:|---:|
+| (a) Georgia coast | 19 | 5 | 0 | | |
+| (b) NE / east Florida | 41 | 19 | 2 | 39 | 27 |
+| (c) Florida west coast / Big Bend (I-75) | 75 | 34 | 9 | 40 | 25 |
+| (d) Carolinas | 120 | 67 | 2 | 41 | 32 |
+| Gulf: Panhandle or west | 192 | 92 | 3 | 32 | 23 |
+| South Florida / Keys | 62 | 23 | 2 | 37 | 25 |
+| No US landfall | 220 | 119 | 0 | | |
+
+**Warning lead time (our calculation, from NWS VTEC and NHC best track).** For each storm since 2008,
+hours from the first NWS watch, and the first warning, for any Georgia zone (coastal or inland) to the
+first hour tropical-storm winds (the best-track R34 radius) reach Georgia. Across the 18 storms with a
+Georgia watch, the median is 39 h (23 to 50 h). Examples: Ian 50/32, Michael 49/36, Milton 49/25,
+Idalia 41/35, Helene 40/28, Matthew 40/28, Irma 38/26, Debby 38/26, Isaias 2026 27/27, Andrea 23/12
+(watch/warning hours). NHC's coastal watches alone understate inland lead time for Gulf storms
+(Michael: 25 h coastal against 49 h with inland VTEC watches). The class medians rest on 2 to 9
+storms each and are not a forecast.
+
+**Evacuation orders** (`data/clean/out/evac_orders.parquet`, cited governor releases). Mandatory
+orders took effect 35 h (Irma 2017) and 41 h (Dorian 2019) before Georgia tropical-storm winds;
+I-16 contraflow began 35 h and 21 h before. Matthew 2016's release gives only the date, which puts
+its mandatory order 9 to 33 h ahead. **Simulator default (assumption):** order effective 35 to 41 h
+before tropical-storm winds, observed in two Atlantic storms. No coastal mandatory order was found
+for the Gulf storms (Michael, Helene, Milton, Isaias 2026); that is unverified.
+
+**Power outages** (EAGLE-I, Brelsford et al. 2024, ORNL / DOE CESER, CC BY 4.0, through the grid
+analysis `analysis/grid/out/county_storm_outages.parquet`; `GRID_OUT` overrides the path). Georgia
+counties with at least 10% of customers out: Helene 109 counties (43,245 power-dependent residents),
+Michael 81 (21,392), Idalia 44, Debby 28, Ian 9, Milton 7, Dorian 5. Matthew and Irma are left out of
+these counts because EAGLE-I has no data-quality index before 2018. The widest outages came from Gulf
+storms and reached far inland, so the power-dependent demand trigger is county outage share, not
+coastal zone.
+
 ## Limits
 
 - Straight-line distances. Routes are a buffer, not a network flow. There is no drive time and no

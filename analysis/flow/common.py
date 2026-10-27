@@ -44,6 +44,19 @@ CORRIDORS = {
 
 PROJ = "'EPSG:4326', 'EPSG:32617', always_xy := true"
 
+# Landfall region: first track point over US mainland or Keys land, at the strength the caller filters on
+# (DIST2LAND = 0; the lat/lon gate drops Caribbean and Bahamas landfalls).
+LANDFALL_CLASS = """
+    CASE WHEN LAT < 26.5 THEN 'south_fl_or_keys'
+         WHEN LON > -81.9 AND LAT BETWEEN 30.7 AND 32.1 THEN 'a_ga_coast'
+         WHEN LON > -81.9 AND LAT < 30.7 THEN 'b_ne_florida'
+         WHEN LON BETWEEN -84.6 AND -81.9 AND LAT < 30.7 THEN 'c_fl_west_coast'
+         WHEN LON > -81.9 AND LAT >= 32.1 THEN 'd_carolinas'
+         WHEN LON < -84.6 THEN 'gulf_panhandle_or_west'
+         ELSE 'other' END
+"""
+US_LANDFALL = "DIST2LAND = 0 AND LAT >= 24.5 AND (LON <= -80.0 OR LAT >= 30.0)"
+
 
 def table(state: str, name: str) -> str:
     path = DATA_ROOT / state / name / "data.parquet"

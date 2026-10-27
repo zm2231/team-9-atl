@@ -1055,5 +1055,370 @@
         "unplaced_seekers": 0
       }
     ]
+  },
+  "storm_library": {
+    "by_origin_class": {
+      "a_ga_coast": {
+        "max_ga_watch_lead_h": null,
+        "median_ga_warning_lead_h": null,
+        "median_ga_watch_lead_h": null,
+        "min_ga_watch_lead_h": null,
+        "since_1950": 5,
+        "storms": 19,
+        "with_ga_lead_time": 0
+      },
+      "b_ne_florida": {
+        "max_ga_watch_lead_h": 39.0,
+        "median_ga_warning_lead_h": 27.0,
+        "median_ga_watch_lead_h": 39.0,
+        "min_ga_watch_lead_h": 39.0,
+        "since_1950": 19,
+        "storms": 41,
+        "with_ga_lead_time": 2
+      },
+      "c_fl_west_coast": {
+        "max_ga_watch_lead_h": 50.0,
+        "median_ga_warning_lead_h": 25.0,
+        "median_ga_watch_lead_h": 40.0,
+        "min_ga_watch_lead_h": 23.0,
+        "since_1950": 34,
+        "storms": 75,
+        "with_ga_lead_time": 9
+      },
+      "d_carolinas": {
+        "max_ga_watch_lead_h": 42.0,
+        "median_ga_warning_lead_h": 32.0,
+        "median_ga_watch_lead_h": 41.0,
+        "min_ga_watch_lead_h": 40.0,
+        "since_1950": 67,
+        "storms": 120,
+        "with_ga_lead_time": 2
+      },
+      "gulf_panhandle_or_west": {
+        "max_ga_watch_lead_h": 49.0,
+        "median_ga_warning_lead_h": 23.0,
+        "median_ga_watch_lead_h": 32.0,
+        "min_ga_watch_lead_h": 27.0,
+        "since_1950": 92,
+        "storms": 192,
+        "with_ga_lead_time": 3
+      },
+      "no_us_landfall": {
+        "max_ga_watch_lead_h": null,
+        "median_ga_warning_lead_h": null,
+        "median_ga_watch_lead_h": null,
+        "min_ga_watch_lead_h": null,
+        "since_1950": 119,
+        "storms": 220,
+        "with_ga_lead_time": 0
+      },
+      "other": {
+        "max_ga_watch_lead_h": null,
+        "median_ga_warning_lead_h": null,
+        "median_ga_watch_lead_h": null,
+        "min_ga_watch_lead_h": null,
+        "since_1950": 1,
+        "storms": 2,
+        "with_ga_lead_time": 0
+      },
+      "south_fl_or_keys": {
+        "max_ga_watch_lead_h": 38.0,
+        "median_ga_warning_lead_h": 25.0,
+        "median_ga_watch_lead_h": 37.0,
+        "min_ga_watch_lead_h": 36.0,
+        "since_1950": 23,
+        "storms": 62,
+        "with_ga_lead_time": 2
+      }
+    },
+    "evac_order_effective_h_recorded": [
+      35.0,
+      41.0
+    ],
+    "ga_watch_lead_h_all": [
+      39.0,
+      23.0,
+      50.0,
+      18
+    ],
+    "lead_time_storms": [
+      {
+        "coastal_warning_h_nhc": 24.0,
+        "coastal_watch_h_nhc": 36.0,
+        "name": "FAY",
+        "origin_class": "south_fl_or_keys",
+        "season": 2008,
+        "warning_h": 24.0,
+        "watch_h": 36.0
+      },
+      {
+        "coastal_warning_h_nhc": 42.0,
+        "coastal_watch_h_nhc": null,
+        "name": "BERYL",
+        "origin_class": "b_ne_florida",
+        "season": 2012,
+        "warning_h": 42.0,
+        "watch_h": 39.0
+      },
+      {
+        "coastal_warning_h_nhc": 12.0,
+        "coastal_watch_h_nhc": 23.0,
+        "name": "ANDREA",
+        "origin_class": "c_fl_west_coast",
+        "season": 2013,
+        "warning_h": 12.0,
+        "watch_h": 23.0
+      },
+      {
+        "coastal_warning_h_nhc": 20.0,
+        "coastal_watch_h_nhc": 26.0,
+        "name": "COLIN",
+        "origin_class": "c_fl_west_coast",
+        "season": 2016,
+        "warning_h": 20.0,
+        "watch_h": 26.0
+      },
+      {
+        "coastal_warning_h_nhc": 13.0,
+        "coastal_watch_h_nhc": 31.0,
+        "name": "HERMINE",
+        "origin_class": "c_fl_west_coast",
+        "season": 2016,
+        "warning_h": 25.0,
+        "watch_h": 33.0
+      },
+      {
+        "coastal_warning_h_nhc": 0.0,
+        "coastal_watch_h_nhc": null,
+        "name": "JULIA",
+        "origin_class": "b_ne_florida",
+        "season": 2016,
+        "warning_h": 0.0,
+        "watch_h": null
+      },
+      {
+        "coastal_warning_h_nhc": 28.0,
+        "coastal_watch_h_nhc": 40.0,
+        "name": "MATTHEW",
+        "origin_class": "d_carolinas",
+        "season": 2016,
+        "warning_h": 28.0,
+        "watch_h": 40.0
+      },
+      {
+        "coastal_warning_h_nhc": 26.0,
+        "coastal_watch_h_nhc": 38.0,
+        "name": "IRMA",
+        "origin_class": "south_fl_or_keys",
+        "season": 2017,
+        "warning_h": 26.0,
+        "watch_h": 38.0
+      },
+      {
+        "coastal_warning_h_nhc": 13.0,
+        "coastal_watch_h_nhc": 25.0,
+        "name": "MICHAEL",
+        "origin_class": "gulf_panhandle_or_west",
+        "season": 2018,
+        "warning_h": 36.0,
+        "watch_h": 49.0
+      },
+      {
+        "coastal_warning_h_nhc": 24.0,
+        "coastal_watch_h_nhc": 42.0,
+        "name": "DORIAN",
+        "origin_class": "d_carolinas",
+        "season": 2019,
+        "warning_h": 36.0,
+        "watch_h": 42.0
+      },
+      {
+        "coastal_warning_h_nhc": null,
+        "coastal_watch_h_nhc": null,
+        "name": "ZETA",
+        "origin_class": "gulf_panhandle_or_west",
+        "season": 2020,
+        "warning_h": 14.0,
+        "watch_h": 32.0
+      },
+      {
+        "coastal_warning_h_nhc": 8.0,
+        "coastal_watch_h_nhc": null,
+        "name": "ETA",
+        "origin_class": "c_fl_west_coast",
+        "season": 2020,
+        "warning_h": 8.0,
+        "watch_h": null
+      },
+      {
+        "coastal_warning_h_nhc": 17.0,
+        "coastal_watch_h_nhc": 29.0,
+        "name": "ELSA",
+        "origin_class": "c_fl_west_coast",
+        "season": 2021,
+        "warning_h": 17.0,
+        "watch_h": 47.0
+      },
+      {
+        "coastal_warning_h_nhc": null,
+        "coastal_watch_h_nhc": null,
+        "name": "FRED",
+        "origin_class": "gulf_panhandle_or_west",
+        "season": 2021,
+        "warning_h": 19.0,
+        "watch_h": null
+      },
+      {
+        "coastal_warning_h_nhc": 32.0,
+        "coastal_watch_h_nhc": 50.0,
+        "name": "IAN",
+        "origin_class": "c_fl_west_coast",
+        "season": 2022,
+        "warning_h": 32.0,
+        "watch_h": 50.0
+      },
+      {
+        "coastal_warning_h_nhc": 27.0,
+        "coastal_watch_h_nhc": 39.0,
+        "name": "NICOLE",
+        "origin_class": "b_ne_florida",
+        "season": 2022,
+        "warning_h": 27.0,
+        "watch_h": 39.0
+      },
+      {
+        "coastal_warning_h_nhc": 29.0,
+        "coastal_watch_h_nhc": 41.0,
+        "name": "IDALIA",
+        "origin_class": "c_fl_west_coast",
+        "season": 2023,
+        "warning_h": 35.0,
+        "watch_h": 41.0
+      },
+      {
+        "coastal_warning_h_nhc": 14.0,
+        "coastal_watch_h_nhc": 26.0,
+        "name": "DEBBY",
+        "origin_class": "c_fl_west_coast",
+        "season": 2024,
+        "warning_h": 26.0,
+        "watch_h": 38.0
+      },
+      {
+        "coastal_warning_h_nhc": 22.0,
+        "coastal_watch_h_nhc": 40.0,
+        "name": "HELENE",
+        "origin_class": "c_fl_west_coast",
+        "season": 2024,
+        "warning_h": 28.0,
+        "watch_h": 40.0
+      },
+      {
+        "coastal_warning_h_nhc": 25.0,
+        "coastal_watch_h_nhc": 49.0,
+        "name": "MILTON",
+        "origin_class": "c_fl_west_coast",
+        "season": 2024,
+        "warning_h": 25.0,
+        "watch_h": 49.0
+      },
+      {
+        "coastal_warning_h_nhc": null,
+        "coastal_watch_h_nhc": null,
+        "name": "ISAIAS",
+        "origin_class": "gulf_panhandle_or_west",
+        "season": 2026,
+        "warning_h": 27.0,
+        "watch_h": 27.0
+      }
+    ],
+    "outage_storms": [
+      {
+        "eaglei_usable": false,
+        "ga_counties_10pct_any_quality": 20,
+        "ga_counties_hit": 0,
+        "name": "MATTHEW",
+        "origin_class": "d_carolinas",
+        "power_dependent_in_hit_counties": null,
+        "season": 2016
+      },
+      {
+        "eaglei_usable": false,
+        "ga_counties_10pct_any_quality": 128,
+        "ga_counties_hit": 0,
+        "name": "IRMA",
+        "origin_class": "south_fl_or_keys",
+        "power_dependent_in_hit_counties": null,
+        "season": 2017
+      },
+      {
+        "eaglei_usable": true,
+        "ga_counties_10pct_any_quality": 81,
+        "ga_counties_hit": 81,
+        "name": "MICHAEL",
+        "origin_class": "gulf_panhandle_or_west",
+        "power_dependent_in_hit_counties": 21392.0,
+        "season": 2018
+      },
+      {
+        "eaglei_usable": true,
+        "ga_counties_10pct_any_quality": 5,
+        "ga_counties_hit": 5,
+        "name": "DORIAN",
+        "origin_class": "d_carolinas",
+        "power_dependent_in_hit_counties": 922.0,
+        "season": 2019
+      },
+      {
+        "eaglei_usable": true,
+        "ga_counties_10pct_any_quality": 9,
+        "ga_counties_hit": 9,
+        "name": "IAN",
+        "origin_class": "c_fl_west_coast",
+        "power_dependent_in_hit_counties": 1714.0,
+        "season": 2022
+      },
+      {
+        "eaglei_usable": true,
+        "ga_counties_10pct_any_quality": 44,
+        "ga_counties_hit": 44,
+        "name": "IDALIA",
+        "origin_class": "c_fl_west_coast",
+        "power_dependent_in_hit_counties": 15152.0,
+        "season": 2023
+      },
+      {
+        "eaglei_usable": true,
+        "ga_counties_10pct_any_quality": 28,
+        "ga_counties_hit": 28,
+        "name": "DEBBY",
+        "origin_class": "c_fl_west_coast",
+        "power_dependent_in_hit_counties": 8026.0,
+        "season": 2024
+      },
+      {
+        "eaglei_usable": true,
+        "ga_counties_10pct_any_quality": 109,
+        "ga_counties_hit": 109,
+        "name": "HELENE",
+        "origin_class": "c_fl_west_coast",
+        "power_dependent_in_hit_counties": 43245.0,
+        "season": 2024
+      },
+      {
+        "eaglei_usable": true,
+        "ga_counties_10pct_any_quality": 21,
+        "ga_counties_hit": 7,
+        "name": "MILTON",
+        "origin_class": "c_fl_west_coast",
+        "power_dependent_in_hit_counties": 1214.0,
+        "season": 2024
+      }
+    ],
+    "seasons": [
+      1851,
+      2026
+    ],
+    "storms": 731
   }
 }

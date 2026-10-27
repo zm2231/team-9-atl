@@ -5,8 +5,10 @@ from pathlib import Path
 from common import (
     CORRIDOR_BUFFER_KM,
     CORRIDORS,
+    LANDFALL_CLASS,
     OUT,
     PROJ,
+    US_LANDFALL,
     connect,
     one,
     save_numbers,
@@ -80,17 +82,6 @@ SCENARIOS = {
     },
 }
 
-# Landfall region: first track point at hurricane strength over US mainland or Keys land
-# (DIST2LAND = 0; the lat/lon gate drops Caribbean and Bahamas landfalls).
-LANDFALL_CLASS = """
-    CASE WHEN LAT < 26.5 THEN 'south_fl_or_keys'
-         WHEN LON > -81.9 AND LAT BETWEEN 30.7 AND 32.1 THEN 'a_ga_coast'
-         WHEN LON > -81.9 AND LAT < 30.7 THEN 'b_ne_florida'
-         WHEN LON BETWEEN -84.6 AND -81.9 AND LAT < 30.7 THEN 'c_fl_west_coast'
-         WHEN LON > -81.9 AND LAT >= 32.1 THEN 'd_carolinas'
-         WHEN LON < -84.6 THEN 'gulf_panhandle_or_west'
-         ELSE 'other' END
-"""
 NEAR_MISS_KM = 100
 
 con = connect()
@@ -107,7 +98,7 @@ con.execute(f"""
         FROM t GROUP BY 1
     ), lf AS (
         SELECT SID, LAT AS landfall_lat, LON AS landfall_lon, ISO_TIME AS landfall_time
-        FROM t WHERE DIST2LAND = 0 AND LAT >= 24.5 AND (LON <= -80.0 OR LAT >= 30.0)
+        FROM t WHERE {US_LANDFALL}
         QUALIFY ROW_NUMBER() OVER (PARTITION BY SID ORDER BY ISO_TIME) = 1
     )
     SELECT t.SID, ANY_VALUE(t.SEASON) AS SEASON, ANY_VALUE(t.NAME) AS NAME, MAX(t.USA_WIND) AS max_wind_kt,
