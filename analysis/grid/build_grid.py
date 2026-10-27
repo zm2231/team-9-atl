@@ -61,6 +61,12 @@ RULES = {
 }
 
 
+def scalar(con: duckdb.DuckDBPyConnection, q: str):
+    row = con.execute(q).fetchone()
+    assert row is not None, q
+    return row[0]
+
+
 def sql_rules() -> str:
     return ", ".join(f"'{r}'" for r in RULES)
 
@@ -102,8 +108,8 @@ def build(con: duckdb.DuckDBPyConnection) -> dict:
       storm_use_rule = 'storm_hit' AS used_in_tier, storm_use_rule AS used_in_tier_rule,
       CASE WHEN storm_use_rule IN ('eaglei_pre2018_excluded', 'milton_helene_carryover') THEN 'suspect' ELSE 'derived' END AS used_in_tier_status
     FROM storm ORDER BY fips_code, window_start_local""")
-    assert con.execute("SELECT count(*) FROM county_storm_outages").fetchone()[0] == 159 * 9
-    assert con.execute("SELECT count(*) FROM county_storm_outages WHERE used_in_tier AND restore_censored").fetchone()[0] == 0
+    assert scalar(con, "SELECT count(*) FROM county_storm_outages") == 159 * 9
+    assert scalar(con, "SELECT count(*) FROM county_storm_outages WHERE used_in_tier AND restore_censored") == 0
 
     con.execute("""
     CREATE TABLE eaglei_county AS
@@ -124,7 +130,7 @@ def build(con: duckdb.DuckDBPyConnection) -> dict:
     SELECT fips_code, max(peak_share) AS peak_share_max_2018plus,
       arg_max(peak_share_status, peak_share) AS peak_share_max_2018plus_status
     FROM county_storm_outages WHERE used_in_tier_rule IN ('storm_hit', 'storm_not_hit') GROUP BY fips_code""")
-    assert con.execute("SELECT count(*) FROM exposure").fetchone()[0] == 159
+    assert scalar(con, "SELECT count(*) FROM exposure") == 159
 
     con.execute(f"""
     CREATE TABLE eia_county AS
@@ -230,7 +236,7 @@ def build(con: duckdb.DuckDBPyConnection) -> dict:
     LEFT JOIN eia_county a USING (fips_code)
     ORDER BY k.fips_code""")
     assert con.execute("SELECT count(*), count(DISTINCT fips_code) FROM county_grid_reliability").fetchone() == (159, 159)
-    assert con.execute("SELECT count(*) FROM county_grid_reliability WHERE n_utilities IS NULL").fetchone()[0] == 0
+    assert scalar(con, "SELECT count(*) FROM county_grid_reliability WHERE n_utilities IS NULL") == 0
 
     for table in ("county_grid_reliability", "county_storm_outages"):
         for (col,) in con.execute(f"SELECT column_name FROM (DESCRIBE {table})").fetchall():
@@ -282,9 +288,9 @@ def summarize(con) -> dict:
         "unknown_max_share": rows(con, f"""
           SELECT round(max(peak_share_max_2018plus), 3) AS max, round(median(peak_share_max_2018plus), 3) AS median
           FROM {g} WHERE reliability_tier = 'UNKNOWN'""")[0],
-        "unknown_irma_hit": con.execute(f"""
+        "unknown_irma_hit": scalar(con, f"""
           SELECT count(DISTINCT s.fips_code) FROM county_storm_outages s JOIN {g} USING (fips_code)
-          WHERE reliability_tier = 'UNKNOWN' AND storm = 'Irma' AND peak_share >= {HIT_SHARE}""").fetchone()[0],
+          WHERE reliability_tier = 'UNKNOWN' AND storm = 'Irma' AND peak_share >= {HIT_SHARE}"""),
         "storm_hits": rows(con, """
           SELECT storm, count(*) FILTER (used_in_tier) AS counties_hit,
                  count(*) FILTER (used_in_tier_rule = 'milton_helene_carryover') AS helene_carryover,

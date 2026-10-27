@@ -5,7 +5,7 @@ recent storms actually did to it. The table feeds the power-dependent side of a 
 where power-dependent residents lose power in a storm, and for how long.
 
 ```
-uv run --with duckdb python analysis/grid/build_grid.py
+uv run --project analysis/grid python analysis/grid/build_grid.py
 ```
 
 Inputs are read from `~/work/extdata` and `~/work/c4data` (override with `GRID_EXTDATA`, `GRID_C4DATA`).
