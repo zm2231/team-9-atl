@@ -165,8 +165,10 @@ def test_receiving_sites_contract(session):
     assert [r["drive_minutes"]["value"] for r in rows] == sorted(
         r["drive_minutes"]["value"] for r in rows)
     assert by_id["S1"]["arrives_before_ts_winds"] is True
-    assert out["shortfall"] == {"seeking_powered_seat": 600,
-                                "generator_recorded_seats_in_time": 400, "uncovered": 200}
+    assert out["lacking_shelter"] == {"seeking_powered_seat": 600,
+                                      "powered_seats_reachable": 400, "no_powered_seat": 200}
+    assert out["needing_transport"] == {"cannot_arrive_in_time": 0}
+    assert out["ignored_ids"] == []
     assert out["drive_time_source"] == "straight_line"
 
 
@@ -181,10 +183,10 @@ def test_surge_category_none_keeps_coastal_sites(session):
     assert out["sites"][0]["generator"] == "UNRECORDED"
     assert out["sites"][0]["arrives_before_ts_winds"] is None
     assert out["sites"][0]["evacuation_delay_minutes"] == {"low": 0, "base": 0, "high": 0}
-    assert out["shortfall"]["uncovered"] == 0
+    assert out["lacking_shelter"]["no_powered_seat"] == 0
 
 
-def test_late_arrival_drops_seats_from_shortfall(session):
+def test_late_base_trip_needs_transport_not_shelter(session):
     session(FakeResponse([
         {"destinationIndex": 0, "duration": "7200s", "distanceMeters": 250000,
          "condition": "ROUTE_EXISTS"},
@@ -193,14 +195,86 @@ def test_late_arrival_drops_seats_from_shortfall(session):
     sites = {"medical_shelters": [
         {"shelter_id": "S1", "name": "Macon", "county_fips": "13021", "lat": MACON[0],
          "lon": MACON[1], "seats": 400, "generator": "YES", "in_surge": []}]}
-    out = receiving.receiving_sites(county, sites, set(), 3, "florida_peninsula", "high", 2.5,
+    out = receiving.receiving_sites(county, sites, set(), 3, "florida_peninsula", "low", 3.0,
                                     relocation_share=0.3, power_dependent_at_risk=1000)
     row = out["sites"][0]
     assert row["corridor"] == "I-16"
-    multiplier = movement.delay_multiplier("I-16", "florida_peninsula", "high")
-    assert multiplier == 4.0
-    assert row["evacuation_delay_minutes"]["high"] == round(120 * (multiplier - 1))
+    multiplier = movement.delay_multiplier("I-16", "florida_peninsula", "base")
+    assert 120 * multiplier / 60 > 3.0 > 120 / 60
+    assert row["evacuation_delay_minutes"]["base"] == round(120 * (multiplier - 1))
     assert row["arrives_before_ts_winds"] is False
-    assert out["shortfall"] == {"seeking_powered_seat": 300,
-                                "generator_recorded_seats_in_time": 0, "uncovered": 300}
+    assert out["lacking_shelter"] == {"seeking_powered_seat": 300,
+                                      "powered_seats_reachable": 400, "no_powered_seat": 0}
+    assert out["needing_transport"] == {"cannot_arrive_in_time": 300}
     assert out["drive_time_source"] == "live"
+
+
+def _shelter(sid, lat, lon, seats, generator):
+    return {"shelter_id": sid, "name": sid, "county_fips": "13021", "lat": lat, "lon": lon,
+            "seats": seats, "generator": generator, "in_surge": []}
+
+
+SWITCH_SITES = {
+    "medical_shelters": [
+        _shelter("NEAR", 32.3, -81.5, 100, "YES"),
+        _shelter("MID", 32.6, -82.5, 300, "UNRECORDED"),
+        _shelter("FAR", MACON[0], MACON[1], 50, "YES"),
+    ],
+    "dialysis_centers": [
+        {"ccn": "C1", "name": "C1", "county_fips": "13175", "lat": DUBLIN[0],
+         "lon": DUBLIN[1], "stations": 20, "in_surge": []},
+    ],
+}
+CHATHAM = {"county_fips": "13051", "lat": SAVANNAH[0], "lon": SAVANNAH[1]}
+
+
+def _run(ts_arrival_h=None, seeking_base=1000.0, **switches):
+    return receiving.receiving_sites(CHATHAM, SWITCH_SITES, set(), None, "gulf", "base",
+                                     ts_arrival_h, relocation_share=0.2,
+                                     power_dependent_at_risk=seeking_base, **switches)
+
+
+def test_switched_off_site_is_not_returned_or_counted(session):
+    session(OSError("offline"))
+    base = _run()
+    assert base["lacking_shelter"]["powered_seats_reachable"] == 150
+    out = _run(sites_off=frozenset({"NEAR", "C1", "NOPE"}))
+    ids = {r.get("shelter_id") or r.get("ccn") for r in out["sites"]}
+    assert ids == {"MID", "FAR"}
+    assert out["lacking_shelter"] == {"seeking_powered_seat": 200,
+                                      "powered_seats_reachable": 50, "no_powered_seat": 150}
+    assert out["ignored_ids"] == ["NOPE"]
+
+
+def test_every_site_off_leaves_all_seekers_without_a_seat(session):
+    session(OSError("offline"))
+    off = frozenset({"NEAR", "MID", "FAR", "C1"})
+    out = _run(sites_off=off)
+    assert out["sites"] == []
+    assert out["lacking_shelter"]["no_powered_seat"] == 200
+    assert out["needing_transport"]["cannot_arrive_in_time"] == 0
+
+
+def test_assumed_generator_adds_its_seats(session):
+    session(OSError("offline"))
+    out = _run(assume_generator=frozenset({"MID", "C1"}))
+    mid = next(r for r in out["sites"] if r.get("shelter_id") == "MID")
+    assert mid["generator"] == "UNRECORDED" and mid["generator_assumed"] is True
+    assert not any(r["generator_assumed"] for r in out["sites"] if r is not mid)
+    assert out["lacking_shelter"]["powered_seats_reachable"] == 150 + 300
+    assert out["lacking_shelter"]["no_powered_seat"] == 0
+    assert out["ignored_ids"] == ["C1"]
+
+
+def test_blocks_when_everything_is_late_or_no_deadline(session):
+    session(OSError("offline"))
+    late = _run(ts_arrival_h=0.01)
+    assert all(r["arrives_before_ts_winds"] is False for r in late["sites"])
+    assert late["lacking_shelter"] == {"seeking_powered_seat": 200,
+                                       "powered_seats_reachable": 150, "no_powered_seat": 50}
+    assert late["needing_transport"] == {"cannot_arrive_in_time": 150}
+    for ts in (None, float("nan")):
+        out = _run(ts_arrival_h=ts)
+        assert all(r["arrives_before_ts_winds"] is None for r in out["sites"])
+        assert out["lacking_shelter"] == late["lacking_shelter"]
+        assert out["needing_transport"] == {"cannot_arrive_in_time": 0}
