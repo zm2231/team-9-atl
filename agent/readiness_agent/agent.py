@@ -88,10 +88,14 @@ Tools:
   receiving list carry a ccn, name and county; ground them with Google Maps by name and county,
   never through get_shelters.
 - For season-long risk use season_county_risk; for what to fix first use gap_sensitivity. Its
-  outlook defaults to auto, which works the outlook out from current NOAA conditions and keeps
-  only the rest of the season. Never ask the planner for a forecast or for storm counts. Quote
-  the auto outlook_note: it names every input with its date, says what share of the season
-  remains, and says whether the conditions model beat the long run in its back-test. Use
+  outlook defaults to auto, which works the outlook out from current NOAA conditions and picks
+  the season to plan: the rest of the current season when more than half of it remains,
+  otherwise the next full season, with the rest of the current season reported separately
+  (rest_of_current_season). Never ask the planner for a forecast or for storm counts. Lead with
+  the auto outlook_note: it says which season was planned and why (for example "Planning the
+  2027 season: 95% of 2026's storms historically arrive before 27 Oct."), names every input with
+  its date, says whether NOAA has an outlook for that season, and says whether the conditions
+  model beat the long run in its back-test. Use
   long_run, recent, la_nina, neutral, el_nino or noaa_aug_2026 only when asked, and quote their
   outlook_note. noaa_aug_2026 is an outside forecast input: name NOAA's August 2026 outlook.
 - For "what does this season look like" or the current conditions, call season_conditions and

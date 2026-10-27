@@ -15,6 +15,7 @@ from .data import DATA_DIR
 TIMEOUT_S = 8
 Z90 = 1.2815515655446004
 NOAA_WEIGHT = 0.5
+PLAN_CURRENT_ABOVE = 0.5
 ONI_URL = "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt"
 TNA_URL = "https://psl.noaa.gov/data/correlation/tna.data"
 ENSO_URL = "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml"
@@ -196,6 +197,38 @@ def _rounded(d: dict, digits: int) -> dict:
     return {k: round(v, digits) if isinstance(v, float) else v for k, v in d.items()}
 
 
+def _season_outlook(year: int, as_of: dt.date, model_out: dict, m: dict) -> dict:
+    outlook = _noaa_outlook(year)
+    if outlook is not None and dt.date.fromisoformat(outlook["issued"]) > as_of:
+        outlook = None
+    noaa = noaa_implied(outlook) if outlook else None
+    weight = NOAA_WEIGHT if noaa else 0.0
+    blended = {k: blend(model_out[k], noaa[k] if noaa else None, weight) for k in model_out}
+    return {
+        "season": year,
+        "noaa_outlook": outlook and {k: outlook[k] for k in (
+            "name", "issued", "url", "named", "hurricanes", "major", "average",
+            "range_probability", "status")},
+        "noaa_note": None if outlook else (
+            f"No NOAA seasonal hurricane outlook for {year} is available as of {as_of}."),
+        "noaa_implied": noaa and {k: _rounded(v, 3) for k, v in noaa.items()},
+        "blended": {k: _rounded(v, 3) for k, v in blended.items()},
+        "weights": {"conditions_model": round(1 - weight, 2), "noaa_outlook": weight},
+        "custom": {
+            "storms_per_year": blended["storms_per_year"]["value"],
+            "hurricane_share": blended["hurricane_share"]["value"],
+            "major_share": min(blended["major_share"]["value"],
+                               blended["hurricane_share"]["value"]),
+            "source": _source_line(year, outlook, weight, m),
+        },
+    }
+
+
+def _storms(blended: dict, share: float) -> dict:
+    return {k: round(v * share, 2) for k, v in blended["storms_per_year"].items()
+            if k in ("value", "p10", "p90")}
+
+
 def season_conditions(as_of_date: dt.date | str | None = None) -> dict:
     as_of = dt.date.fromisoformat(as_of_date) if isinstance(as_of_date, str) else (
         as_of_date or _today())
@@ -203,15 +236,35 @@ def season_conditions(as_of_date: dt.date | str | None = None) -> dict:
     oni = _daily("oni", _oni, _oni_fallback, today)
     tna = _daily("tna", _tna, _tna_fallback, today)
     enso = _daily("enso", _enso_forecast, _enso_fallback, today)
-    outlook = _noaa_outlook(as_of.year)
-    if outlook is not None and dt.date.fromisoformat(outlook["issued"]) > as_of:
-        outlook = None
-    model_out = conditions_model({"oni": oni["value"], "tna": tna["value"]})
-    noaa = noaa_implied(outlook) if outlook else None
-    weight = NOAA_WEIGHT if noaa else 0.0
-    blended = {k: blend(model_out[k], noaa[k] if noaa else None, weight) for k in model_out}
-    remaining = season.season_remaining_share(as_of)
     m = model()
+    model_out = conditions_model({"oni": oni["value"], "tna": tna["value"]})
+    remaining = season.season_remaining_share(as_of)
+    current = _season_outlook(as_of.year, as_of, model_out, m)
+    day = f"{as_of.day} {as_of:%b}"
+    if remaining > PLAN_CURRENT_ABOVE:
+        planned, rest = current, None
+        plan = {
+            "season": as_of.year, "trimmed_to_as_of": True, "run_as_of_date": as_of.isoformat(),
+            "reason": (f"Planning the rest of the {as_of.year} season: {remaining:.0%} of its "
+                       f"storms historically arrive after {day}."),
+            "expected_storms": _storms(current["blended"], remaining),
+        }
+    else:
+        planned = _season_outlook(as_of.year + 1, as_of, model_out, m)
+        plan = {
+            "season": as_of.year + 1, "trimmed_to_as_of": False, "run_as_of_date": None,
+            "reason": (f"Planning the {as_of.year + 1} season: {1 - remaining:.0%} of "
+                       f"{as_of.year}'s storms historically arrive before {day}."),
+            "expected_storms": _storms(planned["blended"], 1.0),
+        }
+        rest = {
+            "season": as_of.year,
+            "as_of_date": as_of.isoformat(),
+            "share_of_season_remaining": round(remaining, 3),
+            "expected_storms": _storms(current["blended"], remaining),
+            **{k: current[k] for k in ("noaa_outlook", "noaa_note", "blended", "weights",
+                                       "custom")},
+        }
     base = next(r for r in m["models"] if r["predictors"] == ["long_run"])
     backtest = [
         {"predictors": r["predictors"],
@@ -221,25 +274,19 @@ def season_conditions(as_of_date: dt.date | str | None = None) -> dict:
          "county_coverage_2018_2025": r["county_coverage_2018_2025"]}
         for r in m["models"]
     ]
-    custom = {
-        "storms_per_year": blended["storms_per_year"]["value"],
-        "hurricane_share": blended["hurricane_share"]["value"],
-        "major_share": min(blended["major_share"]["value"], blended["hurricane_share"]["value"]),
-        "source": _source_line(outlook, weight, m),
-    }
     return {
         "as_of_date": as_of.isoformat(),
+        "plan": plan,
         "share_of_season_remaining": round(remaining, 3),
         "inputs": {"oni": oni, "mdr_sst_anomaly": tna, "enso_forecast": enso,
-                   "noaa_outlook": outlook and {k: outlook[k] for k in (
-                       "name", "issued", "url", "named", "hurricanes", "major", "average",
-                       "range_probability", "status")}},
+                   "noaa_outlook": planned["noaa_outlook"]},
+        "noaa_note": planned["noaa_note"],
         "conditions_model": {k: _rounded(v, 3) for k, v in model_out.items()},
-        "noaa_implied": noaa and {k: _rounded(v, 3) for k, v in noaa.items()},
-        "blended": {k: _rounded(v, 3) for k, v in blended.items()},
-        "rest_of_season_storms": {
-            k: round(v * remaining, 2) for k, v in blended["storms_per_year"].items()},
-        "weights": {"conditions_model": round(1 - weight, 2), "noaa_outlook": weight},
+        "noaa_implied": planned["noaa_implied"],
+        "blended": planned["blended"],
+        "weights": planned["weights"],
+        "custom": planned["custom"],
+        "rest_of_current_season": rest,
         "backtest": {
             "count_family": m["count_family"],
             "models": backtest,
@@ -247,20 +294,21 @@ def season_conditions(as_of_date: dt.date | str | None = None) -> dict:
             "oni_only_per_unit": m["oni_only_per_unit"],
             "selected": m["selected"],
         },
-        "custom": custom,
         "method": (
             "Storms per year are counted within 250 km of Georgia; shares are of those storms. "
             "The conditions model uses a predictor only where its leave-one-season-out back-test "
             "beat the long-run rate; otherwise that part is the 1950-2025 long-run value. NOAA's "
             "basin counts are converted to Georgia by their ratio to the 1991-2020 average and "
-            "blended with the conditions model at the stated weights. Ranges are 10th-90th "
-            "percentiles of the model's parameter uncertainty; NOAA's are its 70% ranges. "
-            "The run keeps only storms after as_of_date."
+            "blended with the conditions model at the stated weights, only when NOAA has issued "
+            "an outlook for the planned season. Ranges are 10th-90th percentiles of the model's "
+            "parameter uncertainty; NOAA's are its 70% ranges. When more than half of the current "
+            "season remains, the plan keeps only its storms after as_of_date; otherwise it plans "
+            "the next full season and reports the rest of the current season separately."
         ),
     }
 
 
-def _source_line(outlook: dict | None, weight: float, m: dict) -> str:
+def _source_line(year: int, outlook: dict | None, weight: float, m: dict) -> str:
     parts = []
     sel = m["selected"]
     if all(v == ["long_run"] for v in sel.values()):
@@ -272,4 +320,4 @@ def _source_line(outlook: dict | None, weight: float, m: dict) -> str:
     if outlook:
         parts.append(f"outside forecast input: {outlook['name']}, issued {outlook['issued']}, "
                      f"{outlook['url']}, weight {weight:g}")
-    return "Auto outlook (" + "; ".join(parts) + ")"
+    return f"Auto outlook for the {year} season (" + "; ".join(parts) + ")"

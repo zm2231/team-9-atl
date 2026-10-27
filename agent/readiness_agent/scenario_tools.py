@@ -501,30 +501,52 @@ def _auto_note(cond: dict[str, Any]) -> str:
     noaa_text = (
         f"blended {cond['weights']['noaa_outlook']:g} with the outside forecast input "
         f"{noaa['name']} (issued {noaa['issued']}, {noaa['url']})" if noaa
-        else "no NOAA seasonal outlook applies to this date"
+        else cond["noaa_note"].rstrip(".")
     )
-    return (
-        f"Auto outlook as of {cond['as_of_date']}: "
-        f"{cond['share_of_season_remaining']:.0%} of the season remains. {model}; {noaa_text}. "
+    note = (
+        f"{cond['plan']['reason']} {model}; {noaa_text}. "
         f"Blended: {b['storms_per_year']['value']:.2f} storms per year within 250 km of Georgia "
         f"(10-90: {b['storms_per_year']['p10']:.2f}-{b['storms_per_year']['p90']:.2f}), "
         f"{b['hurricane_share']['value']:.0%} hurricanes, {b['major_share']['value']:.0%} major."
     )
+    rest = cond["rest_of_current_season"]
+    if rest:
+        note += (
+            f" Rest of {rest['season']} after {rest['as_of_date']}: "
+            f"{rest['share_of_season_remaining']:.0%} of the season remains, about "
+            f"{rest['expected_storms']['value']:.2f} storms, reported separately."
+        )
+    return note
 
 
-def _outlook_args(outlook: str, as_of_date: str | None) -> tuple[str, dict, dict | None]:
+def _outlook_args(
+    outlook: str, as_of_date: str | None
+) -> tuple[str, dict, dict | None, dict | None]:
     from .scenario import conditions
 
     if outlook != AUTO:
-        return outlook, {}, None
+        return outlook, {}, None, None
     cond = conditions.season_conditions(as_of_date)
+    rest = cond["rest_of_current_season"]
     auto = {
         "note": _auto_note(cond),
-        **{k: cond[k] for k in ("as_of_date", "share_of_season_remaining", "inputs",
-                                "conditions_model", "noaa_implied", "blended", "weights",
-                                "backtest", "method")},
+        **{k: cond[k] for k in ("as_of_date", "plan", "share_of_season_remaining", "inputs",
+                                "noaa_note", "conditions_model", "noaa_implied", "blended",
+                                "weights", "backtest", "method")},
+        "rest_of_current_season": rest and {k: v for k, v in rest.items() if k != "custom"},
     }
-    return "custom", {"custom": cond["custom"], "as_of_date": cond["as_of_date"]}, auto
+    run_as_of = cond["plan"]["run_as_of_date"]
+    extra = {"custom": cond["custom"], **({"as_of_date": run_as_of} if run_as_of else {})}
+    rest_extra = rest and {"custom": rest["custom"], "as_of_date": rest["as_of_date"]}
+    return "custom", extra, auto, rest_extra
+
+
+def _ranked(rows: list[dict[str, Any]], county_fips: str | None, limit: int) -> list:
+    if county_fips:
+        return [c for c in rows if c["county_fips"] == county_fips]
+    return sorted(rows, key=lambda c: -c["lacking_shelter"]["total"]["one_in_10"])[
+        : max(1, min(int(limit), 159))
+    ]
 
 
 def season_county_risk(
@@ -554,7 +576,7 @@ def season_county_risk(
         }
     case = case if case in CASES else "base"
     try:
-        name, extra, auto = _outlook_args(outlook, as_of_date)
+        name, extra, auto, rest_extra = _outlook_args(outlook, as_of_date)
     except ValueError as exc:
         return _status("bad_date", f"as_of_date must be YYYY-MM-DD ({exc}).")
     note = auto["note"] if auto else season_outlook_note(outlook)
@@ -566,21 +588,25 @@ def season_county_risk(
         add_sites,
         site_updates.effective_sites(data.sites(), planner),
     )
-    run = season.run_season(
-        name,
-        sites_off=sorted(switches["sites_off"] | set(planner["sites_off"])),
-        assume_generator=sorted(switches["assume_generator"]),
-        case=case,
-        **site_updates.season_kwargs(planner, request),
-        **extra,
-    )
-    rows = run["counties"]
-    if county_fips:
-        rows = [c for c in rows if c["county_fips"] == county_fips]
-    else:
-        rows = sorted(rows, key=lambda c: -c["lacking_shelter"]["total"]["one_in_10"])[
-            : max(1, min(int(limit), 159))
-        ]
+    def run_with(run_name: str, kwargs: dict) -> dict[str, Any]:
+        return season.run_season(
+            run_name,
+            sites_off=sorted(switches["sites_off"] | set(planner["sites_off"])),
+            assume_generator=sorted(switches["assume_generator"]),
+            case=case,
+            **site_updates.season_kwargs(planner, request),
+            **kwargs,
+        )
+
+    run = run_with(name, extra)
+    rows = _ranked(run["counties"], county_fips, limit)
+    if auto and rest_extra:
+        rest_run = run_with("custom", rest_extra)
+        auto["rest_of_current_season"]["result"] = {
+            "as_of": rest_run.get("as_of"),
+            "statewide": rest_run["statewide"],
+            "counties": _ranked(rest_run["counties"], county_fips, limit),
+        }
     return {
         "outlook": outlook,
         "label": run["label"],
@@ -696,7 +722,7 @@ def county_plan(
     def run_season(name: str, assume_generator: list[str] | None = None) -> dict[str, Any]:
         run_name, extra = name, {}
         if name == AUTO and auto_args:
-            run_name, extra, _ = auto_args
+            run_name, extra = auto_args[0], auto_args[1]
         return season.run_season(
             run_name,
             sites_off=planner["sites_off"],
@@ -726,7 +752,18 @@ def county_plan(
                 "note": note(name),
                 **pick(run),
             }
-        return {"by_outlook": rows}
+        out: dict[str, Any] = {"by_outlook": rows}
+        if auto_args and auto_args[3]:
+            rest = season.run_season(
+                "custom", sites_off=planner["sites_off"], **planner_kwargs, **auto_args[3]
+            )
+            out["rest_of_current_season"] = {
+                "season": auto_args[2]["rest_of_current_season"]["season"],
+                "as_of": rest.get("as_of"),
+                "storms_per_year": rest["storms_per_year"],
+                **pick(rest),
+            }
+        return out
 
     def generator_switch():
         unrecorded = [
