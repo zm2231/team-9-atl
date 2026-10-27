@@ -73,7 +73,7 @@ SWINGS = [
     },
     {
         "gap": "storm_rates",
-        "description": "Storm frequency from tracks 1950-2025 vs 2000-2025",
+        "description": "Storm frequency from tracks 1950-LAST vs 2000-LAST",
         "record_to_collect": "None; a modelling choice between long and recent climate",
         "param": "rates_from",
         "values": (1950, 2000),
@@ -295,7 +295,7 @@ def statewide_1in10(case: dict) -> float:
 
 def fix_ranking(ctx: dict) -> list[dict]:
     rows = []
-    for k, sw in enumerate(SWINGS):
+    for sw in SWINGS:
         vals = []
         for v in sw["values"]:
             p = dict(BASE, **{sw["param"]: v})
@@ -304,7 +304,7 @@ def fix_ranking(ctx: dict) -> list[dict]:
         rows.append(
             {
                 "gap": sw["gap"],
-                "description": sw["description"],
+                "description": sw["description"].replace("LAST", str(ctx["last"])),
                 "record_to_collect": sw["record_to_collect"],
                 "uncovered_1in10_low": round(lo),
                 "uncovered_1in10_high": round(hi),
@@ -314,16 +314,13 @@ def fix_ranking(ctx: dict) -> list[dict]:
     return sorted(rows, key=lambda r: -r["swing"])
 
 
-def backtest(ctx: dict, base: dict, observed: dict[str, int]) -> dict:
+def backtest_counts(lam: np.ndarray, observed: dict[str, int], counties: list[dict]) -> dict:
     years = BACKTEST_YEARS[1] - BACKTEST_YEARS[0] + 1
-    lam = base["rate"] @ (base["outage"] >= OUTAGE_25).astype(float)
-    rows, inside = [], 0
-    for j, c in enumerate(ctx["counties"]):
+    rows = []
+    for j, c in enumerate(counties):
         mu = float(lam[j] * years)
         lo, hi = poisson_quantile(mu, 0.1), poisson_quantile(mu, 0.9)
         obs = int(observed.get(c["county_fips"], 0))
-        ok = lo <= obs <= hi
-        inside += ok
         rows.append(
             {
                 "county_fips": c["county_fips"],
@@ -331,19 +328,42 @@ def backtest(ctx: dict, base: dict, observed: dict[str, int]) -> dict:
                 "expected": round(mu, 3),
                 "p10": lo,
                 "p90": hi,
-                "inside": ok,
+                "inside": lo <= obs <= hi,
             }
         )
-    total_mu = float(lam.sum() * years)
+    total = float(lam.sum() * years)
+    return {
+        "share_inside": round(sum(r["inside"] for r in rows) / len(rows), 3),
+        "statewide": {
+            "observed": sum(r["observed"] for r in rows),
+            "expected": round(total, 1),
+            "p10": poisson_quantile(total, 0.1),
+            "p90": poisson_quantile(total, 0.9),
+        },
+        "rows": rows,
+    }
+
+
+def backtest(ctx: dict, base: dict, observed: dict[str, int]) -> dict:
+    hits = (base["outage"] >= OUTAGE_25).astype(float)
+    main = backtest_counts(base["rate"] @ hits, observed, ctx["counties"])
+    recent_rate = event_rates(ctx["seasons"], ctx["storm_of_event"], 2000, ctx["last"])
+    recent = backtest_counts(recent_rate @ hits, observed, ctx["counties"])
     return {
         "window": list(BACKTEST_YEARS),
         "threshold": OUTAGE_25,
         "method": "observed county-storms with peak_share >= 0.25 (not suspect) vs Poisson "
-        "10th-90th percentile of the season model's expected count over the window",
-        "counties": len(rows),
-        "share_inside": round(inside / len(rows), 3),
-        "statewide": {"observed": sum(r["observed"] for r in rows), "expected": round(total_mu, 1)},
-        "rows": rows,
+        "10th-90th percentile of the season model's expected count over the window; the "
+        "statewide range treats counties as independent, so it is narrower than the truth",
+        "counties": len(main["rows"]),
+        "rates_from": BASE["rates_from"],
+        "share_inside": main["share_inside"],
+        "statewide": main["statewide"],
+        "rates_from_2000": {
+            "share_inside": recent["share_inside"],
+            "statewide": recent["statewide"],
+        },
+        "rows": main["rows"],
     }
 
 
