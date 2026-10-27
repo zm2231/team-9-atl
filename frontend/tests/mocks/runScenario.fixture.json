@@ -1,0 +1,1332 @@
+{
+ "name": "run_scenario",
+ "response": {
+  "affected_county_fips": [
+   "13007",
+   "13037",
+   "13087",
+   "13093",
+   "13131",
+   "13141",
+   "13177",
+   "13193",
+   "13205",
+   "13239",
+   "13249",
+   "13253",
+   "13259",
+   "13261",
+   "13273",
+   "13275",
+   "13287",
+   "13321"
+  ],
+  "affected_shelter_ids": [
+   "140485"
+  ],
+  "receiving_top": [
+   "140485",
+   "140129",
+   "140058",
+   "338230",
+   "331528"
+  ],
+  "scenario": {
+   "source": "drawn_track",
+   "origin": "gulf",
+   "category": 4,
+   "month": 10,
+   "past_storms_used": [],
+   "match": null,
+   "likelihood": {
+    "matching_storms": 3,
+    "years": [
+     1950,
+     2026
+    ],
+    "per_year": 0.039,
+    "return_period_years": 25.7,
+    "p_at_least_one_per_season": 0.0382,
+    "per_year_range80": [
+     0.013,
+     0.0649
+    ],
+    "example_storms": [
+     "Helene 2024",
+     "Michael 2018",
+     "Dennis 2005"
+    ]
+   },
+   "support": "within_labeled_support",
+   "range_label": "scenario range from 27 past storms",
+   "assumptions": {
+    "affected_threshold_share": 0.1,
+    "affected_county_rule": "at least 10% outage in at least half of the draws",
+    "dialysis_down_share": 0.5,
+    "relocation_share": 0.2,
+    "case": "base"
+   }
+  },
+  "statewide": {
+   "counties_affected": {
+    "p10": 17,
+    "p50": 33,
+    "p90": 56
+   },
+   "counties_affected_in_most_draws": 18,
+   "power_dependent_at_risk": {
+    "p10": 2679,
+    "p50": 5330,
+    "p90": 10515
+   },
+   "oxygen_users_at_risk": {
+    "p10": 760,
+    "p50": 1433,
+    "p90": 2797
+   },
+   "dialysis_patients_at_risk": {
+    "p10": 59,
+    "p50": 284,
+    "p90": 1083
+   },
+   "facility_beds_exposed": {
+    "p10": 151,
+    "p50": 1074,
+    "p90": 3998
+   }
+  },
+  "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages for 27 storms 2018-2025 (county_storm_outages) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+  "counties": [
+   {
+    "county_fips": "13087",
+    "county_name": "Decatur",
+    "outage_share": {
+     "p10": 0.065,
+     "p50": 0.396,
+     "p90": 0.845
+    },
+    "peak_wind_kt": 66.1,
+    "hours_ts_winds": 19.1,
+    "ts_winds_arrive_h": 13.0,
+    "power_dependent": {
+     "residents": 338,
+     "at_risk": {
+      "p10": 22,
+      "p50": 134,
+      "p90": 286
+     }
+    },
+    "oxygen_users": {
+     "residents": 106,
+     "at_risk": {
+      "p10": 7,
+      "p50": 42,
+      "p90": 90
+     }
+    },
+    "home_health_users": {
+     "residents": 78,
+     "at_risk": {
+      "p10": 5,
+      "p50": 31,
+      "p90": 66
+     }
+    },
+    "dialysis_patients": {
+     "patients": 95,
+     "centres": 2,
+     "stations": 35,
+     "centres_down": false
+    },
+    "nursing_home_beds": 207,
+    "assisted_living_beds": 90,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13089",
+    "county_name": "Dekalb",
+    "outage_share": {
+     "p10": 0.003,
+     "p50": 0.024,
+     "p90": 0.189
+    },
+    "peak_wind_kt": 35.0,
+    "hours_ts_winds": 4.0,
+    "ts_winds_arrive_h": 34.1,
+    "power_dependent": {
+     "residents": 5082,
+     "at_risk": {
+      "p10": 16,
+      "p50": 121,
+      "p90": 962
+     }
+    },
+    "oxygen_users": {
+     "residents": 1002,
+     "at_risk": {
+      "p10": 3,
+      "p50": 24,
+      "p90": 190
+     }
+    },
+    "home_health_users": {
+     "residents": 720,
+     "at_risk": {
+      "p10": 2,
+      "p50": 17,
+      "p90": 136
+     }
+    },
+    "dialysis_patients": {
+     "patients": 1304,
+     "centres": 23,
+     "stations": 447,
+     "centres_down": false
+    },
+    "nursing_home_beds": 2402,
+    "assisted_living_beds": 2382,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13131",
+    "county_name": "Grady",
+    "outage_share": {
+     "p10": 0.059,
+     "p50": 0.396,
+     "p90": 0.868
+    },
+    "peak_wind_kt": 66.2,
+    "hours_ts_winds": 20.1,
+    "ts_winds_arrive_h": 14.0,
+    "power_dependent": {
+     "residents": 302,
+     "at_risk": {
+      "p10": 18,
+      "p50": 120,
+      "p90": 262
+     }
+    },
+    "oxygen_users": {
+     "residents": 68,
+     "at_risk": {
+      "p10": 4,
+      "p50": 27,
+      "p90": 59
+     }
+    },
+    "home_health_users": {
+     "residents": 55,
+     "at_risk": {
+      "p10": 3,
+      "p50": 22,
+      "p90": 48
+     }
+    },
+    "dialysis_patients": {
+     "patients": 76,
+     "centres": 0,
+     "stations": 0,
+     "centres_down": false
+    },
+    "nursing_home_beds": 217,
+    "assisted_living_beds": 56,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13135",
+    "county_name": "Gwinnett",
+    "outage_share": {
+     "p10": 0.003,
+     "p50": 0.022,
+     "p90": 0.217
+    },
+    "peak_wind_kt": 34.5,
+    "hours_ts_winds": 5.0,
+    "ts_winds_arrive_h": 35.1,
+    "power_dependent": {
+     "residents": 5265,
+     "at_risk": {
+      "p10": 13,
+      "p50": 116,
+      "p90": 1142
+     }
+    },
+    "oxygen_users": {
+     "residents": 1178,
+     "at_risk": {
+      "p10": 3,
+      "p50": 26,
+      "p90": 255
+     }
+    },
+    "home_health_users": {
+     "residents": 734,
+     "at_risk": {
+      "p10": 2,
+      "p50": 16,
+      "p90": 159
+     }
+    },
+    "dialysis_patients": {
+     "patients": 910,
+     "centres": 21,
+     "stations": 345,
+     "centres_down": false
+    },
+    "nursing_home_beds": 1131,
+    "assisted_living_beds": 3906,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13215",
+    "county_name": "Muscogee",
+    "outage_share": {
+     "p10": 0.005,
+     "p50": 0.047,
+     "p90": 0.319
+    },
+    "peak_wind_kt": 44.9,
+    "hours_ts_winds": 12.0,
+    "ts_winds_arrive_h": 24.1,
+    "power_dependent": {
+     "residents": 2215,
+     "at_risk": {
+      "p10": 11,
+      "p50": 105,
+      "p90": 706
+     }
+    },
+    "oxygen_users": {
+     "residents": 678,
+     "at_risk": {
+      "p10": 3,
+      "p50": 32,
+      "p90": 216
+     }
+    },
+    "home_health_users": {
+     "residents": 338,
+     "at_risk": {
+      "p10": 2,
+      "p50": 16,
+      "p90": 108
+     }
+    },
+    "dialysis_patients": {
+     "patients": 493,
+     "centres": 11,
+     "stations": 229,
+     "centres_down": false
+    },
+    "nursing_home_beds": 1106,
+    "assisted_living_beds": 1366,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13275",
+    "county_name": "Thomas",
+    "outage_share": {
+     "p10": 0.014,
+     "p50": 0.135,
+     "p90": 0.578
+    },
+    "peak_wind_kt": 59.2,
+    "hours_ts_winds": 20.1,
+    "ts_winds_arrive_h": 14.0,
+    "power_dependent": {
+     "residents": 719,
+     "at_risk": {
+      "p10": 10,
+      "p50": 97,
+      "p90": 415
+     }
+    },
+    "oxygen_users": {
+     "residents": 152,
+     "at_risk": {
+      "p10": 2,
+      "p50": 20,
+      "p90": 88
+     }
+    },
+    "home_health_users": {
+     "residents": 102,
+     "at_risk": {
+      "p10": 1,
+      "p50": 14,
+      "p90": 59
+     }
+    },
+    "dialysis_patients": {
+     "patients": 143,
+     "centres": 3,
+     "stations": 61,
+     "centres_down": false
+    },
+    "nursing_home_beds": 267,
+    "assisted_living_beds": 396,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13121",
+    "county_name": "Fulton",
+    "outage_share": {
+     "p10": 0.001,
+     "p50": 0.013,
+     "p90": 0.128
+    },
+    "peak_wind_kt": 34.3,
+    "hours_ts_winds": 1.0,
+    "ts_winds_arrive_h": 35.1,
+    "power_dependent": {
+     "residents": 7334,
+     "at_risk": {
+      "p10": 10,
+      "p50": 95,
+      "p90": 935
+     }
+    },
+    "oxygen_users": {
+     "residents": 1184,
+     "at_risk": {
+      "p10": 2,
+      "p50": 15,
+      "p90": 151
+     }
+    },
+    "home_health_users": {
+     "residents": 972,
+     "at_risk": {
+      "p10": 1,
+      "p50": 13,
+      "p90": 124
+     }
+    },
+    "dialysis_patients": {
+     "patients": 1644,
+     "centres": 35,
+     "stations": 675,
+     "centres_down": false
+    },
+    "nursing_home_beds": 3105,
+    "assisted_living_beds": 6037,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13021",
+    "county_name": "Bibb",
+    "outage_share": {
+     "p10": 0.005,
+     "p50": 0.035,
+     "p90": 0.264
+    },
+    "peak_wind_kt": 45.9,
+    "hours_ts_winds": 8.0,
+    "ts_winds_arrive_h": 27.1,
+    "power_dependent": {
+     "residents": 2251,
+     "at_risk": {
+      "p10": 10,
+      "p50": 78,
+      "p90": 595
+     }
+    },
+    "oxygen_users": {
+     "residents": 558,
+     "at_risk": {
+      "p10": 3,
+      "p50": 19,
+      "p90": 147
+     }
+    },
+    "home_health_users": {
+     "residents": 261,
+     "at_risk": {
+      "p10": 1,
+      "p50": 9,
+      "p90": 69
+     }
+    },
+    "dialysis_patients": {
+     "patients": 482,
+     "centres": 6,
+     "stations": 127,
+     "centres_down": false
+    },
+    "nursing_home_beds": 1163,
+    "assisted_living_beds": 1022,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13095",
+    "county_name": "Dougherty",
+    "outage_share": {
+     "p10": 0.005,
+     "p50": 0.056,
+     "p90": 0.356
+    },
+    "peak_wind_kt": 58.5,
+    "hours_ts_winds": 14.0,
+    "ts_winds_arrive_h": 17.0,
+    "power_dependent": {
+     "residents": 1347,
+     "at_risk": {
+      "p10": 7,
+      "p50": 75,
+      "p90": 480
+     }
+    },
+    "oxygen_users": {
+     "residents": 366,
+     "at_risk": {
+      "p10": 2,
+      "p50": 20,
+      "p90": 130
+     }
+    },
+    "home_health_users": {
+     "residents": 126,
+     "at_risk": {
+      "p10": 1,
+      "p50": 7,
+      "p90": 45
+     }
+    },
+    "dialysis_patients": {
+     "patients": 293,
+     "centres": 7,
+     "stations": 120,
+     "centres_down": false
+    },
+    "nursing_home_beds": 436,
+    "assisted_living_beds": 373,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13205",
+    "county_name": "Mitchell",
+    "outage_share": {
+     "p10": 0.024,
+     "p50": 0.203,
+     "p90": 0.693
+    },
+    "peak_wind_kt": 63.0,
+    "hours_ts_winds": 18.1,
+    "ts_winds_arrive_h": 15.0,
+    "power_dependent": {
+     "residents": 335,
+     "at_risk": {
+      "p10": 8,
+      "p50": 68,
+      "p90": 232
+     }
+    },
+    "oxygen_users": {
+     "residents": 74,
+     "at_risk": {
+      "p10": 2,
+      "p50": 15,
+      "p90": 51
+     }
+    },
+    "home_health_users": {
+     "residents": 52,
+     "at_risk": {
+      "p10": 1,
+      "p50": 11,
+      "p90": 36
+     }
+    },
+    "dialysis_patients": {
+     "patients": 70,
+     "centres": 1,
+     "stations": 19,
+     "centres_down": false
+    },
+    "nursing_home_beds": 156,
+    "assisted_living_beds": 45,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13261",
+    "county_name": "Sumter",
+    "outage_share": {
+     "p10": 0.017,
+     "p50": 0.144,
+     "p90": 0.574
+    },
+    "peak_wind_kt": 53.2,
+    "hours_ts_winds": 11.0,
+    "ts_winds_arrive_h": 22.1,
+    "power_dependent": {
+     "residents": 458,
+     "at_risk": {
+      "p10": 8,
+      "p50": 66,
+      "p90": 263
+     }
+    },
+    "oxygen_users": {
+     "residents": 130,
+     "at_risk": {
+      "p10": 2,
+      "p50": 19,
+      "p90": 75
+     }
+    },
+    "home_health_users": {
+     "residents": 98,
+     "at_risk": {
+      "p10": 2,
+      "p50": 14,
+      "p90": 56
+     }
+    },
+    "dialysis_patients": {
+     "patients": 126,
+     "centres": 2,
+     "stations": 31,
+     "centres_down": false
+    },
+    "nursing_home_beds": 338,
+    "assisted_living_beds": 431,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13063",
+    "county_name": "Clayton",
+    "outage_share": {
+     "p10": 0.003,
+     "p50": 0.029,
+     "p90": 0.176
+    },
+    "peak_wind_kt": 36.1,
+    "hours_ts_winds": 7.0,
+    "ts_winds_arrive_h": 32.1,
+    "power_dependent": {
+     "residents": 1931,
+     "at_risk": {
+      "p10": 5,
+      "p50": 56,
+      "p90": 341
+     }
+    },
+    "oxygen_users": {
+     "residents": 365,
+     "at_risk": {
+      "p10": 1,
+      "p50": 11,
+      "p90": 64
+     }
+    },
+    "home_health_users": {
+     "residents": 207,
+     "at_risk": {
+      "p10": 1,
+      "p50": 6,
+      "p90": 37
+     }
+    },
+    "dialysis_patients": {
+     "patients": 526,
+     "centres": 5,
+     "stations": 85,
+     "centres_down": false
+    },
+    "nursing_home_beds": 638,
+    "assisted_living_beds": 816,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13321",
+    "county_name": "Worth",
+    "outage_share": {
+     "p10": 0.023,
+     "p50": 0.167,
+     "p90": 0.581
+    },
+    "peak_wind_kt": 55.4,
+    "hours_ts_winds": 14.0,
+    "ts_winds_arrive_h": 19.1,
+    "power_dependent": {
+     "residents": 330,
+     "at_risk": {
+      "p10": 8,
+      "p50": 55,
+      "p90": 192
+     }
+    },
+    "oxygen_users": {
+     "residents": 125,
+     "at_risk": {
+      "p10": 3,
+      "p50": 21,
+      "p90": 73
+     }
+    },
+    "home_health_users": {
+     "residents": 57,
+     "at_risk": {
+      "p10": 1,
+      "p50": 10,
+      "p90": 33
+     }
+    },
+    "dialysis_patients": {
+     "patients": 68,
+     "centres": 1,
+     "stations": 12,
+     "centres_down": false
+    },
+    "nursing_home_beds": 117,
+    "assisted_living_beds": 24,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13071",
+    "county_name": "Colquitt",
+    "outage_share": {
+     "p10": 0.011,
+     "p50": 0.08,
+     "p90": 0.468
+    },
+    "peak_wind_kt": 59.4,
+    "hours_ts_winds": 20.1,
+    "ts_winds_arrive_h": 16.0,
+    "power_dependent": {
+     "residents": 558,
+     "at_risk": {
+      "p10": 6,
+      "p50": 44,
+      "p90": 261
+     }
+    },
+    "oxygen_users": {
+     "residents": 227,
+     "at_risk": {
+      "p10": 2,
+      "p50": 18,
+      "p90": 106
+     }
+    },
+    "home_health_users": {
+     "residents": 108,
+     "at_risk": {
+      "p10": 1,
+      "p50": 9,
+      "p90": 51
+     }
+    },
+    "dialysis_patients": {
+     "patients": 76,
+     "centres": 1,
+     "stations": 26,
+     "centres_down": false
+    },
+    "nursing_home_beds": 287,
+    "assisted_living_beds": 200,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13093",
+    "county_name": "Dooly",
+    "outage_share": {
+     "p10": 0.042,
+     "p50": 0.23,
+     "p90": 0.772
+    },
+    "peak_wind_kt": 52.4,
+    "hours_ts_winds": 9.0,
+    "ts_winds_arrive_h": 24.1,
+    "power_dependent": {
+     "residents": 173,
+     "at_risk": {
+      "p10": 7,
+      "p50": 40,
+      "p90": 133
+     }
+    },
+    "oxygen_users": {
+     "residents": 60,
+     "at_risk": {
+      "p10": 3,
+      "p50": 14,
+      "p90": 46
+     }
+    },
+    "home_health_users": {
+     "residents": 44,
+     "at_risk": {
+      "p10": 2,
+      "p50": 10,
+      "p90": 34
+     }
+    },
+    "dialysis_patients": {
+     "patients": 55,
+     "centres": 0,
+     "stations": 0,
+     "centres_down": false
+    },
+    "nursing_home_beds": 0,
+    "assisted_living_beds": 52,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13177",
+    "county_name": "Lee",
+    "outage_share": {
+     "p10": 0.012,
+     "p50": 0.113,
+     "p90": 0.528
+    },
+    "peak_wind_kt": 54.5,
+    "hours_ts_winds": 13.0,
+    "ts_winds_arrive_h": 18.1,
+    "power_dependent": {
+     "residents": 335,
+     "at_risk": {
+      "p10": 4,
+      "p50": 38,
+      "p90": 177
+     }
+    },
+    "oxygen_users": {
+     "residents": 104,
+     "at_risk": {
+      "p10": 1,
+      "p50": 12,
+      "p90": 55
+     }
+    },
+    "home_health_users": {
+     "residents": 30,
+     "at_risk": {
+      "p10": 0,
+      "p50": 3,
+      "p90": 16
+     }
+    },
+    "dialysis_patients": {
+     "patients": 43,
+     "centres": 1,
+     "stations": 22,
+     "centres_down": false
+    },
+    "nursing_home_beds": 60,
+    "assisted_living_beds": 92,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13277",
+    "county_name": "Tift",
+    "outage_share": {
+     "p10": 0.006,
+     "p50": 0.054,
+     "p90": 0.37
+    },
+    "peak_wind_kt": 53.3,
+    "hours_ts_winds": 16.0,
+    "ts_winds_arrive_h": 20.1,
+    "power_dependent": {
+     "residents": 684,
+     "at_risk": {
+      "p10": 4,
+      "p50": 37,
+      "p90": 253
+     }
+    },
+    "oxygen_users": {
+     "residents": 257,
+     "at_risk": {
+      "p10": 1,
+      "p50": 14,
+      "p90": 95
+     }
+    },
+    "home_health_users": {
+     "residents": 112,
+     "at_risk": {
+      "p10": 1,
+      "p50": 6,
+      "p90": 41
+     }
+    },
+    "dialysis_patients": {
+     "patients": 96,
+     "centres": 2,
+     "stations": 36,
+     "centres_down": false
+    },
+    "nursing_home_beds": 278,
+    "assisted_living_beds": 233,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13151",
+    "county_name": "Henry",
+    "outage_share": {
+     "p10": 0.002,
+     "p50": 0.016,
+     "p90": 0.141
+    },
+    "peak_wind_kt": 38.2,
+    "hours_ts_winds": 10.0,
+    "ts_winds_arrive_h": 31.1,
+    "power_dependent": {
+     "residents": 2264,
+     "at_risk": {
+      "p10": 4,
+      "p50": 37,
+      "p90": 320
+     }
+    },
+    "oxygen_users": {
+     "residents": 474,
+     "at_risk": {
+      "p10": 1,
+      "p50": 8,
+      "p90": 67
+     }
+    },
+    "home_health_users": {
+     "residents": 256,
+     "at_risk": {
+      "p10": 0,
+      "p50": 4,
+      "p90": 36
+     }
+    },
+    "dialysis_patients": {
+     "patients": 513,
+     "centres": 10,
+     "stations": 159,
+     "centres_down": false
+    },
+    "nursing_home_beds": 299,
+    "assisted_living_beds": 778,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13273",
+    "county_name": "Terrell",
+    "outage_share": {
+     "p10": 0.019,
+     "p50": 0.178,
+     "p90": 0.661
+    },
+    "peak_wind_kt": 56.5,
+    "hours_ts_winds": 13.0,
+    "ts_winds_arrive_h": 18.1,
+    "power_dependent": {
+     "residents": 181,
+     "at_risk": {
+      "p10": 3,
+      "p50": 32,
+      "p90": 120
+     }
+    },
+    "oxygen_users": {
+     "residents": 77,
+     "at_risk": {
+      "p10": 1,
+      "p50": 14,
+      "p90": 51
+     }
+    },
+    "home_health_users": {
+     "residents": 29,
+     "at_risk": {
+      "p10": 1,
+      "p50": 5,
+      "p90": 19
+     }
+    },
+    "dialysis_patients": {
+     "patients": 59,
+     "centres": 0,
+     "stations": 0,
+     "centres_down": false
+    },
+    "nursing_home_beds": 60,
+    "assisted_living_beds": 53,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   },
+   {
+    "county_fips": "13153",
+    "county_name": "Houston",
+    "outage_share": {
+     "p10": 0.002,
+     "p50": 0.018,
+     "p90": 0.135
+    },
+    "peak_wind_kt": 44.1,
+    "hours_ts_winds": 8.0,
+    "ts_winds_arrive_h": 25.1,
+    "power_dependent": {
+     "residents": 1721,
+     "at_risk": {
+      "p10": 4,
+      "p50": 31,
+      "p90": 233
+     }
+    },
+    "oxygen_users": {
+     "residents": 511,
+     "at_risk": {
+      "p10": 1,
+      "p50": 9,
+      "p90": 69
+     }
+    },
+    "home_health_users": {
+     "residents": 222,
+     "at_risk": {
+      "p10": 0,
+      "p50": 4,
+      "p90": 30
+     }
+    },
+    "dialysis_patients": {
+     "patients": 288,
+     "centres": 7,
+     "stations": 106,
+     "centres_down": false
+    },
+    "nursing_home_beds": 458,
+    "assisted_living_beds": 673,
+    "in_surge_zone": {
+     "shelter_ids": [],
+     "dialysis_ccns": []
+    },
+    "status": [
+     "modelled"
+    ]
+   }
+  ],
+  "receiving": {
+   "sites": [
+    {
+     "kind": "dialysis_centre",
+     "ccn": "112801",
+     "stations": 9,
+     "name": "DCI - CLARK HOME TRAINING CENTER",
+     "county_fips": "13095",
+     "generator": "UNRECORDED",
+     "straight_line_km": 2.6,
+     "drive_minutes": {
+      "value": 3,
+      "status": "straight_line"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": null,
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "dialysis_centre",
+     "ccn": "112509",
+     "stations": 26,
+     "name": "DCI ALBANY",
+     "county_fips": "13095",
+     "generator": "UNRECORDED",
+     "straight_line_km": 2.7,
+     "drive_minutes": {
+      "value": 4,
+      "status": "straight_line"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": null,
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "dialysis_centre",
+     "ccn": "112587",
+     "stations": 20,
+     "name": "DCI EAST ALBANY",
+     "county_fips": "13095",
+     "generator": "UNRECORDED",
+     "straight_line_km": 3.5,
+     "drive_minutes": {
+      "value": 5,
+      "status": "straight_line"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": null,
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "dialysis_centre",
+     "ccn": "852506",
+     "stations": 11,
+     "name": "Fresenius Medical Care of Albany",
+     "county_fips": "13095",
+     "generator": "UNRECORDED",
+     "straight_line_km": 4.7,
+     "drive_minutes": {
+      "value": 6,
+      "status": "straight_line"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": null,
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "dialysis_centre",
+     "ccn": "112704",
+     "stations": 22,
+     "name": "DCI ALBANY WEST TOWN",
+     "county_fips": "13095",
+     "generator": "UNRECORDED",
+     "straight_line_km": 4.8,
+     "drive_minutes": {
+      "value": 6,
+      "status": "straight_line"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": null,
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "medical_shelter",
+     "shelter_id": "140485",
+     "seats": 200,
+     "name": "Sumter County Fairgrounds",
+     "county_fips": "13261",
+     "generator": "UNRECORDED",
+     "straight_line_km": 57.4,
+     "drive_minutes": {
+      "value": 75,
+      "status": "straight_line"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 194,
+      "high": 224
+     },
+     "corridor": "I-75 S",
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "medical_shelter",
+     "shelter_id": "140129",
+     "seats": 150,
+     "name": "Dudley Baptist Church",
+     "county_fips": "13175",
+     "generator": "UNRECORDED",
+     "straight_line_km": 149.6,
+     "drive_minutes": {
+      "value": 194,
+      "status": "straight_line"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 505,
+      "high": 583
+     },
+     "corridor": "I-75 S",
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "medical_shelter",
+     "shelter_id": "140058",
+     "seats": 57,
+     "name": "Gordon College Nursing & Allied Health Building",
+     "county_fips": "13171",
+     "generator": "UNRECORDED",
+     "straight_line_km": 165.1,
+     "drive_minutes": {
+      "value": 215,
+      "status": "straight_line"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 557,
+      "high": 644
+     },
+     "corridor": "I-75 S",
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "medical_shelter",
+     "shelter_id": "338230",
+     "seats": 20,
+     "name": "Ridge Road Elementary School",
+     "county_fips": "13303",
+     "generator": "UNRECORDED",
+     "straight_line_km": 202.4,
+     "drive_minutes": {
+      "value": 263,
+      "status": "straight_line"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 684,
+      "high": 790
+     },
+     "corridor": "I-75 S",
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "medical_shelter",
+     "shelter_id": "331528",
+     "seats": 450,
+     "name": "Metter High School",
+     "county_fips": "13043",
+     "generator": "YES",
+     "straight_line_km": 217.8,
+     "drive_minutes": {
+      "value": 283,
+      "status": "straight_line"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 736,
+      "high": 850
+     },
+     "corridor": "I-75 S",
+     "arrives_before_ts_winds": true
+    }
+   ],
+   "shortfall": {
+    "seeking_powered_seat": 15,
+    "generator_recorded_seats_in_time": 450,
+    "uncovered": 0
+   },
+   "drive_time_source": "straight_line"
+  }
+ }
+}
