@@ -239,3 +239,11 @@ def test_last_day_of_year_plans_next_season_with_nothing_left():
     section = plan["power_outage_frequency"]
     assert "by_outlook" in section
     assert section["rest_of_current_season"]["storms_per_year"] == 0
+
+
+def test_every_tool_is_registered_once():
+    from readiness_agent import agent
+
+    names = [t.__name__ for t in agent.root_agent.tools if callable(t)]
+    assert len(names) == len(set(names))
+    assert "season_conditions" in names

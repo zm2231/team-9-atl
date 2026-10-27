@@ -230,8 +230,6 @@ root_agent = Agent(
                 record_site_update,
                 recommend_sites,
                 county_storm_profile,
-                record_site_update,
-                recommend_sites,
             ],
         ),
     ],
