@@ -7,44 +7,14 @@ import AffectedSummary from "../scenario/AffectedSummary";
 import ReceivingList from "../scenario/ReceivingList";
 
 /**
- * County/shelter summaries, the hurricane lists and "What we could not tell you". Collapsed to a
- * rail by default; hovering, selecting or drawing never opens it (tasks T082–T083).
+ * The Details tab: county/shelter summaries, the hurricane lists and "What we could not tell you".
+ * SidePanel owns the tab; hovering, selecting or drawing never switches to it (feature 003 FR-012).
  */
 export default function DetailsPanel() {
-  const { state, dispatch } = useStore();
+  const { state } = useStore();
   const scenario = useScenario();
-  const hasNews = Boolean(state.selectedShelterId || state.selectedFips || scenario);
-
-  if (!state.detailsOpen) {
-    return (
-      <button
-        type="button"
-        className="details-rail"
-        aria-expanded="false"
-        aria-controls="details-panel"
-        aria-label={hasNews ? "Show details (new details available)" : "Show details"}
-        onClick={() => dispatch({ type: "setDetailsOpen", open: true })}
-      >
-        {hasNews && <span className="details-rail__dot" aria-hidden="true" />}
-        Details ▸
-      </button>
-    );
-  }
-
   return (
-    <aside id="details-panel" className="side" aria-label="Details">
-      <div className="side__header">
-        <h2>Details</h2>
-        <button
-          type="button"
-          className="btn"
-          aria-expanded="true"
-          aria-controls="details-panel"
-          onClick={() => dispatch({ type: "setDetailsOpen", open: false })}
-        >
-          ◂ Hide
-        </button>
-      </div>
+    <div className="details">
       {state.selectedShelterId ? <ShelterDetails /> : <CountySummary />}
       {scenario && (
         <>
@@ -53,6 +23,6 @@ export default function DetailsPanel() {
         </>
       )}
       <CouldNotTell />
-    </aside>
+    </div>
   );
 }

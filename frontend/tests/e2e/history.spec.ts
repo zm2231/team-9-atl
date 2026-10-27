@@ -75,7 +75,7 @@ test("reopen restores inputs and re-simulates (T019, SC-002, FR-007–FR-009)", 
   const QUESTION = "Which of these receiving shelters can actually take a wheelchair?";
   await drawAcross(page, "13127");
   await page.getByRole("button", { name: "Cat 4", exact: true }).click();
-  await page.getByLabel("Within reach cutoff in kilometres").fill("120");
+  await page.getByLabel("Within reach cutoff in miles").fill("75");
   await ask(page, QUESTION);
 
   await page.getByRole("button", { name: "New simulation" }).click();
@@ -86,13 +86,14 @@ test("reopen restores inputs and re-simulates (T019, SC-002, FR-007–FR-009)", 
   // The older scenario is second (newest first).
   await page.getByTestId("history-item").nth(1).click();
   await expect(page.getByRole("button", { name: "Cat 4", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByText("Within reach:")).toContainText("120 km");
+  await expect(page.getByText("Within reach:")).toContainText("75 mi");
   await expect(page.locator("path.band")).toHaveCount(1);
 
   // Visible without opening Details (analysis M2), and inside Details (FR-008).
   await expect(page.getByTestId("resimulated-note")).toContainText("re-simulated at");
-  await page.getByRole("button", { name: /Show details/ }).click();
+  await page.getByRole("tab", { name: /^Details/ }).click();
   await expect(page.getByTestId("resimulated")).toContainText("from current data");
+  await page.getByRole("tab", { name: "Chat" }).click();
 
   const earlier = page.getByTestId("earlier-questions");
   await expect(earlier).toContainText(QUESTION);

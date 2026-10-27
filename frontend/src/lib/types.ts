@@ -89,7 +89,6 @@ export interface ReceivingEntry {
   rank: number;
   distance_km: SourcedValue;
   nearest_affected_county: string;
-  reason: string;
 }
 
 export interface HurricaneScenario {

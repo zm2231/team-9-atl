@@ -1,27 +1,33 @@
-import { CUTOFF_MAX_KM, CUTOFF_MIN_KM } from "../../lib/simulation";
+import { formatDistance, fromKm, sliderRange, toKm, unitName, type DistanceUnit } from "../../lib/units";
 
-/** "Within reach" is one visible, documented setting, not a hidden constant (FR-018b). */
+/**
+ * "Within reach" is one visible, documented setting, not a hidden constant (FR-018b). The value is
+ * always kilometres; the scale and label follow the display unit (feature 003, research R3).
+ */
 export default function ReachSlider({
   value,
+  unit,
   onChange,
   disabled,
 }: {
   value: number;
+  unit: DistanceUnit;
   onChange: (km: number) => void;
   disabled?: boolean;
 }) {
+  const { min, max, step } = sliderRange(unit);
   return (
     <label>
-      Within reach: <strong>{value} km</strong> (straight-line){" "}
+      Within reach: <strong>{formatDistance(value, unit)}</strong> (straight-line){" "}
       <input
         type="range"
-        min={CUTOFF_MIN_KM}
-        max={CUTOFF_MAX_KM}
-        step={5}
-        value={value}
+        min={min}
+        max={max}
+        step={step}
+        value={Math.round(fromKm(value, unit) / step) * step}
         disabled={disabled}
-        aria-label="Within reach cutoff in kilometres"
-        onChange={(e) => onChange(Number(e.target.value))}
+        aria-label={`Within reach cutoff in ${unitName(unit)}`}
+        onChange={(e) => onChange(toKm(Number(e.target.value), unit))}
       />
     </label>
   );

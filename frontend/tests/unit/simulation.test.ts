@@ -7,6 +7,7 @@ import {
   affected,
   capacitySummary,
   computeBand,
+  reasonFor,
   receivingList,
   thinTrack,
 } from "../../src/lib/simulation";
@@ -51,7 +52,9 @@ describe("receivingList (FR-018a–d)", () => {
     const { list } = run(cobbTrack, 1, 200);
     expect(list.some((r) => r.shelter_id === "J1")).toBe(true);
     expect(list[0].shelter_id).not.toBe("J1");
-    expect(list.find((r) => r.shelter_id === "J1")!.reason).toContain("implausible");
+    const j1 = list.find((r) => r.shelter_id === "J1")!;
+    const shelter = data.shelters.find((s) => s.shelter_id === "J1")!;
+    expect(reasonFor(shelter, j1, 200, "km")).toContain("implausible");
   });
 
   it("filters by the cutoff at 25, 80 and 200 km", () => {

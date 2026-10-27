@@ -4,6 +4,7 @@ import type { Feature, LineString, MultiPolygon, Point, Polygon } from "geojson"
 import { countFlags } from "./flags";
 import type { Category, ExcludedShelter, FlagCounts, FlagKey, ReceivingEntry, Shelter } from "./types";
 import { gaCounties, type CountyFeature } from "./geo";
+import { formatDistance, type DistanceUnit } from "./units";
 
 /** Band half-width per category, loosely scaled to hurricane-force wind radii. Illustrative only. */
 export const HALF_WIDTH_KM: Record<Category, number> = { 1: 30, 2: 45, 3: 60, 4: 80, 5: 100 };
@@ -53,12 +54,14 @@ const isSuspect = (s: Shelter) => s.quality_flags.includes("suspect_capacity");
 /** A data error must never top the list: suspect capacities rank as 0. */
 const rankCapacity = (s: Shelter) => (isSuspect(s) ? 0 : (s.evacuation_capacity ?? 0));
 
-function reasonFor(s: Shelter, rank: number, d: number, cutoffKm: number): string {
+/** One row's reason, built at display time so its distances follow the selected unit (feature 003). */
+export function reasonFor(s: Shelter, entry: ReceivingEntry, cutoffKm: number, unit: DistanceUnit): string {
+  const d = formatDistance(entry.distance_km.value ?? 0, unit);
   const parts: string[] = [];
   if (isSuspect(s)) parts.push("Capacity looks implausible; ranked as 0");
-  else if (rank === 1) parts.push(`Largest recorded capacity within ${cutoffKm} km`);
-  else if (s.evacuation_capacity === null) parts.push(`Capacity not recorded; ${Math.round(d)} km away`);
-  else parts.push(`Recorded capacity ${s.evacuation_capacity.toLocaleString("en-US")}, ${Math.round(d)} km away`);
+  else if (entry.rank === 1) parts.push(`Largest recorded capacity within ${formatDistance(cutoffKm, unit)}`);
+  else if (s.evacuation_capacity === null) parts.push(`Capacity not recorded; ${d} away`);
+  else parts.push(`Recorded capacity ${s.evacuation_capacity.toLocaleString("en-US")}, ${d} away`);
   parts.push(
     {
       YES: "wheelchair access recorded yes",
@@ -109,7 +112,6 @@ export function receivingList(
     rank: i + 1,
     distance_km: { value: d, source: "Simulation (straight-line) · shelters", kind: "simulation" },
     nearest_affected_county: nearest,
-    reason: reasonFor(s, i + 1, d, cutoffKm),
   }));
 }
 
