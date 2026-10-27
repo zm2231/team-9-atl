@@ -7,8 +7,9 @@ Module boundaries for the three build lanes. Runtime code is numpy plus the stan
 | Module | Public API |
 |---|---|
 | `windfield.py` | `TrackPoint(hour, lat, lon, vmax_kt, rmw_km, r34_km)`; `interpolate_hourly(points)`; `exposure(track, lats, lons) -> dict[str, np.ndarray]` with keys `peak_wind_kt`, `hours_34kt`, `hours_50kt`, `hours_64kt`, `min_dist_km`, `first_34kt_hour` (NaN when never reached). Vectorized over counties; must match the scalar `county_exposure` to 1e-6 |
-| `model.py` | `FEATURES = ["peak_wind_kt", "hours_34kt", "hours_50kt", "min_dist_km", "pop"]`; `transform(x)`; `OutageModel.load()`; `.sample(features, rng, n_draws) -> np.ndarray (n_draws, n_counties)`, one storm effect per draw shared across counties |
-| `storms.py` | `analog_tracks(lat, lon, heading_deg, month, intensity_kt=None, max_tracks=40) -> list[Analog]`, each analog's track re-timed so hour 0 is the matched point and shifted so that point sits on the requested position; `drawn_track(lonlats, category, forward_kmh=20) -> list[TrackPoint]`; `climatology() -> list[Analog]` (every storm since 1950 within 250 km of Georgia, with annual weight); `classify_origin(lat, lon)` |
+| `model.py` | `FEATURES = ["peak_wind_kt", "hours_34kt", "hours_50kt", "min_dist_km", "pop", "storm_peak_kt", "storm_speed_kmh"]`; `transform(x)` = log1p of each plus squared log wind (`N_TERMS` columns); fitted on `evac_prod.ext_eaglei_county_storm_2014_2025` (35 storms 2016-2025); `OutageModel.load()`; `OutageModel.load()`; `.sample(features, rng, n_draws) -> np.ndarray (n_draws, n_counties)`, one storm effect per draw shared across counties |
+| `profile.py` | `county_storm_profile(county_fips, outlook)`: labelled storms observed vs held-out modelled, county effect rank, yearly chance of 25% / 50% outage, strongest historical wind, support |
+| `storms.py` | `storm_features(track)` -> `storm_peak_kt` (peak within 300 km of Georgia), `storm_speed_kmh` (median forward speed there); `analog_tracks(lat, lon, heading_deg, month, intensity_kt=None, max_tracks=40) -> list[Analog]`, each analog's track re-timed so hour 0 is the matched point and shifted so that point sits on the requested position; `drawn_track(lonlats, category, forward_kmh=20) -> list[TrackPoint]`; `climatology() -> list[Analog]` (every storm since 1950 within 250 km of Georgia, with annual weight); `classify_origin(lat, lon)` |
 | `engine.py` | `run(tracks, *, n_draws, seed) -> Result` with per-county arrays (`outage` draws, `peak_wind_kt`, `hours_34kt`, `ts_arrival_h`) and per-track support flags; `people_at_risk(result, counties) -> dict` |
 | `data.py` | `counties()`, `sites()`, `tracks()`, `model_npz()`, cached loaders over `data/*.json` and `data/outage_model.npz` |
 
@@ -22,7 +23,7 @@ Module boundaries for the three build lanes. Runtime code is numpy plus the stan
 |---|---|
 | Surge flags | `data/sites.json`: every medical shelter and dialysis centre gets `in_surge` = list of categories 1-5 whose SLOSH maximum-of-maximums zone covers it. Also `data/surge_zones.geojson` simplified per category for the map, under 1.5 MB |
 | Facility beds | `nursing_home_beds` per county by spatial join of `care_facilities_clean` to Census county boundaries; `assisted_living_beds` from `ext_ga_assisted_living.county_fips` |
-| Season build | `build/build_season.py`: about 2,000 events from `storms.climatology()`, `engine.run`, people at risk, receiving capacity; writes `evac_prod.scenario_season_county` and `evac_prod.scenario_fix_ranking`; back-test against 2018-2025 |
+| Season build | `build/build_season.py`: 3,200 events from `storms.climatology()` (per storm 4 historical replays and 12 synthetic variants from `build/synthetic.py`; also writes `evac_prod.scenario_worst_events`), `engine.run`, people at risk, receiving capacity; writes `evac_prod.scenario_season_county` and `evac_prod.scenario_fix_ranking`; back-test against 2018-2025 |
 
 ## Lane D: movement (`scenario-movement` branch)
 

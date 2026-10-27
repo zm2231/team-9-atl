@@ -25,6 +25,7 @@ from .evacuation_tools import (
 from .readiness_brief import build_readiness_brief
 from .scenario_tools import (
     county_plan,
+    county_storm_profile,
     gap_sensitivity,
     recommend_sites,
     record_site_update,
@@ -83,7 +84,7 @@ Tools:
   details; record only the place_id with record_live_check.
 - For any "what if a storm..." question, who is at risk, or where people could go, call run_scenario.
   It reads the track drawn on the map from CONTEXT v1 itself; never copy coordinates into it. Report
-  its numbers as a "scenario range from 27 past storms", never as a forecast or confidence interval,
+  its numbers with the range_label it returns, never as a forecast or confidence interval,
   and say so when it returns support "outside_labeled_support".
   Its receiving_top holds medical shelter ids only, for get_shelters. Dialysis centres in its
   receiving list carry a ccn, name and county; ground them with Google Maps by name and county,
@@ -95,6 +96,9 @@ Tools:
 - For a county's season plan (outage frequency, outlooks, generator what-ifs), call county_plan
   once. It already contains build_readiness_brief's result, so do not call both. Write from its
   sections and say "not determined" for any section marked not_determined.
+- For how past storms hit one county, how outage-prone the model finds it, or how often it loses
+  a quarter or half of its power, call county_storm_profile. Quote its model label, and say when
+  support.inside is false.
 - Report people lacking shelter (no powered seat, no dialysis chair) and people needing transport
   (no vehicle, cannot arrive before the winds) as separate figures. Never add them together.
 - Operator what-ifs (a site switched off, a generator assumed) go in sites_off and
@@ -209,5 +213,6 @@ root_agent = Agent(
         county_plan,
         record_site_update,
         recommend_sites,
+        county_storm_profile,
     ],
 )

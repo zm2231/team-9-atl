@@ -113,12 +113,13 @@ def test_added_site_reduces_lacking_shelter_where_it_reaches():
 
 def test_greedy_accounts_for_overlap():
     base = season.siting_base()
-    cands = siting.upgrade_candidates(base["ev"]) + siting.county_candidates()
-    scored = season.evaluate_candidates(base, cands)
-    combo = season.greedy(base, scored[:20])
-    assert combo[0]["candidate_id"] == scored[0]["candidate_id"]
-    assert [c["candidate_id"] for c in combo[1:]] != [c["candidate_id"] for c in scored[1:3]]
-    assert combo[1]["added_reduction_1in10"] <= scored[1]["lacking_shelter_1in10_reduction"]
+    scored = season.evaluate_candidates(base, siting.county_candidates())
+    a = next(c for c in scored if c["lacking_shelter_1in10_reduction"] > 0)
+    twin = {**a, "candidate_id": "twin"}
+    single = season.evaluate_candidates(base, [twin])[0]["lacking_shelter_1in10_reduction"]
+    combo = season.greedy(base, [a, twin])
+    assert combo[0]["candidate_id"] == a["candidate_id"]
+    assert len(combo) == 1 or combo[1]["added_reduction_1in10"] < single
 
 
 def test_p_helps_is_paired():
