@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from .build import BQ_COLUMNS, OUT, TABLES
+from .build import BQ_COLUMNS, OUT, SHELTER_FEED_FIELDS, TABLES
 
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT = "qwiklabs-gcp-04-edc952746633"
@@ -53,6 +53,20 @@ def checks(con) -> dict[str, list[tuple]]:
     d = {k: n for k, n in con.execute("SELECT coordinates_confidence, COUNT(*) FROM dialysis_centers GROUP BY 1 ORDER BY 1").fetchall()}
     o = con.execute("SELECT place_group, COUNT(*), string_agg(DISTINCT source_license, ', ' ORDER BY source_license) "
                     "FROM overture_places GROUP BY 1 ORDER BY 1").fetchall()
+    z = _q(con, """SELECT (SELECT COUNT(*) FROM hazard_tracts WHERE evac_zone IS NOT NULL),
+                          (SELECT COUNT(*) FROM care_facilities WHERE evac_zone IS NOT NULL),
+                          (SELECT COUNT(*) FROM assisted_living WHERE evac_zone IS NOT NULL),
+                          (SELECT COUNT(*) FROM raw_zones)""")
+    a = _q(con, """SELECT COUNT(*), COUNT(*) FILTER (WHERE facility_identity_status = 'aggregated_small_home'),
+                          SUM(licensed_beds), median(km_nearest_medical_shelter)
+                   FROM assisted_living""")
+    a_disagree = _q(con, """SELECT COUNT(*) FROM assisted_living a JOIN raw_power p ON p.fips_code = a.county_fips
+                            WHERE lower(replace(a.COUNTY, ' ', '')) <> lower(replace(p.name, ' ', ''))""")[0]
+    cf = _q(con, "SELECT COUNT(*), COUNT(*) FILTER (WHERE evac_zone IS NOT NULL) FROM contraflow_intersections")
+    se = {k: n for k, n in con.execute("SELECT storm_match_status, COUNT(*) FROM storm_events GROUP BY 1 ORDER BY 1").fetchall()}
+    sh = _q(con, "SELECT COUNT(*) FROM storm_history")[0]
+    dropped_feed = [n for (n,) in con.execute("SELECT name FROM raw_shelter_feed_fields ORDER BY name").fetchall()
+                    if n not in SHELTER_FEED_FIELDS]
     return {
         "hazard_tracts": [
             ("source columns", h[3], "11 NRI columns as published", "unchanged, in the BigQuery `hazard_tracts_clean` order"),
@@ -60,6 +74,8 @@ def checks(con) -> dict[str, list[tuple]]:
             ("hrcn_ealp_percentile", h[3], f"`HRCN_EALP` {h[1]:.3g} to {h[2]:.3g}",
              f"`hrcn_ealp_pctile` 0 to 1 (top: {h[4]})"),
             ("fips_from_geo_id", h[3], "no county column", "`county_fips` = left(geo_id, 5)"),
+            ("gema_zone", z[0], f"no evacuation zone ({z[3]} GEMA zone polygons)",
+             "`evac_zone`, `evac_zone_county` from the tract centroid; null elsewhere"),
         ],
         "power_dependent_counties": [
             ("columns dropped to match BigQuery clean schema", p[0], ", ".join(f"`{x}`" for x in dropped), "not carried"),
@@ -83,13 +99,38 @@ def checks(con) -> dict[str, list[tuple]]:
              f"`nearest_tract_geo_id`, `county_fips` (imputed); {disagree} disagree with CMS county text"),
             ("medical_shelter_distance_pending", c[0], "none",
              f"`km_nearest_medical_shelter` median {c[5]:.1f}, max {c[6]:.1f} (pending teammate shelters_clean)"),
+            ("gema_zone", z[1], "no evacuation zone", "`evac_zone`, `evac_zone_county` from the facility point"),
+        ],
+        "assisted_living (GaMap2Care)": [
+            ("gamap2care_facility", a[0], "GaMap2Care facility fields", f"one row per FACID; {_fmt(a[2])} licensed beds"),
+            ("small_home_aggregated", a[1], "name, street address and point of homes with 6 or fewer beds",
+             "`NAME`, `ADDRESS` null; `Latitude`/`Longitude` = tract centroid; status aggregated_small_home"),
+            ("nearest_tract_centroid", a[0], "GaMap2Care `COUNTY` text",
+             f"`county_fips` (imputed); {a_disagree} disagree with the county text, both kept"),
+            ("gema_zone", z[2], "no evacuation zone", "`evac_zone`, `evac_zone_county`"),
+            ("medical_shelter_distance_pending", a[0], "none",
+             f"`km_nearest_medical_shelter` median {a[3]:.1f} (pending teammate shelters_clean)"),
+        ],
+        "contraflow_intersections (GEMA)": [
+            ("gema_contraflow_point", cf[0], "GEMA I-16 contraflow points", f"`county_fips` imputed; {cf[1]} in a GEMA zone"),
+        ],
+        "gema_shelter_feed (input for the teammate shelters table)": [
+            ("webeoc_facility_fields", 0, f"{len(SHELTER_FEED_FIELDS) + len(dropped_feed)} schema fields",
+             f"{len(SHELTER_FEED_FIELDS)} facility/status fields kept; never read: "
+             + ", ".join(f"`{n}`" for n in dropped_feed)),
+        ],
+        "storm_events / storm_history (NCEI)": [
+            ("ncei_storm_match_narrative", se.get("external", 0), "HURDAT2 match by narrative name", "status external"),
+            ("ncei_storm_match_nearest", se.get("imputed", 0), "nearest active HURDAT2 storm", "status imputed"),
+            ("ncei_storm_unmatched", se.get("unrecorded", 0), "no storm", "status unrecorded"),
+            ("ncei_storm_aggregate", sh, "events", "one row per storm and state"),
         ],
         "dialysis_centers (gap fill)": [
             ("zip_to_county_empower", sum(d.values()), "CMS county text", "`county_fips` from ZIP"),
             ("census_geocoder", sum(v for k, v in d.items() if k != "unmatched"), "no coordinates",
              ", ".join(f"{k} {v}" for k, v in d.items())),
         ],
-        "overture_places (gap fill)": [
+        "overture_places (held: built to out/held/, not committed or posted)": [
             ("overture_places", n, f"Overture `{g}`", f"status external, licences: {lic}") for g, n, lic in o
         ],
     }
@@ -113,7 +154,8 @@ def write_post(con, root: Path = ROOT) -> None:
              "team's `_clean` table is a separate, deliberate step. The leading columns match the existing",
              "`evacuation_readiness.<table>_clean` schemas (read with `bq show --schema`), and the clean-layer",
              "columns follow.", "", "```bash", "source ~/work/google-hackathon/hackathon-env.sh"]
-    for name in TABLES:
+    staged = [n for n in TABLES if n != "gema_shelter_feed"]
+    for name in staged:
         lines.append(f"bq load --source_format=PARQUET --replace {PROJECT}:{DATASET}.{name}_flow_staging "
                      f"data/clean/out/{name}.parquet")
     lines += ["```", "", "Check the leading columns before replacing:", "", "```sql"]
@@ -125,8 +167,10 @@ def write_post(con, root: Path = ROOT) -> None:
     for name in BQ_COLUMNS:
         lines.append(f"CREATE OR REPLACE TABLE `{PROJECT}.{DATASET}.{name}_clean` AS "
                      f"SELECT * FROM `{PROJECT}.{DATASET}.{name}_flow_staging`;")
-    lines += ["```", "", "`dialysis_centers` and `overture_places` are new gap-fill tables and stay as",
-              "`<name>_flow_staging` until the team names them.", "",
+    lines += ["```", "", "The other tables (" + ", ".join(f"`{n}`" for n in staged if n not in BQ_COLUMNS)
+              + ") are new and stay as `<name>_flow_staging` until the team names them.",
+              "`gema_shelter_feed` is an input for the teammate shelters table and is not loaded here.",
+              "`overture_places` is held pending the licence ruling and is not loaded.", "",
               "Column counts:", ""]
     for name in TABLES:
         n = len(con.execute(f"DESCRIBE {name}").fetchall())

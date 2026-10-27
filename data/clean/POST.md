@@ -11,7 +11,10 @@ bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuatio
 bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.hazard_tracts_flow_staging data/clean/out/hazard_tracts.parquet
 bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.power_dependent_counties_flow_staging data/clean/out/power_dependent_counties.parquet
 bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.dialysis_centers_flow_staging data/clean/out/dialysis_centers.parquet
-bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.overture_places_flow_staging data/clean/out/overture_places.parquet
+bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.assisted_living_flow_staging data/clean/out/assisted_living.parquet
+bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.contraflow_intersections_flow_staging data/clean/out/contraflow_intersections.parquet
+bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.storm_events_flow_staging data/clean/out/storm_events.parquet
+bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.storm_history_flow_staging data/clean/out/storm_history.parquet
 ```
 
 Check the leading columns before replacing:
@@ -30,13 +33,18 @@ CREATE OR REPLACE TABLE `qwiklabs-gcp-04-edc952746633.evacuation_readiness.hazar
 CREATE OR REPLACE TABLE `qwiklabs-gcp-04-edc952746633.evacuation_readiness.power_dependent_counties_clean` AS SELECT * FROM `qwiklabs-gcp-04-edc952746633.evacuation_readiness.power_dependent_counties_flow_staging`;
 ```
 
-`dialysis_centers` and `overture_places` are new gap-fill tables and stay as
-`<name>_flow_staging` until the team names them.
+The other tables (`dialysis_centers`, `assisted_living`, `contraflow_intersections`, `storm_events`, `storm_history`) are new and stay as `<name>_flow_staging` until the team names them.
+`gema_shelter_feed` is an input for the teammate shelters table and is not loaded here.
+`overture_places` is held pending the licence ruling and is not loaded.
 
 Column counts:
 
-- `care_facilities`: 61 columns (10 leading BigQuery columns)
-- `hazard_tracts`: 29 columns (11 leading BigQuery columns)
+- `care_facilities`: 67 columns (10 leading BigQuery columns)
+- `hazard_tracts`: 35 columns (11 leading BigQuery columns)
 - `power_dependent_counties`: 61 columns (20 leading BigQuery columns)
 - `dialysis_centers`: 21 columns (0 leading BigQuery columns)
-- `overture_places`: 21 columns (0 leading BigQuery columns)
+- `assisted_living`: 45 columns (0 leading BigQuery columns)
+- `contraflow_intersections`: 20 columns (0 leading BigQuery columns)
+- `gema_shelter_feed`: 16 columns (0 leading BigQuery columns)
+- `storm_events`: 40 columns (0 leading BigQuery columns)
+- `storm_history`: 16 columns (0 leading BigQuery columns)

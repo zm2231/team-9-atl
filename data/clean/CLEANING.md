@@ -12,6 +12,7 @@ its published value; cleaned values go in appended columns with `_status` and `_
 | `cfld_null_outside_layer` | 2,588 | `CFLD_EXPP` NULL | `cfld_expp_clean` = 0, `cfld_expp_clean_status` = imputed |
 | `hrcn_ealp_percentile` | 2,791 | `HRCN_EALP` 0 to 0.0329 | `hrcn_ealp_pctile` 0 to 1 (top: 13029920308) |
 | `fips_from_geo_id` | 2,791 | no county column | `county_fips` = left(geo_id, 5) |
+| `gema_zone` | 198 | no evacuation zone (27 GEMA zone polygons) | `evac_zone`, `evac_zone_county` from the tract centroid; null elsewhere |
 
 ## power_dependent_counties
 
@@ -34,6 +35,38 @@ its published value; cleaned values go in appended columns with `_status` and `_
 | `certified beds` | 1 | snapshot `number_of_certified_beds` | differs from CMS `cms_certified_beds` |
 | `nearest_tract_centroid` | 356 | no tract or county FIPS | `nearest_tract_geo_id`, `county_fips` (imputed); 11 disagree with CMS county text |
 | `medical_shelter_distance_pending` | 356 | none | `km_nearest_medical_shelter` median 52.1, max 185.3 (pending teammate shelters_clean) |
+| `gema_zone` | 26 | no evacuation zone | `evac_zone`, `evac_zone_county` from the facility point |
+
+## assisted_living (GaMap2Care)
+
+| Rule | Rows | Before | After |
+|---|---:|---|---|
+| `gamap2care_facility` | 1,894 | GaMap2Care facility fields | one row per FACID; 46,567 licensed beds |
+| `small_home_aggregated` | 1,044 | name, street address and point of homes with 6 or fewer beds | `NAME`, `ADDRESS` null; `Latitude`/`Longitude` = tract centroid; status aggregated_small_home |
+| `nearest_tract_centroid` | 1,894 | GaMap2Care `COUNTY` text | `county_fips` (imputed); 59 disagree with the county text, both kept |
+| `gema_zone` | 78 | no evacuation zone | `evac_zone`, `evac_zone_county` |
+| `medical_shelter_distance_pending` | 1,894 | none | `km_nearest_medical_shelter` median 45.2 (pending teammate shelters_clean) |
+
+## contraflow_intersections (GEMA)
+
+| Rule | Rows | Before | After |
+|---|---:|---|---|
+| `gema_contraflow_point` | 32 | GEMA I-16 contraflow points | `county_fips` imputed; 13 in a GEMA zone |
+
+## gema_shelter_feed (input for the teammate shelters table)
+
+| Rule | Rows | Before | After |
+|---|---:|---|---|
+| `webeoc_facility_fields` | 0 | 39 schema fields | 16 facility/status fields kept; never read: `CreationDate`, `Creator`, `EditDate`, `Editor`, `ObjectID`, `entrydate`, `positionid`, `primary_contact`, `primary_phone`, `primary_phone_ext`, `primary_phone_notes`, `remarks`, `secondary_contact`, `secondary_phone`, `secondary_phone_ext`, `secondary_phone_notes`, `shelter_fax`, `shelter_phone`, `subscribername`, `twentyfour_contact`, `twentyfour_phone`, `twentyfour_phone_ext`, `twentyfour_phone_notes` |
+
+## storm_events / storm_history (NCEI)
+
+| Rule | Rows | Before | After |
+|---|---:|---|---|
+| `ncei_storm_match_narrative` | 6,347 | HURDAT2 match by narrative name | status external |
+| `ncei_storm_match_nearest` | 577 | nearest active HURDAT2 storm | status imputed |
+| `ncei_storm_unmatched` | 10 | no storm | status unrecorded |
+| `ncei_storm_aggregate` | 192 | events | one row per storm and state |
 
 ## dialysis_centers (gap fill)
 
@@ -42,7 +75,7 @@ its published value; cleaned values go in appended columns with `_status` and `_
 | `zip_to_county_empower` | 355 | CMS county text | `county_fips` from ZIP |
 | `census_geocoder` | 323 | no coordinates | geocoded_census_exact 242, geocoded_census_non_exact 81, unmatched 32 |
 
-## overture_places (gap fill)
+## overture_places (held: built to out/held/, not committed or posted)
 
 | Rule | Rows | Before | After |
 |---|---:|---|---|

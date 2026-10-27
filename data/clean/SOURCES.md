@@ -9,18 +9,27 @@ Every input is read locally; nothing is fetched at build time. Paths are the def
 | HHS emPOWER REST service, county and ZIP layers (fetched 2026-10-27) | `$EXTDATA/emPOWER/empower_ga_{county,zip}.csv` (`EXTDATA`, default `~/work/extdata`) | HHS ASPR / CMS | US Government work, de-identified; use only for emergency preparedness and make no attempt to identify any individual | Canonical live counts (`*_live`); ZIP-to-county for dialysis centers |
 | CMS Provider Data: Nursing Home Provider Information, Dialysis Facility listing (GA rows) | `$CMS_DIR/{nursing_homes_ga,dialysis_facilities_ga}.parquet` (`CMS_DIR`) | Centers for Medicare & Medicaid Services | US Government work | Residents per day, CMS beds, provider type, sprinklers; dialysis stations |
 | Census Geocoder results for the CMS dialysis addresses | `dialysis_centers_geocoded.csv` (`DIALYSIS_GEOCODED`) | US Census Bureau | US Government work | Dialysis center coordinates and match quality |
-| Overture Maps Places, release 2026-10-21.0, Georgia care and transport categories | `places_ga_care_transport.parquet` (`OVERTURE_PLACES`) | Overture Maps Foundation | Per row in `source_license`: CDLA-Permissive-2.0 (Meta, Microsoft, BrightQuery, Uberall, Birdeye, RenderSEO), Apache-2.0 (Foursquare), CC0-1.0 (AllThePlaces) | Assisted living, retirement homes, home health, hospice, ambulance and medical-transport listings |
+| GEMA hurricane evacuation zones (27 polygons) and I-16 contraflow intersections (32 points), fetched 2026-10-27 | `$EXTDATA/gema/{evacuation_zones,contraflow_intersections}.geojson` | Georgia Emergency Management and Homeland Security Agency | No licence stated; cleared for this event with attribution (see below) | `evac_zone` on hazard tracts, care facilities and assisted living; `contraflow_intersections` |
+| GEMA WebEOC shelter feed schema (`Shelters_v2_view`; 0 rows on 2026-10-27) | `$EXTDATA/gema/shelters_v2_schema.json` | GEMA/HS | As above | Field list for `gema_shelter_feed`; contact, phone, remarks, subscriber and editor fields are never read |
+| GaMap2Care assisted living communities and personal care homes, facility fields only (fetched 2026-10-27) | `$EXTDATA/gamap2care/gamap2care_alc_pch_facility_fields.parquet` | Georgia Department of Community Health, Healthcare Facility Regulation | As above; administrator, email and telephone were never downloaded | `assisted_living` |
+| NOAA NCEI Storm Events Database, Georgia and Florida tropical-related events 1996-2025, matched to HURDAT2 storms | `$EXTDATA/ncei_storm_events/ga_fl_tropical.parquet` | NOAA National Centers for Environmental Information | US Government work | `storm_events`, `storm_history` |
+| Overture Maps Places, release 2026-10-21.0, Georgia care and transport categories (**held**) | `places_ga_care_transport.parquet` (`OVERTURE_PLACES`) | Overture Maps Foundation | Per row in `source_license`: CDLA-Permissive-2.0, Apache-2.0 (Foursquare), CC0-1.0 (AllThePlaces) | Built to `out/held/overture_places.parquet`, which is gitignored and not posted until the licence question is settled |
 
-Not used: the GDOT evacuation-route layer (no stated licence), DCH licensed-facility lists (no
-stated licence), and Census TIGER/Line roads (public domain, used by `analysis/flow`, not here).
-No phone numbers, emails or websites are carried from Overture.
+Not used here: GDOT evacuation routes (used by `analysis/flow` as the corridor layer), Census
+TIGER/Line roads (used by `analysis/flow` where GDOT has no route), EAGLE-I outage data (held), and
+Georgia DPH OASIS (not needed for these tables). No phone numbers, emails or websites are carried
+from any source.
 
 ## Licence bar
 
 The repository bar is public domain, CC0 or US Government work, and no non-commercial,
-no-derivatives, share-alike, unstated licence or individual-level personal data. Overture's
-CDLA-Permissive-2.0 and Apache-2.0 rows are permissive and carry none of the excluded terms; they
-are kept with their per-row licence so any consumer can filter to CC0 only.
+no-derivatives, share-alike, unstated licence or individual-level personal data. On 2026-10-27 the
+event organizers ruled that Georgia state and county agency data with no stated licence counts as
+government work and may be used with attribution (GDOT, GEMA, GaMap2Care). The personal-data rule
+still binds: facility fields only, and personal care homes with 6 or fewer licensed beds, often
+family homes in private residences, carry no name or street address and sit at their tract
+centroid in every output. Overture's CDLA-Permissive-2.0 and Apache-2.0 rows await a ruling and are
+held.
 
 ## Attribution
 
@@ -28,8 +37,13 @@ are kept with their per-row licence so any consumer can filter to CC0 only.
 - HHS emPOWER Program (ASPR/CMS), HHS emPOWER REST Service, accessed 2026-10-27.
 - FEMA National Risk Index. For planning purposes only.
 - US Census Bureau Geocoder.
+- Source: Georgia Emergency Management and Homeland Security Agency (GEMA/HS).
+- Source: Georgia Department of Community Health, Healthcare Facility Regulation (GaMap2Care).
+- Source: Georgia Department of Transportation (GDOT) EGIS, Office of Transportation Data (`analysis/flow`).
+- NOAA National Centers for Environmental Information, Storm Events Database.
 - Overture Maps Foundation, overturemaps.org. Data from Meta, Microsoft, Foursquare, AllThePlaces and
   others under CDLA Permissive 2.0, Apache 2.0 and CC0.
 
-Foursquare rows (`source_dataset = 'Foursquare'`) are redistributed under Apache 2.0 with this notice:
+If the held Overture rows are released, Foursquare rows (`source_dataset = 'Foursquare'`) carry this
+Apache 2.0 notice:
 "Copyright 2024 Foursquare Labs, Inc. All rights reserved. Available under Apache 2.0."

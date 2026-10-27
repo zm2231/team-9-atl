@@ -1,4 +1,5 @@
-STATUSES = ("recorded", "unrecorded", "imputed", "assumption", "suspect", "external")
+STATUSES = ("recorded", "unrecorded", "imputed", "assumption", "suspect", "external", "aggregated_small_home")
+SMALL_HOME_BEDS = 6
 
 PROJ = "'EPSG:4326', 'EPSG:32617', always_xy := true"
 
@@ -39,6 +40,25 @@ RULES = {
     "overture_places": (
         "Overture Maps Places release 2026-10-21.0, per-row licence in source_license (CDLA-Permissive-2.0, "
         "Apache-2.0, CC0-1.0); confidence is Overture's own. A listing, not licensure: no beds, no fleet size."),
+    "gema_zone": (
+        "GEMA hurricane evacuation zone (County, Zone) whose polygon contains the point (tract centroid for "
+        "tracts). Null with status external: outside every zone; GEMA zones cover 11 coastal counties. Where "
+        "edge slivers overlap, the earliest zone letter wins. Null with status unrecorded: no point."),
+    "gamap2care_facility": "GaMap2Care facility record as published by Georgia DCH, facility fields only.",
+    "small_home_aggregated": (
+        f"Personal care home with {SMALL_HOME_BEDS} or fewer licensed beds, often a family home in a private "
+        "residence: NAME and ADDRESS are null and Latitude/Longitude are its tract centroid in every output; "
+        "beds and counts stay. Distances use the tract centroid."),
+    "gema_contraflow_point": "GEMA I-16 contraflow intersection as published.",
+    "webeoc_facility_fields": (
+        "GEMA WebEOC shelter feed restricted to facility and status fields; contact names, phones, fax, "
+        "remarks, subscriber and editor fields are never read."),
+    "ncei_storm_match_narrative": "NCEI event matched to a HURDAT2 storm by the storm name in its narrative and active dates.",
+    "ncei_storm_match_nearest": "NCEI event assigned to the nearest active HURDAT2 storm (no name in the narrative).",
+    "ncei_storm_unmatched": "No HURDAT2 storm matched.",
+    "ncei_storm_aggregate": (
+        "Per storm and state: NCEI Storm Events counts and sums as reported (counties from county-type rows "
+        "only; forecast-zone rows carry no county)."),
 }
 
 

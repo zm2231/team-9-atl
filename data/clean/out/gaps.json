@@ -41,32 +41,45 @@
   },
   {
     "id": "alf_pch_missing",
-    "table": "care_facilities",
-    "gap": "Assisted living, personal care, home health and hospice are not in care_facilities",
+    "table": "assisted_living",
+    "gap": "Assisted living communities and personal care homes are not in care_facilities",
     "size": {
-      "overture_assisted_living": 421,
-      "overture_retirement_homes": 1646,
-      "overture_home_health": 2037,
-      "overture_hospice": 375
+      "assisted_living_communities": 326,
+      "assisted_living_beds": 27226.0,
+      "personal_care_homes": 1568,
+      "personal_care_home_beds": 19341.0,
+      "small_homes_aggregated": 1044
     },
     "affects": "medically dependent population outside nursing homes",
     "fill": "external_source",
-    "fill_status": "partially_filled",
-    "detail": "overture_places (status external, Overture confidence and per-row licence kept). Listings only: no beds, no licensure. DCH licensed lists state no licence and are not used."
+    "fill_status": "filled",
+    "detail": "assisted_living from GaMap2Care (Georgia DCH), facility fields only. Homes with 6 or fewer beds carry no name or address and sit at their tract centroid. Licensed beds, not residents."
+  },
+  {
+    "id": "home_health_hospice_listings",
+    "table": null,
+    "gap": "Home health and hospice agencies serving people at home",
+    "size": {
+      "overture_home_health_held": 2037,
+      "overture_hospice_held": 375
+    },
+    "affects": "medically dependent population at home",
+    "fill": "external_source",
+    "detail": "Overture listings are built locally but held (out/held/, not committed) pending the licence ruling on CDLA-Permissive and Apache rows.",
+    "fill_status": "open"
   },
   {
     "id": "nemt_ambulance_inventory",
-    "table": "care_facilities",
+    "table": null,
     "gap": "NEMT, para-transit and ambulance fleet",
     "size": {
-      "overture_ambulance_ems": 258,
-      "overture_medical_transport": 40,
-      "vehicles": 0
+      "overture_ambulance_ems_held": 258,
+      "overture_medical_transport_held": 40
     },
     "affects": "transport capacity for medically dependent evacuees",
     "fill": "assumption_range",
-    "fill_status": "partially_filled",
-    "detail": "Overture locates operators, never fleet size or wheelchair vans. Fleet is a labelled low/base/high input until a county or state inventory is supplied."
+    "detail": "Overture locates operators (held), never fleet size or wheelchair vans. Fleet is a labelled low/base/high input until a county or state inventory is supplied.",
+    "fill_status": "open"
   },
   {
     "id": "medical_shelter_distance",
@@ -146,7 +159,20 @@
     },
     "affects": "which facilities and tracts flood in a given storm",
     "fill": "external_source",
-    "detail": "NRI coastal flood is an annualised composite. NOAA NHC SLOSH MOM rasters (public domain) are documented in extdata/slosh, not clipped.",
+    "detail": "NRI coastal flood is an annualised composite, and GEMA evacuation zones (now on hazard_tracts, care_facilities and assisted_living) are planning zones, not inundation. NOAA NHC SLOSH MOM rasters (public domain) are documented in extdata/slosh, not clipped.",
+    "fill_status": "open"
+  },
+  {
+    "id": "live_shelter_status",
+    "table": "gema_shelter_feed",
+    "gap": "Which shelters are open, full or closed now",
+    "size": {
+      "rows": 0,
+      "fields_kept": 16
+    },
+    "affects": "operational shelter capacity during an event",
+    "fill": "external_source",
+    "detail": "GEMA WebEOC feed had no rows when fetched; gema_shelter_feed is its facility and status schema, an input for the teammate shelters table. Contact, phone and remarks fields are never read.",
     "fill_status": "open"
   },
   {
@@ -164,12 +190,14 @@
   },
   {
     "id": "evacuation_route_geometry",
-    "table": null,
+    "table": "contraflow_intersections",
     "gap": "Official evacuation route geometry",
-    "size": {},
+    "size": {
+      "contraflow_intersections": 32
+    },
     "affects": "which roads evacuees use",
     "fill": "external_source",
-    "detail": "Licence gap: the GDOT layer states no licence and is not shipped. Analyses use Census TIGER/Line 2023 roads by route name; drive legs come from Maps routing at runtime, nothing stored.",
-    "fill_status": "open"
+    "fill_status": "filled",
+    "detail": "GDOT hurricane evacuation routes and contraflow route are the corridor layer in analysis/flow (cleared with attribution); TIGER/Line covers I-75 north of Macon and I-20, which GDOT's layer omits. GEMA I-16 contraflow intersections are in contraflow_intersections."
   }
 ]

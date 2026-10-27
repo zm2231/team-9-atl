@@ -57,6 +57,10 @@ def con():
           [["112500", 31.3, -82.8, "geocoded_census_non_exact"], ["112501", None, None, "unmatched"]])
     table(c, "raw_shelters", ["latitude DOUBLE", "longitude DOUBLE", "is_medical BOOLEAN"],
           [[33.0, -84.0, False], [32.0, -83.0, True]])
+    c.execute("""CREATE TABLE raw_zones AS SELECT * FROM (VALUES
+                 ('Coast', 'B', ST_GeomFromText('POLYGON((-82.2 30.8, -81.8 30.8, -81.8 31.2, -82.2 31.2, -82.2 30.8))')),
+                 ('Coast', 'A', ST_GeomFromText('POLYGON((-82.1 30.9, -81.9 30.9, -81.9 31.1, -82.1 31.1, -82.1 30.9))')))
+                 t(County, Zone, geom)""")
     yield c
     c.close()
 
@@ -78,6 +82,9 @@ def test_hazard_cfld_percentile_and_source_columns_unchanged(con):
     assert t["13003000100"][:4] == (500, 500, "recorded", "source_value")
     assert t["13001000100"][4] < t["13003000100"][4] < t["13001000200"][4]
     assert t["13003000100"][5] == "13003"
+    z = dict(con.execute("SELECT geo_id, evac_zone || ':' || evac_zone_status FROM hazard_tracts "
+                         "WHERE evac_zone IS NOT NULL OR evac_zone_status <> 'external'").fetchall())
+    assert z == {"13003000100": "A:external"}
 
 
 def test_populated_tract_without_hazard_row_fails(con):
@@ -169,6 +176,63 @@ def test_every_appended_column_carries_status_and_rule(con):
     assert rules <= set(B.R.RULES)
 
 
+GAMAP = ["FACTYPE VARCHAR", "FACID VARCHAR", "NAME VARCHAR", "ADDRESS VARCHAR", "FAC_CITY VARCHAR", "FAC_ST VARCHAR",
+         "FAC_ZIP VARCHAR", "OPERSTDESC VARCHAR", "OPERSTATDT VARCHAR", "OPEN_DATE VARCHAR", "CLOSEDDATE VARCHAR",
+         "licensed_beds DOUBLE", "EFFECTIVE_DATE_OF_LICENSE VARCHAR", "facility_type VARCHAR", "SUBTYPE VARCHAR",
+         "COUNTY VARCHAR", "Latitude DOUBLE", "Longitude DOUBLE", "Accuracy VARCHAR"]
+
+
+def gamap_row(facid, ftype, beds, lat, lon):
+    return [None, facid, f"Home {facid}", f"{facid} Oak St", "Town", "GA", "30000", "Active", None, None, None,
+            beds, None, ftype, None, "APPLING", lat, lon, "ROOFTOP"]
+
+
+def test_small_personal_care_homes_lose_name_address_and_point(con):
+    B.build_hazard_tracts(con)
+    table(con, "raw_gamap2care", GAMAP, [
+        gamap_row("PCH1", "PERSONAL CARE HOME", 6, 33.01, -84.02),
+        gamap_row("PCH2", "PERSONAL CARE HOME", 7, 33.01, -84.02),
+        gamap_row("ALC1", "ASSISTED LIVING COMMUNITY", 6, 31.0, -82.0)])
+    B.build_assisted_living(con)
+    rows = {r[0]: r[1:] for r in con.execute(
+        "SELECT FACID, NAME, ADDRESS, Latitude, Longitude, facility_identity_status, licensed_beds, county_fips, "
+        "evac_zone FROM assisted_living").fetchall()}
+    assert rows["PCH1"] == (None, None, 33.0, -84.0, "aggregated_small_home", 6, "13001", None)
+    assert rows["PCH2"][:5] == ("Home PCH2", "PCH2 Oak St", 33.01, -84.02, "recorded")
+    assert rows["ALC1"][4:] == ("recorded", 6, "13003", "A")
+    assert B.unprovenanced(con, "assisted_living") == []
+
+
+def test_shelter_feed_never_reads_contact_fields(con):
+    fields = [(f, "esriFieldTypeInteger" if f in ("dataid", "capacity", "post_impact_capacity", "occupancy")
+               else "esriFieldTypeString") for f in B.SHELTER_FEED_FIELDS]
+    fields += [("primary_contact", "esriFieldTypeString"), ("primary_phone", "esriFieldTypeString"),
+               ("remarks", "esriFieldTypeString")]
+    table(con, "raw_shelter_feed_fields", ["name VARCHAR", "type VARCHAR"], fields)
+    B.build_gema_shelter_feed(con)
+    cols = [r[0] for r in con.execute("DESCRIBE gema_shelter_feed").fetchall()]
+    assert cols == B.SHELTER_FEED_FIELDS
+    assert not any("contact" in c or "phone" in c or c in ("remarks", "Creator", "Editor") for c in cols)
+
+
+def test_storm_match_status_and_history(con):
+    table(con, "raw_ncei", ["event_id BIGINT", "state VARCHAR", "year INTEGER", "is_tropical_type BOOLEAN",
+                            "county_fips VARCHAR", "deaths_direct INTEGER", "deaths_indirect INTEGER",
+                            "injuries_direct INTEGER", "damage_property_usd DOUBLE", "damage_crops_usd DOUBLE",
+                            "begin_local TIMESTAMP", "end_local TIMESTAMP", "storm_atcf_id VARCHAR",
+                            "storm_name VARCHAR", "storm_match_method VARCHAR"], [
+        [1, "GA", 2017, True, "13051", 1, 0, 0, 100.0, 0.0, "2017-09-11", "2017-09-11", "AL112017", "IRMA",
+         "narrative_name+hurdat2_active"],
+        [2, "GA", 2017, True, None, 0, 1, 0, 50.0, 0.0, "2017-09-10", "2017-09-12", "AL112017", "IRMA",
+         "nearest_active_hurdat2"],
+        [3, "GA", 2018, False, "13051", 0, 0, 0, 0.0, 0.0, "2018-01-01", "2018-01-01", None, None, None]])
+    B.build_storm_events(con)
+    st = dict(con.execute("SELECT event_id, storm_match_status FROM storm_events").fetchall())
+    assert st == {1: "external", 2: "imputed", 3: "unrecorded"}
+    assert con.execute("SELECT storm_atcf_id, events, counties, deaths_direct, deaths_indirect, damage_property_usd "
+                       "FROM storm_history").fetchall() == [("AL112017", 2, 1, 1, 1, 150.0)]
+
+
 SRC = Sources.from_env()
 
 
@@ -179,7 +243,10 @@ def test_real_inputs_canonical_numbers():
     B.build_all(con)
     nums = B.numbers(con)
     assert nums["rows"] == {"care_facilities": 356, "hazard_tracts": 2791, "power_dependent_counties": 159,
-                            "dialysis_centers": 355, "overture_places": 4858}
+                            "dialysis_centers": 355, "assisted_living": 1894, "contraflow_intersections": 32,
+                            "gema_shelter_feed": 0, "storm_events": 6934, "storm_history": 192}
+    assert nums["assisted_living"]["PERSONAL CARE HOME"]["small_homes_aggregated"] == 1044
+    assert nums["evacuation_zones"]["tracts_in_zone"] == 198
     p = nums["power_dependent_counties"]
     assert (p["dialysis_live"], p["dialysis_stations"], p["facility_esrd_dialysis_any_dme_snapshot"]) == (18026, 5956, 6009)
     assert nums["hazard_tracts"]["cfld_imputed_outside_layer"] == 2588

@@ -1,4 +1,20 @@
 {
+  "assisted_living": {
+    "ASSISTED LIVING COMMUNITY": {
+      "facilities": 326,
+      "licensed_beds": 27226.0,
+      "small_home_beds": 0.0,
+      "small_homes_aggregated": 0
+    },
+    "PERSONAL CARE HOME": {
+      "facilities": 1568,
+      "licensed_beds": 19341.0,
+      "small_home_beds": 4404.0,
+      "small_homes_aggregated": 1044
+    },
+    "county_text_disagrees_with_imputed_fips": 59,
+    "median_km_nearest_medical_shelter_pending": 45.2101
+  },
   "care_facilities": {
     "avg_residents_per_day": 31820.8,
     "cms_certified_beds": 39462.0,
@@ -10,6 +26,11 @@
     "occupancy_unrecorded": 2,
     "snapshot_certified_beds": 39494.0
   },
+  "contraflow_intersections": {
+    "counties": 8,
+    "in_zone": 13,
+    "points": 32
+  },
   "dialysis_centers": {
     "coordinates_confidence": {
       "geocoded_census_exact": 242,
@@ -17,6 +38,24 @@
       "unmatched": 32
     },
     "stations_without_coordinates": 505
+  },
+  "evacuation_zones": {
+    "assisted_living_beds_in_zone": 1884.0,
+    "assisted_living_in_zone": 78,
+    "care_facilities_in_zone": 26,
+    "population_by_zone": {
+      "A": 222567.0,
+      "B": 360949.0,
+      "C": 80233.0,
+      "D": 18032.0,
+      "X": 15603.0
+    },
+    "tracts_in_zone": 198
+  },
+  "gema_shelter_feed": {
+    "fields_dropped": 23,
+    "fields_kept": 16,
+    "rows": 0
   },
   "hazard_tracts": {
     "cfld_imputed_outside_layer": 2588,
@@ -26,7 +65,7 @@
     "vulnerability_tracts_without_hazard_row_population": 0.0,
     "without_vulnerability_tract": 0
   },
-  "overture_places": {
+  "overture_places_held": {
     "ambulance_ems": {
       "not_permanently_closed": 258,
       "places": 272
@@ -71,10 +110,29 @@
     "power_dependent_snapshot": 92567.0
   },
   "rows": {
+    "assisted_living": 1894,
     "care_facilities": 356,
+    "contraflow_intersections": 32,
     "dialysis_centers": 355,
+    "gema_shelter_feed": 0,
     "hazard_tracts": 2791,
-    "overture_places": 4858,
-    "power_dependent_counties": 159
+    "power_dependent_counties": 159,
+    "storm_events": 6934,
+    "storm_history": 192
+  },
+  "storm_events": {
+    "events": 6934,
+    "ga_events": 3423,
+    "ga_storms": 77,
+    "match": {
+      "external": 6347,
+      "imputed": 577,
+      "unrecorded": 10
+    },
+    "storms": 128,
+    "years": [
+      1996,
+      2025
+    ]
   }
 }

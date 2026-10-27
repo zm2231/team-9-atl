@@ -1,6 +1,6 @@
 # Clean layer: care facilities, hazard tracts, power-dependent counties (Georgia)
 
-Builds three clean tables from the Georgia snapshot, plus two gap-fill tables, as local Parquet.
+Builds three clean tables from the Georgia snapshot, plus gap-fill and scenario tables, as local Parquet.
 Nothing here writes to BigQuery or GCS; `POST.md` holds the load commands for when posting is approved.
 
 ```bash
@@ -19,7 +19,11 @@ Inputs and licences are in [SOURCES.md](SOURCES.md). The build stops with a list
 | `hazard_tracts.parquet` | 2,791 | `geo_id` | the 11 columns of `evacuation_readiness.hazard_tracts_clean` |
 | `power_dependent_counties.parquet` | 159 | `fips_code` | the 20 columns of `evacuation_readiness.power_dependent_counties_clean` |
 | `dialysis_centers.parquet` | 355 | `ccn` | gap fill: CMS dialysis facilities with county and coordinates |
-| `overture_places.parquet` | 4,858 | `id` | gap fill: Overture care and transport listings |
+| `assisted_living.parquet` | 1,894 | `FACID` | GaMap2Care assisted living communities and personal care homes |
+| `contraflow_intersections.parquet` | 32 | `OBJECTID` | GEMA I-16 contraflow intersections |
+| `gema_shelter_feed.parquet` | 0 | `GlobalID` | WebEOC shelter feed, facility and status fields only; an input for the teammate shelters table |
+| `storm_events.parquet` | 6,934 | `event_id` | NCEI tropical-related storm events, GA and FL, 1996-2025 |
+| `storm_history.parquet` | 192 | `storm_atcf_id`, `state` | per-storm, per-state totals for the scenario library |
 | `numbers.json` | | | every count quoted here and in the generated docs |
 | `rules.json` | | | the text of every rule named in a `_rule` column |
 | `gaps.json` | | | the gap register behind `GAPS.md` |
@@ -27,12 +31,17 @@ Inputs and licences are in [SOURCES.md](SOURCES.md). The build stops with a list
 The leading columns were read from the BigQuery schemas with `bq show --schema` and hold the
 snapshot values unchanged, one row per source row. Every cleaned or added column follows with its own
 `<column>_status` and `<column>_rule`; the build fails if one is missing. The exceptions are grouped:
-`<field>_live_low` shares `<field>_live_status`, and dialysis `latitude`, `longitude` and
-`coordinates_confidence` share `coordinates_status`.
+`<field>_live_low` shares `<field>_live_status`, dialysis `latitude`, `longitude` and
+`coordinates_confidence` share `coordinates_status`, and `storm_history` totals share
+`aggregate_status`.
+
+Overture listings are built to `out/held/` (gitignored) and are not committed or posted while their
+licence question is open.
 
 Status values: `recorded` (the source has a value), `unrecorded` (the source has none),
 `imputed` (filled or assigned by a stated rule; a plain calculation on recorded inputs stays `recorded`), `assumption` (depends on an input not yet settled),
-`suspect` (kept but contradicted by a better source), `external` (from a gap-fill source).
+`suspect` (kept but contradicted by a better source), `external` (from a gap-fill source),
+`aggregated_small_home` (identity removed, see below).
 
 ## Decisions
 
@@ -56,5 +65,19 @@ Status values: `recorded` (the source has a value), `unrecorded` (the source has
   the CMS county text, and both are kept.
 - **Medical-shelter distance.** Read-only from the snapshot `shelters` table (`is_medical`), median
   52.1 km. Status `assumption`, pending the teammate `shelters_clean` table.
+
+- **Evacuation zones.** GEMA zone (A-D, X) from the tract centroid or facility point; null outside all
+  27 zone polygons. 198 tracts are in a zone (697,384 residents), as are 26 nursing homes and 78
+  assisted living or personal care homes.
+- **Small personal care homes.** 1,044 of the 1,568 personal care homes have 6 or fewer licensed beds.
+  In every output they have no `NAME` or `ADDRESS`, their `Latitude`/`Longitude` is the tract
+  centroid, and their distances are measured from it; beds and counts stay. Status
+  `aggregated_small_home`.
+- **County of an assisted living home.** Imputed from the nearest tract centroid; 59 disagree with
+  the GaMap2Care county text, and both are kept.
+- **Shelter feed.** The WebEOC feed had no rows when fetched. `gema_shelter_feed` fixes its 16
+  facility and status fields; 23 contact, phone, remarks and editor fields are never read.
+- **Storm history.** NCEI events keep their HURDAT2 match: 6,347 by narrative name (`external`),
+  577 by nearest active storm (`imputed`), 10 unmatched.
 
 Rule-by-rule counts are in [CLEANING.md](CLEANING.md); unfilled gaps in [GAPS.md](GAPS.md).
