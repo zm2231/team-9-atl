@@ -569,3 +569,21 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
     plan["audit"] = _section(SOURCES["audit"], audit)
     plan["source"] = "Assembled from the readiness brief and the season model; each section names its source"
     return plan
+
+
+def county_storm_profile(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
+    """How storms have hit one Georgia county and how the outage model treats it: every labelled storm with the observed outage against the model's held-out prediction, the county's learned outage-proneness ranked against the state, the yearly chance of 25% and 50% outages from the season engine, the strongest historical wind with its modelled outage, and whether the county is inside the model's data support.
+
+    county_fips: a Georgia county FIPS code, for example 13275.
+    outlook: long_run (default), recent, la_nina, neutral, el_nino or noaa_aug_2026.
+    """
+    from .scenario import profile, season
+
+    if not isinstance(county_fips, str) or not county_fips.startswith("13"):
+        return _status("needs_county", "Give a Georgia county_fips, for example 13275.")
+    if outlook not in season.OUTLOOKS:
+        outlook = "long_run"
+    result = profile.county_storm_profile(county_fips, outlook)
+    if result["status"] != "ok":
+        return _status("unknown_county", "No Georgia county has that FIPS code.")
+    return {**result, "source": SOURCES["scenario"]}

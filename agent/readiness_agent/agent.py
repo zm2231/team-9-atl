@@ -23,7 +23,13 @@ from .evacuation_tools import (
     record_live_check,
 )
 from .readiness_brief import build_readiness_brief
-from .scenario_tools import county_plan, gap_sensitivity, run_scenario, season_county_risk
+from .scenario_tools import (
+    county_plan,
+    county_storm_profile,
+    gap_sensitivity,
+    run_scenario,
+    season_county_risk,
+)
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-edc952746633")
 DATASET_ID = os.getenv("EVAC_DATASET", "evac_prod")
@@ -88,6 +94,9 @@ Tools:
 - For a county's season plan (outage frequency, outlooks, generator what-ifs), call county_plan
   once. It already contains build_readiness_brief's result, so do not call both. Write from its
   sections and say "not determined" for any section marked not_determined.
+- For how past storms hit one county, how outage-prone the model finds it, or how often it loses
+  a quarter or half of its power, call county_storm_profile. Quote its model label, and say when
+  support.inside is false.
 - Report people lacking shelter (no powered seat, no dialysis chair) and people needing transport
   (no vehicle, cannot arrive before the winds) as separate figures. Never add them together.
 - Operator what-ifs (a site switched off, a generator assumed) go in sites_off and
@@ -166,5 +175,6 @@ root_agent = Agent(
         season_county_risk,
         gap_sensitivity,
         county_plan,
+        county_storm_profile,
     ],
 )

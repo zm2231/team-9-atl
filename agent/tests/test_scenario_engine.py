@@ -207,3 +207,19 @@ def test_outage_rises_with_category():
         t = storms.drawn_track([[-85.0, 27.0], [-84.3, 30.0], [-83.5, 33.5]], cat)
         medians.append(np.median(engine.run([t], n_draws=400, seed=3).outage[:, fips]))
     assert medians[0] < medians[1] < medians[2]
+
+
+def test_county_storm_profile():
+    from readiness_agent.scenario import profile
+
+    p = profile.county_storm_profile("13275")
+    assert p["status"] == "ok" and p["county_name"] == "Thomas"
+    assert p["labelled_storms"]
+    first = p["labelled_storms"][0]
+    assert first["modelled"]["p10"] <= first["modelled"]["p50"] <= first["modelled"]["p90"]
+    assert 1 <= p["fragility"]["rank_most_fragile"] <= 159
+    y = p["yearly_chance"]
+    assert y["outage_50pct"]["per_year"] <= y["outage_25pct"]["per_year"]
+    assert p["worst_historical_wind"]["peak_wind_kt"] > 0
+    assert p["support"]["inside"] is True
+    assert profile.county_storm_profile("99999")["status"] == "unknown_county"

@@ -313,12 +313,20 @@ def predict(m: dict, feats, fips, rng, n_draws) -> np.ndarray:
 def loso(feats, fips, sids, share, cust, county_ids, names: dict[str, str]) -> dict:
     per_storm, err, med_err, const_err, inside = [], [], [], [], []
     big_err, big_inside, big_bias = [], [], []
+    held_out: dict[str, list] = defaultdict(list)
     for fold, sid in enumerate(sorted(set(sids))):
         tr, te = sids != sid, sids == sid
         m = fit(feats[tr], fips[tr], sids[tr], share[tr], cust[tr], county_ids)
         pred = predict(m, feats[te], fips[te], np.random.default_rng(SEED + fold), LOSO_DRAWS)
-        lo, hi = np.quantile(pred, [0.1, 0.9], axis=0)
+        lo, mid, hi = np.quantile(pred, [0.1, 0.5, 0.9], axis=0)
         y = share[te]
+        for j, f in enumerate(fips[te]):
+            if f.startswith("13"):
+                held_out[str(f)].append([
+                    str(sid), round(float(y[j]), 4), round(float(lo[j]), 4),
+                    round(float(mid[j]), 4), round(float(hi[j]), 4),
+                    round(float(feats[te][j, 0]), 1),
+                ])
         e = np.abs(y - pred.mean(0))
         ins = (y >= lo) & (y <= hi)
         err.append(e)
@@ -354,6 +362,7 @@ def loso(feats, fips, sids, share, cust, county_ids, names: dict[str, str]) -> d
         "big_storm_inside_10_90": round(float(cat(big_inside).mean()), 4) if big_inside else None,
         "big_storm_bias": round(float(np.mean(big_bias)), 4) if big_bias else None,
         "per_storm": per_storm,
+        "held_out": held_out,
     }
 
 
@@ -406,6 +415,12 @@ def main(gazetteer_path: str) -> None:
         "tau_storm": round(m["tau_storm"], 4), "tau_county": round(m["tau_county"], 4), "sigma": round(m["sigma"], 4),
     }
     metrics["baseline"] = BASELINE
+    write_json("county_storm_fit.json", {
+        "label_table": LABEL_TABLE,
+        "columns": ["sid", "observed", "p10", "p50", "p90", "peak_wind_kt"],
+        "storms": {sid: names.get(sid, sid) for sid in sorted(set(sids))},
+        "counties": metrics.pop("held_out"),
+    })
     (DATA / "outage_model_metrics.json").write_text(json.dumps(metrics, indent=1) + "\n")
     summary = {k: v for k, v in metrics.items() if k != "per_storm"}
     summary.update(
