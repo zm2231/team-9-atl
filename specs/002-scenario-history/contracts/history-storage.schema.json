@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "scenario-history/v1",
+  "title": "Scenario history (localStorage gsr.scenarioHistory.v1)",
+  "description": "User inputs only. No results, answers or Google Maps content can be represented (FR-002, FR-003, FR-004, FR-016).",
+  "type": "object",
+  "required": ["version", "scenarios"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": 1 },
+    "scenarios": { "type": "array", "maxItems": 50, "items": { "$ref": "#/$defs/SavedScenario" } }
+  },
+  "$defs": {
+    "Position": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        { "type": "number", "minimum": -180, "maximum": 180 },
+        { "type": "number", "minimum": -90, "maximum": 90 }
+      ]
+    },
+    "Track": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type", "coordinates"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "LineString" },
+            "coordinates": { "type": "array", "minItems": 2, "maxItems": 2000, "items": { "$ref": "#/$defs/Position" } }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["type", "coordinates"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "Point" },
+            "coordinates": { "$ref": "#/$defs/Position" }
+          }
+        }
+      ]
+    },
+    "SavedQuestion": {
+      "type": "object",
+      "required": ["text", "asked_at"],
+      "additionalProperties": false,
+      "properties": {
+        "text": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "asked_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "SavedScenario": {
+      "type": "object",
+      "required": ["id", "name", "nameIsCustom", "track", "category", "cutoff_km", "questions",
+                   "created_at", "updated_at", "last_opened_at"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "nameIsCustom": { "type": "boolean" },
+        "track": { "$ref": "#/$defs/Track" },
+        "category": { "enum": [1, 2, 3, 4, 5] },
+        "cutoff_km": { "type": "number", "minimum": 25, "maximum": 200 },
+        "questions": { "type": "array", "maxItems": 100, "items": { "$ref": "#/$defs/SavedQuestion" } },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" },
+        "last_opened_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

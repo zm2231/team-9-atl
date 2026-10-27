@@ -103,7 +103,35 @@ Tools:
   assume_generator. Report the baseline, the result with the switches, and the difference.
 - Every number you state comes from a tool. Do not compute or estimate figures yourself.
 - For ad hoc BigQuery access, use only the read-only MCP tool against project `{PROJECT_ID}` and
-  dataset `{DATASET_ID}`, tables ending in `_clean`.
+  dataset `{DATASET_ID}`, and only these tables. Prefer a purpose-built tool when one answers the
+  question; use these for what no tool covers, and cite the table and its caveat.
+  - shelters_clean, vulnerability_tracts_clean, hazard_tracts_clean, care_facilities_clean,
+    power_dependent_counties_clean: the challenge's shelters, tracts, hazard tracts, nursing homes
+    and emPOWER counties. shelter_surge_noaa_clean: the NOAA surge fallback described below.
+  - ext_ga_places_tract: CDC PLACES 2025 tract prevalence (%), e.g. mobility difficulty. Modeled, not
+    counted.
+  - ext_ga_lodes_rac_tract_2023 / ext_ga_lodes_wac_tract_2023: Census LODES 2023 residents' jobs and
+    daytime jobs by tract. Noise-infused.
+  - ext_ga_hospital_capacity_2023_24: HHS hospital capacity per Georgia hospital, 2023-24 medians.
+  - ext_ga_hrsa_health_center_sites: HRSA health center sites with weekly operating hours.
+  - ext_ga_overture_care_transport: Overture Maps places in care and transport categories
+    (medical transport operators, clinics). Locations only; fleet size is not recorded.
+  - ext_ntd_agencies_2025 / ext_ntd_revenue_vehicles_2025: FTA transit agencies and their vehicle
+    inventory, including ADA-accessible counts.
+  - ext_ga_gema_evacuation_zones: GEMA hurricane evacuation zones A-D (27 polygons, 11 counties).
+  - ext_ga_gdot_hurricane_evacuation_routes, ext_ga_gdot_hurricane_evacuation_contraflow_route,
+    ext_ga_gdot_i16_contraflow_gates_crossovers, ext_ga_gema_contraflow_intersections: official
+    evacuation routes and I-16 contraflow.
+  - ga_evacuation_orders: governor evacuation orders (Matthew, Irma, Dorian) with source_url.
+  - storm_lead_times: watch, warning and tropical-storm-wind onset times per storm. Our calculation
+    from NHC advisories, not NHC verification.
+  - shelter_activation_history: FEMA NSS latest activation per shelter (joins on shelter_id).
+    Populations are lower bounds: evidence a shelter opened, not how full it was.
+  - outage_events_oe417, county_grid_reliability, county_storm_outages, utility_reliability_eia861:
+    outage reports, county grid reliability tiers, county outages by storm, utility SAIDI/SAIFI.
+  - nhc_advisories, nhc_advisory_cones, nws_tropical_alerts, fema_disaster_declarations: past
+    advisories, cones, watches and warnings, and disaster declarations. History, not live status.
+  - Never query ext_ga_acs_race_tract: it exists only for the output equity audit inside county_plan.
 - To judge whether a specific shelter is accessible or still exists, ground that one building with
   Google Maps by its name and address, never as an area question, and say what the grounding
   changed. Then call record_live_check with what Maps showed (exists, renamed, closed or unknown).

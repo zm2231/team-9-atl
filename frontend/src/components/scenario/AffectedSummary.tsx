@@ -6,7 +6,7 @@ import { useScenario } from "../../state/scenario";
 
 /** Shelters inside the simulated band (FR-018, FR-019). */
 export default function AffectedSummary() {
-  const { shelterById } = useStore();
+  const { state, shelterById } = useStore();
   const scenario = useScenario();
   if (!scenario) return null;
   const shelters = scenario.affected_shelter_ids.map((id) => shelterById.get(id)).filter((s) => s !== undefined);
@@ -18,6 +18,13 @@ export default function AffectedSummary() {
   return (
     <div className="card card--sim" data-testid="affected-summary">
       <span className="badge-sim">Illustrative scenario — not a forecast</span>
+      {state.resimulatedAt && (
+        <div className="small" data-testid="resimulated">
+          Re-simulated at{" "}
+          {new Date(state.resimulatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} from current
+          data
+        </div>
+      )}
       <h2>
         Category {scenario.category} track · {scenario.half_width_km} km either side
       </h2>

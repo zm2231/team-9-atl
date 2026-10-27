@@ -1,9 +1,9 @@
 // Illustrative hurricane scenario (research R5, R6). Not a wind or surge model.
-import { booleanIntersects, booleanPointInPolygon, buffer, distance, length, lineString, point } from "@turf/turf";
+import { along, booleanIntersects, booleanPointInPolygon, buffer, distance, length, lineString, point } from "@turf/turf";
 import type { Feature, LineString, MultiPolygon, Point, Polygon } from "geojson";
 import { countFlags } from "./flags";
 import type { Category, ExcludedShelter, FlagCounts, FlagKey, ReceivingEntry, Shelter } from "./types";
-import type { CountyFeature } from "./geo";
+import { gaCounties, type CountyFeature } from "./geo";
 
 /** Band half-width per category, loosely scaled to hurricane-force wind radii. Illustrative only. */
 export const HALF_WIDTH_KM: Record<Category, number> = { 1: 30, 2: 45, 3: 60, 4: 80, 5: 100 };
@@ -133,4 +133,32 @@ export function capacitySummary(shelters: Shelter[]): {
     else total += cap;
   }
   return { total, totalInclSuspect, excluded };
+}
+
+const SAMPLE_KM = 2;
+
+function countyAt(p: [number, number]): string | null {
+  const pt = point(p);
+  return gaCounties.features.find((f) => booleanPointInPolygon(pt, f))?.id ?? null;
+}
+
+/** Georgia counties the track itself crosses, in order along it (feature 002 naming, R5). */
+export function countiesAlongTrack(track: LineString | Point): string[] {
+  if (track.type === "Point") {
+    const c = countyAt(track.coordinates as [number, number]);
+    return c ? [c] : [];
+  }
+  const line = lineString(track.coordinates);
+  const km = length(line, { units: "kilometers" });
+  const samples: [number, number][] = [];
+  for (let d = 0; d < km; d += SAMPLE_KM) {
+    samples.push(along(line, d, { units: "kilometers" }).geometry.coordinates as [number, number]);
+  }
+  samples.push(track.coordinates[track.coordinates.length - 1] as [number, number]);
+  const out: string[] = [];
+  for (const p of samples) {
+    const c = countyAt(p);
+    if (c && c !== out[out.length - 1]) out.push(c);
+  }
+  return out;
 }
