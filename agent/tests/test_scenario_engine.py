@@ -131,6 +131,9 @@ def test_run_contract_and_speed():
     assert counts.max() - counts.min() <= 1
     assert r.peak_wind_kt.shape == r.hours_34kt.shape == r.ts_arrival_h.shape == (n,)
     assert len(r.outside_support) == len(tracks)
+    assert r.ts_arrival_share.shape == r.p_affected.shape == (n,)
+    assert np.array_equal(np.isnan(r.ts_arrival_h), r.ts_arrival_share == 0)
+    assert np.allclose(r.p_affected, (r.outage >= engine.AFFECTED_SHARE).mean(axis=0))
     again = engine.run(tracks, n_draws=400, seed=7)
     assert np.array_equal(r.outage, again.outage)
 
@@ -156,7 +159,7 @@ def test_people_at_risk_thresholds():
     result = engine.Result(
         outage=np.array([[0.6, 0.2]]), track_of_draw=np.zeros(1, int),
         peak_wind_kt=np.zeros(2), hours_34kt=np.zeros(2), ts_arrival_h=np.zeros(2),
-        outside_support=[False],
+        outside_support=[False], ts_arrival_share=np.ones(2), p_affected=np.ones(2),
     )
     p = engine.people_at_risk(result, counties)
     assert p["power_dependent"].tolist() == [[60.0, 40.0]]

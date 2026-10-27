@@ -9,6 +9,7 @@ from .windfield import TrackPoint, exposure
 
 DIALYSIS_DOWN_SHARE = 0.5
 FACILITY_DOWN_SHARE = 0.5
+AFFECTED_SHARE = 0.10
 
 
 @dataclass(frozen=True)
@@ -19,6 +20,8 @@ class Result:
     hours_34kt: np.ndarray
     ts_arrival_h: np.ndarray
     outside_support: list[bool]
+    ts_arrival_share: np.ndarray
+    p_affected: np.ndarray
 
 
 def run(tracks: list[list[TrackPoint]], n_draws: int = 400, seed: int = 20261027) -> Result:
@@ -45,15 +48,21 @@ def run(tracks: list[list[TrackPoint]], n_draws: int = 400, seed: int = 20261027
         feats = np.column_stack([e[f] for f in FEATURES])
         outage.append(model.sample(feats, rng, int(k)))
         owner.append(np.full(int(k), i))
-    ts = np.median(np.nan_to_num(np.array(arrival), nan=np.inf), axis=0)
-    ts[~np.isfinite(ts)] = np.nan
+    arrival_arr = np.array(arrival)
+    reached = ~np.isnan(arrival_arr)
+    ts = np.full(arrival_arr.shape[1], np.nan)
+    any_reached = reached.any(axis=0)
+    ts[any_reached] = np.nanmedian(arrival_arr[:, any_reached], axis=0)
+    outage_draws = np.vstack(outage)
     return Result(
-        outage=np.vstack(outage),
+        outage=outage_draws,
         track_of_draw=np.concatenate(owner),
         peak_wind_kt=np.median(np.array(wind), axis=0),
         hours_34kt=np.median(np.array(h34), axis=0),
         ts_arrival_h=ts,
         outside_support=[support(t) == "outside_labeled_support" for t in tracks],
+        ts_arrival_share=reached.mean(axis=0),
+        p_affected=(outage_draws >= AFFECTED_SHARE).mean(axis=0),
     )
 
 
