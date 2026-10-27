@@ -25,8 +25,10 @@ def fake(monkeypatch):
              "group_quarters_pop": 0.0, "pct_disability": 5.0, "lat": 32.2, "lon": -81.3},
         ],
         "reach": [
-            {"geo_id": "t1", "within_reach": 3, "wheelchair_yes_within_reach": True, "nearest_km": 1.2},
-            {"geo_id": "t2", "within_reach": 1, "wheelchair_yes_within_reach": False, "nearest_km": 9.5},
+            {"geo_id": "t1", "within_reach": 3, "wheelchair_yes_within_reach": 1,
+             "wheelchair_no_within_reach": 1, "wheelchair_unrecorded_within_reach": 1, "nearest_km": 1.2},
+            {"geo_id": "t2", "within_reach": 1, "wheelchair_yes_within_reach": 0,
+             "wheelchair_no_within_reach": 0, "wheelchair_unrecorded_within_reach": 1, "nearest_km": 9.5},
         ],
         "shelters": [shelter("a", wc=True, surge=True), shelter("b", flood=True), shelter("c", wc=False, gen=True)],
         "facilities": [{"ccn": "115641", "name": "Riverview", "city": "Savannah", "beds": 284.0}],
@@ -78,7 +80,9 @@ def test_destinations_carry_flags_and_say_they_are_not_yet_verified(fake):
 
 def test_what_to_fix_lists_the_three_gaps(fake):
     fix = readiness_brief.build_readiness_brief("13051")["what_to_fix"]
-    assert [t["geo_id"] for t in fix["tracts_without_accessible_shelter_in_reach"]] == ["t2"]
+    gaps = fix["tracts_without_recorded_accessible_shelter_in_reach"]
+    assert [t["geo_id"] for t in gaps] == ["t2"]
+    assert "unknown, not no" in gaps[0]["gap"] and gaps[0]["wheelchair_unrecorded_within_reach"] == 1
     assert {s["shelter_id"] for s in fix["shelters_in_surge_or_flood_zone"]} == {"a", "b"}
     assert fix["facilities_without_recorded_generator"]["count"] == 1
 

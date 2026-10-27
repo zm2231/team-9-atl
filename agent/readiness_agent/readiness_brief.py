@@ -25,7 +25,8 @@ def build_readiness_brief(county_fips: str, tract_limit: int = 8, destination_li
     the county's nursing homes. where_they_would_go: pre-landfall shelters within reach of the
     ranked tracts, with capacity, recorded flags and surge exposure; confirm each one live with
     Google Maps before relying on it. what_to_fix: tracts with no recorded wheelchair-accessible
-    shelter within reach, nursing homes with no recorded generator in a county with power-dependent
+    shelter within reach (each says whether none is in reach, the ones in reach are unrecorded, or
+    they are recorded not accessible), nursing homes with no recorded generator in a county with power-dependent
     residents, and shelters in a surge or flood zone. could_not_tell: counts over the whole county.
     """
     if not county_fips:
@@ -50,9 +51,7 @@ def build_readiness_brief(county_fips: str, tract_limit: int = 8, destination_li
     power_dependent = _count(power[0].get("power_dependent_dme")) if power else None
 
     no_accessible = [
-        {"geo_id": t["geo_id"], "households_no_vehicle": _count(t.get("households_no_vehicle")),
-         "shelters_within_reach": reach.get(t["geo_id"], {}).get("within_reach", 0),
-         "nearest_shelter_km": reach.get(t["geo_id"], {}).get("nearest_km")}
+        _accessibility_gap(t, reach.get(t["geo_id"], {}))
         for t in ranked
         if (t.get("households_no_vehicle") or 0) > 0
         and not reach.get(t["geo_id"], {}).get("wheelchair_yes_within_reach")
@@ -87,7 +86,7 @@ def build_readiness_brief(county_fips: str, tract_limit: int = 8, destination_li
             "source": tools.SOURCES["shelters"],
         },
         "what_to_fix": {
-            "tracts_without_accessible_shelter_in_reach": no_accessible,
+            "tracts_without_recorded_accessible_shelter_in_reach": no_accessible,
             "facilities_without_recorded_generator": {
                 "count": len(facilities),
                 "power_dependent_residents_in_county": power_dependent,
@@ -98,6 +97,22 @@ def build_readiness_brief(county_fips: str, tract_limit: int = 8, destination_li
         },
         "could_not_tell": _could_not_tell(shelters, facilities),
     }
+
+
+def _accessibility_gap(t: dict[str, Any], reach: dict[str, Any]) -> dict[str, Any]:
+    within = reach.get("within_reach") or 0
+    unrecorded = reach.get("wheelchair_unrecorded_within_reach") or 0
+    if not within:
+        gap = "no pre-landfall shelter within reach"
+    elif unrecorded:
+        gap = "shelters within reach, but none recorded accessible: unknown, not no"
+    else:
+        gap = "every shelter within reach is recorded not accessible"
+    return {"geo_id": t["geo_id"], "households_no_vehicle": _count(t.get("households_no_vehicle")),
+            "gap": gap, "shelters_within_reach": within,
+            "wheelchair_no_within_reach": reach.get("wheelchair_no_within_reach") or 0,
+            "wheelchair_unrecorded_within_reach": unrecorded,
+            "nearest_shelter_km": reach.get("nearest_km")}
 
 
 def _count(value: Any) -> int | None:
@@ -166,8 +181,12 @@ def _tract_reach(county_fips: str) -> list[dict[str, Any]]:
         )
         SELECT t.geo_id,
                COUNTIF(ST_DWITHIN(t.pt, s.pt, @reach_m)) AS within_reach,
-               LOGICAL_OR(ST_DWITHIN(t.pt, s.pt, @reach_m) AND s.wheelchair_accessible IS TRUE)
+               COUNTIF(ST_DWITHIN(t.pt, s.pt, @reach_m) AND s.wheelchair_accessible IS TRUE)
                  AS wheelchair_yes_within_reach,
+               COUNTIF(ST_DWITHIN(t.pt, s.pt, @reach_m) AND s.wheelchair_accessible IS FALSE)
+                 AS wheelchair_no_within_reach,
+               COUNTIF(ST_DWITHIN(t.pt, s.pt, @reach_m) AND s.wheelchair_accessible IS NULL)
+                 AS wheelchair_unrecorded_within_reach,
                ROUND(MIN(ST_DISTANCE(t.pt, s.pt)) / 1000, 1) AS nearest_km
         FROM t CROSS JOIN s
         GROUP BY t.geo_id
