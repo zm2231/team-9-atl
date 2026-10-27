@@ -10,7 +10,7 @@ from .sources import Sources
 
 OUT = Path(__file__).resolve().parents[1] / "out"
 
-# Leading columns, names and order, of the team's BigQuery evacuation_readiness.*_clean tables
+# Leading columns, names and order, of the BigQuery evacuation_readiness.*_clean tables
 # (bq show --schema, 2026-10-27). Clean-layer columns are appended after them.
 BQ_COLUMNS = {
     "care_facilities": ["cms_certification_number_ccn", "provider_name", "provider_address", "citytown", "state",

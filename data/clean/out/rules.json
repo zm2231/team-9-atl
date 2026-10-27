@@ -16,7 +16,7 @@
   "gema_contraflow_point": "GEMA I-16 contraflow intersection as published.",
   "gema_zone": "GEMA hurricane evacuation zone (County, Zone) whose polygon contains the point (tract centroid for tracts). Null with status external: outside every zone; GEMA zones cover 11 coastal counties. Where edge slivers overlap, the earliest zone letter wins. Null with status unrecorded: no point.",
   "hrcn_ealp_percentile": "Canonical hurricane exposure: percent rank (0-1) of NRI HRCN_EALP, expected annual population loss, among Georgia hazard rows. HRCN_AFREQ stays as published.",
-  "medical_shelter_distance_pending": "Straight-line km to the nearest snapshot shelter with is_medical = true, read-only from the raw snapshot: pending teammate shelters_clean.",
+  "medical_shelter_distance_pending": "Straight-line km to the nearest snapshot shelter with is_medical = true, read-only from the raw snapshot: pending shelters_clean.",
   "ncei_storm_aggregate": "Per storm and state: NCEI Storm Events counts and sums as reported (counties from county-type rows only; forecast-zone rows carry no county).",
   "ncei_storm_match_narrative": "NCEI event matched to a HURDAT2 storm by the storm name in its narrative and active dates.",
   "ncei_storm_match_nearest": "NCEI event assigned to the nearest active HURDAT2 storm (no name in the narrative).",

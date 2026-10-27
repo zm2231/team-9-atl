@@ -90,7 +90,7 @@
     },
     "affects": "medical sheltering access per facility",
     "fill": "external_source",
-    "detail": "Computed read-only from the raw snapshot shelters (is_medical): pending teammate shelters_clean.",
+    "detail": "Computed read-only from the raw snapshot shelters (is_medical): pending shelters_clean.",
     "fill_status": "open"
   },
   {
@@ -172,7 +172,7 @@
     },
     "affects": "operational shelter capacity during an event",
     "fill": "external_source",
-    "detail": "GEMA WebEOC feed had no rows when fetched; gema_shelter_feed is its facility and status schema, an input for the teammate shelters table. Contact, phone and remarks fields are never read. FEMA OpenShelters total_population is a live query only.",
+    "detail": "GEMA WebEOC feed had no rows when fetched; gema_shelter_feed is its facility and status schema, an input for shelters_clean. Contact, phone and remarks fields are never read. FEMA OpenShelters total_population is a live query only.",
     "fill_status": "open"
   },
   {
@@ -212,7 +212,7 @@
     },
     "affects": "shelter demand against capacity",
     "fill": "assumption_range",
-    "detail": "No shelter-level history. NSS populations are a lower bound (status reported_lower_bound). Anchor a labelled range on Red Cross statewide peaks once their releases are cited; live occupancy only from the GEMA feed during an incident.",
+    "detail": "No shelter-level history. NSS populations are a lower bound (status reported_lower_bound). Anchor a labelled range on cited Red Cross Georgia counts: Irma one-night peak of more than 5,500 people in 40 shelters (2017-09-11, https://www.redcross.org/local/georgia/about-us/news-and-events/news/Hurricane-Irma-Red-Cross-and-community-partners-shelter-over-108000-people-overnight.html); Irma cumulative 6,627 people, 20,392 stays, 45 centers (https://www.redcross.org/local/georgia/about-us/news-and-events/news/2017-in-Review-Red-Cross-Delivers-More-Food-Relief-Items-and-Shelter-Stays-than-Last-4-Years-Combined.html); Michael cumulative 847 people, 2,844 stays, 11 shelters (https://www.redcross.org/local/georgia/about-us/news-and-events/press-releases/georgia-relief-efforts-transition.html); Helene cumulative 680+ people, 35 shelters (https://www.redcross.org/local/georgia/about-us/news-and-events/news/ruins-recovery-hope-georgia-one-year-after-hurricane-helene.html). Only the Irma one-night figure is a peak. Live occupancy only from the GEMA feed during an incident.",
     "fill_status": "open"
   },
   {
@@ -239,7 +239,7 @@
     },
     "affects": "which shelters can be used before landfall",
     "fill": "maps_verify",
-    "detail": "No ARC 4496 or FEMA P-361 rating in any source. Fill: NSS hurricane-activation evidence (proven, excluded, unknown) plus Maps verification of the largest unknowns; the shelters table itself is owned by a teammate.",
+    "detail": "No ARC 4496 or FEMA P-361 rating in any source. Fill: NSS hurricane-activation evidence (proven, excluded, unknown) plus Maps verification of the largest unknowns; the shelters table itself is shelters_clean.",
     "fill_status": "open"
   },
   {

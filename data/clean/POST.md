@@ -37,8 +37,8 @@ CREATE OR REPLACE TABLE `qwiklabs-gcp-04-edc952746633.evacuation_readiness.hazar
 CREATE OR REPLACE TABLE `qwiklabs-gcp-04-edc952746633.evacuation_readiness.power_dependent_counties_clean` AS SELECT * FROM `qwiklabs-gcp-04-edc952746633.evacuation_readiness.power_dependent_counties_flow_staging`;
 ```
 
-The other tables (`dialysis_centers`, `assisted_living`, `contraflow_intersections`, `storm_events`, `storm_history`, `overture_places`, `shelter_activation_history`, `evac_orders`, `outage_events`) are new and stay as `<name>_flow_staging` until the team names them.
-`gema_shelter_feed` is an input for the teammate shelters table and is not loaded here.
+The other tables (`dialysis_centers`, `assisted_living`, `contraflow_intersections`, `storm_events`, `storm_history`, `overture_places`, `shelter_activation_history`, `evac_orders`, `outage_events`) are new and stay as `<name>_flow_staging` until their BigQuery names are set.
+`gema_shelter_feed` is an input for shelters_clean and is not loaded here.
 
 Column counts:
 

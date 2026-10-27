@@ -28,7 +28,7 @@ RULES = {
     "cms_occupancy": "Occupancy = CMS Average Number of Residents per Day / CMS certified beds (an average, not the daily census).",
     "medical_shelter_distance_pending": (
         "Straight-line km to the nearest snapshot shelter with is_medical = true, read-only from the raw "
-        "snapshot: pending teammate shelters_clean."),
+        "snapshot: pending shelters_clean."),
     "zip_to_county_empower": "County from the facility ZIP via the emPOWER ZIP table's county FIPS (one county per ZIP).",
     "census_geocoder": (
         "Coordinates from the US Census Geocoder batch on the CMS address (US Government work); "

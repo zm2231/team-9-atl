@@ -97,7 +97,7 @@ def checks(con) -> dict[str, list[tuple]]:
             ("nearest_tract_centroid", c[0], "no tract or county FIPS",
              f"`nearest_tract_geo_id`, `county_fips` (imputed); {disagree} disagree with CMS county text"),
             ("medical_shelter_distance_pending", c[0], "none",
-             f"`km_nearest_medical_shelter` median {c[5]:.1f}, max {c[6]:.1f} (pending teammate shelters_clean)"),
+             f"`km_nearest_medical_shelter` median {c[5]:.1f}, max {c[6]:.1f} (pending shelters_clean)"),
             ("gema_zone", z[1], "no evacuation zone", "`evac_zone`, `evac_zone_county` from the facility point"),
         ],
         "assisted_living (GaMap2Care)": [
@@ -109,12 +109,12 @@ def checks(con) -> dict[str, list[tuple]]:
              f"`county_fips` (imputed); {a_disagree} disagree with the county text, both kept"),
             ("gema_zone", z[2], "no evacuation zone", "`evac_zone`, `evac_zone_county`"),
             ("medical_shelter_distance_pending", a[0], "none",
-             f"`km_nearest_medical_shelter` median {a[3]:.1f} (pending teammate shelters_clean)"),
+             f"`km_nearest_medical_shelter` median {a[3]:.1f} (pending shelters_clean)"),
         ],
         "contraflow_intersections (GEMA)": [
             ("gema_contraflow_point", cf[0], "GEMA I-16 contraflow points", f"`county_fips` imputed; {cf[1]} in a GEMA zone"),
         ],
-        "gema_shelter_feed (input for the teammate shelters table)": [
+        "gema_shelter_feed (input for shelters_clean)": [
             ("webeoc_facility_fields", 0, f"{len(SHELTER_FEED_FIELDS) + len(dropped_feed)} schema fields",
              f"{len(SHELTER_FEED_FIELDS)} facility/status fields kept; never read: "
              + ", ".join(f"`{n}`" for n in dropped_feed)),
@@ -188,8 +188,8 @@ def write_post(con, root: Path = ROOT) -> None:
         lines.append(f"CREATE OR REPLACE TABLE `{PROJECT}.{DATASET}.{name}_clean` AS "
                      f"SELECT * FROM `{PROJECT}.{DATASET}.{name}_flow_staging`;")
     lines += ["```", "", "The other tables (" + ", ".join(f"`{n}`" for n in staged if n not in BQ_COLUMNS)
-              + ") are new and stay as `<name>_flow_staging` until the team names them.",
-              "`gema_shelter_feed` is an input for the teammate shelters table and is not loaded here.",
+              + ") are new and stay as `<name>_flow_staging` until their BigQuery names are set.",
+              "`gema_shelter_feed` is an input for shelters_clean and is not loaded here.",
               "",
               "Column counts:", ""]
     for name in TABLES:

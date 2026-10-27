@@ -34,7 +34,7 @@ its published value; cleaned values go in appended columns with `_status` and `_
 | `cms_occupancy` | 354 | no occupancy | `occupancy_rate` (statewide 80.8%); 2 homes unrecorded |
 | `certified beds` | 1 | snapshot `number_of_certified_beds` | differs from CMS `cms_certified_beds` |
 | `nearest_tract_centroid` | 356 | no tract or county FIPS | `nearest_tract_geo_id`, `county_fips` (imputed); 11 disagree with CMS county text |
-| `medical_shelter_distance_pending` | 356 | none | `km_nearest_medical_shelter` median 52.1, max 185.3 (pending teammate shelters_clean) |
+| `medical_shelter_distance_pending` | 356 | none | `km_nearest_medical_shelter` median 52.1, max 185.3 (pending shelters_clean) |
 | `gema_zone` | 26 | no evacuation zone | `evac_zone`, `evac_zone_county` from the facility point |
 
 ## assisted_living (GaMap2Care)
@@ -45,7 +45,7 @@ its published value; cleaned values go in appended columns with `_status` and `_
 | `small_home_aggregated` | 1,044 | every GaMap2Care field of homes with 6 or fewer beds | opaque `FACID` (pch_small_<county>_<n>); only `facility_type` and `licensed_beds` kept; `Latitude`/`Longitude` = tract centroid; status aggregated_small_home |
 | `nearest_tract_centroid` | 1,894 | GaMap2Care `COUNTY` text | `county_fips` (imputed); 59 disagree with the county text, both kept |
 | `gema_zone` | 78 | no evacuation zone | `evac_zone`, `evac_zone_county` |
-| `medical_shelter_distance_pending` | 1,894 | none | `km_nearest_medical_shelter` median 45.2 (pending teammate shelters_clean) |
+| `medical_shelter_distance_pending` | 1,894 | none | `km_nearest_medical_shelter` median 45.2 (pending shelters_clean) |
 
 ## contraflow_intersections (GEMA)
 
@@ -53,7 +53,7 @@ its published value; cleaned values go in appended columns with `_status` and `_
 |---|---:|---|---|
 | `gema_contraflow_point` | 32 | GEMA I-16 contraflow points | `county_fips` imputed; 13 in a GEMA zone |
 
-## gema_shelter_feed (input for the teammate shelters table)
+## gema_shelter_feed (input for shelters_clean)
 
 | Rule | Rows | Before | After |
 |---|---:|---|---|

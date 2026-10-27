@@ -21,7 +21,7 @@ Inputs and licences are in [SOURCES.md](SOURCES.md). The build stops with a list
 | `dialysis_centers.parquet` | 355 | `ccn` | gap fill: CMS dialysis facilities with county and coordinates |
 | `assisted_living.parquet` | 1,894 | `FACID` (opaque for small homes) | GaMap2Care assisted living communities and personal care homes |
 | `contraflow_intersections.parquet` | 32 | `OBJECTID` | GEMA I-16 contraflow intersections |
-| `gema_shelter_feed.parquet` | 0 | `GlobalID` | WebEOC shelter feed, facility and status fields only; an input for the teammate shelters table |
+| `gema_shelter_feed.parquet` | 0 | `GlobalID` | WebEOC shelter feed, facility and status fields only; an input for `shelters_clean` |
 | `storm_events.parquet` | 6,934 | `event_id` | NCEI tropical-related storm events, GA and FL, 1996-2025 |
 | `storm_history.parquet` | 192 | `storm_atcf_id`, `state` | per-storm, per-state totals for the scenario library |
 | `overture_places.parquet` | 4,858 | `id` | Overture care and transport listings, per-row licence |
@@ -67,7 +67,7 @@ Status values: `recorded` (the source has a value), `unrecorded` (the source has
 - **County of a nursing home.** Imputed from the nearest tract centroid; 11 homes disagree with
   the CMS county text, and both are kept.
 - **Medical-shelter distance.** Read-only from the snapshot `shelters` table (`is_medical`), median
-  52.1 km. Status `assumption`, pending the teammate `shelters_clean` table.
+  52.1 km. Status `assumption`, pending `shelters_clean`.
 
 - **Evacuation zones.** GEMA zone (A-D, X) from the tract centroid or facility point; null outside all
   27 zone polygons. 198 tracts are in a zone (697,384 residents), as are 26 nursing homes and 78
