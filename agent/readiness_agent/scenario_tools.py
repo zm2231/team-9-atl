@@ -490,12 +490,21 @@ def season_county_risk(
     seats_override: dict[str, int] | None = None,
     stations_override: dict[str, int] | None = None,
     add_sites: list[dict[str, Any]] | None = None,
+    uncertainty: str = "fixed",
 ) -> dict[str, Any]:
     """Season-long hurricane risk per Georgia county from 3,200 simulated events built on every storm since 1950 near Georgia (800 replays of the historical tracks and 2,400 synthetic variants shifted, re-intensified, re-timed and resized): chance per year of losing power to at least 25% of customers, power-dependent residents affected, people lacking shelter (no powered seat, no dialysis chair) and people needing transport (no vehicle), each in a typical, a 1-in-10 and a 1-in-100 season.
 
-    outlook picks the storm rate: long_run (default, 1950-2025), recent (2000-2025), la_nina, neutral, el_nino (seasons with that ENSO state), or noaa_aug_2026 (scaled to NOAA's August 2026 outlook, an outside forecast input). sites_off and assume_generator rerun the season with shelters or dialysis centres switched off, or generators assumed. seats_override, stations_override and add_sites [{lat, lon, seats, generator}] are further what-ifs. Planner-reported site updates are always applied. Each result carries probability: the share of simulated seasons with anyone lacking shelter, with 50 or more, and with anyone lacking a dialysis chair. Without county_fips, returns the counties with the most people lacking shelter.
+    outlook picks the storm rate: long_run (default, 1950-2025), recent (2000-2025), la_nina, neutral, el_nino (seasons with that ENSO state), or noaa_aug_2026 (scaled to NOAA's August 2026 outlook, an outside forecast input). sites_off and assume_generator rerun the season with shelters or dialysis centres switched off, or generators assumed. seats_override, stations_override and add_sites [{lat, lon, seats, generator}] are further what-ifs. Planner-reported site updates are always applied. Each result carries probability: the share of simulated seasons with anyone lacking shelter, with 50 or more, and with anyone lacking a dialysis chair. uncertainty="sampled" draws the unknowns (relocation share, Florida inflow, dialysis absorption, unrecorded generators, no-vehicle share) per simulated season and adds spread_attribution; the default "fixed" uses the case. Without county_fips, returns the counties with the most people lacking shelter.
     """
     from .scenario import data, season, site_updates
+
+    if uncertainty not in season.UNCERTAINTY_MODES:
+        return {
+            "status": "unknown_uncertainty",
+            "message": f"uncertainty must be one of: {', '.join(season.UNCERTAINTY_MODES)}.",
+            "counties": [],
+            "source": SOURCES["season"],
+        }
 
     if outlook not in season.OUTLOOKS:
         return {
@@ -519,6 +528,7 @@ def season_county_risk(
         sites_off=sorted(switches["sites_off"] | set(planner["sites_off"])),
         assume_generator=sorted(switches["assume_generator"]),
         case=case,
+        uncertainty=uncertainty,
         **site_updates.season_kwargs(planner, request),
     )
     rows = run["counties"]
@@ -540,6 +550,7 @@ def season_county_risk(
         "ignored_ids": [*run["ignored_ids"], *switches["invalid"], *request["invalid"]],
         "added_sites": run["added_sites"],
         "planner_updates": _planner_report(planner),
+        "uncertainty": run["uncertainty"],
         "statewide": run["statewide"],
         "counties": rows,
         "source": SOURCES["season"],
@@ -610,10 +621,13 @@ def _readiness_brief(county_fips: str) -> dict[str, Any]:
     return build_readiness_brief(county_fips)
 
 
-def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
+def county_plan(
+    county_fips: str, outlook: str = "long_run", uncertainty: str = "fixed"
+) -> dict[str, Any]:
     """One call that assembles a county's season readiness plan: the readiness brief (who cannot leave, where they would go, what to fix, what we could not tell), how often the power goes out under the chosen outlook and the long run, people lacking shelter and needing transport in a typical and a 1-in-10 season, what confirming every unrecorded medical-shelter generator would change, and an audit of the brief's ranked tracts against the state. Sections that cannot be filled are marked not_determined. Write the plan from these sections only, and verify the top shelters live with Google Maps.
 
     outlook: long_run (default), recent, la_nina, neutral, el_nino or noaa_aug_2026.
+    uncertainty: fixed (default) or sampled, which draws the unknowns per simulated season.
     """
     from google.cloud import bigquery
 
@@ -623,6 +637,8 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
         return _status("needs_county", "Give a Georgia county_fips, for example 13051.")
     if outlook not in season.OUTLOOKS:
         outlook = "long_run"
+    if uncertainty not in season.UNCERTAINTY_MODES:
+        uncertainty = "fixed"
     county = next((c for c in data.counties() if c["county_fips"] == county_fips), None)
     if county is None:
         return _status("unknown_county", "No Georgia county has that FIPS code.")
@@ -636,6 +652,7 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
             name,
             sites_off=planner["sites_off"],
             assume_generator=assume_generator or (),
+            uncertainty=uncertainty,
             **planner_kwargs,
         )
 
@@ -684,6 +701,7 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
         "county_fips": county_fips,
         "county_name": county["county_name"],
         "outlook": outlook,
+        "uncertainty": uncertainty,
         "planner_updates": _planner_report(planner),
     }
     plan["readiness_brief"] = _section("readiness brief (see its own sources)", brief)

@@ -289,6 +289,10 @@ def summarize(
     values: dict[str, np.ndarray], rate: np.ndarray, out25: np.ndarray, n: int, seed: int
 ) -> dict:
     seasons = worst_per_season(values, rate, np.random.default_rng(seed), n)
+    return summarize_seasons(seasons, rate, out25)
+
+
+def summarize_seasons(seasons: dict[str, np.ndarray], rate: np.ndarray, out25: np.ndarray) -> dict:
     lam = rate @ out25.astype(np.float64)
     any_lam = float(rate @ out25.any(axis=1))
 
@@ -307,6 +311,149 @@ def summarize(
         "county": county,
         "statewide": state,
     }
+
+
+UNCERTAINTY_MODES = ("fixed", "sampled")
+UNKNOWNS = {
+    "relocation_share": (
+        "triangular(0.10, 0.20, 0.40): the low and high fixed cases bound it and the base case "
+        "is the mode; no county records how many power-dependent residents seek a powered seat"
+    ),
+    "florida_inflow": (
+        "uniform(0.05, 0.25) share of Georgia receiving capacity taken by Florida evacuees: no "
+        "intake record by home state exists, so the range brackets the fixed 0.15"
+    ),
+    "dialysis_per_station": (
+        "uniform(1, 2) displaced patients per station: one with a late shift, up to two with "
+        "extra shifts; no centre reports surge capacity"
+    ),
+    "unrecorded_generators": (
+        "each medical shelter with no generator record has one with probability {p:.3f}, a "
+        "prior from the {n} medical shelters whose generator is recorded ({yes} YES, {no} NO)"
+    ),
+    "no_vehicle_share": (
+        "uniform between each county's all-household and 65+ no-vehicle share (ACS B25045); one "
+        "draw per season, at the same point of every county's range"
+    ),
+}
+SOBOL_BINS = 20
+
+
+def generator_prior(ev: dict[str, np.ndarray]) -> dict[str, Any]:
+    flags = [str(x) for x in ev["shelter_generator"]]
+    yes, no = flags.count("YES"), flags.count("NO")
+    return {"p": yes / (yes + no), "yes": yes, "no": no, "n": yes + no}
+
+
+def _per_pick_worst(v: np.ndarray, draws: dict[str, np.ndarray]) -> np.ndarray:
+    k = draws["k"]
+    best = np.zeros((len(k), v.shape[1]), dtype=v.dtype)
+    if v.shape[0]:
+        best[k > 0] = np.maximum.reduceat(v, draws["starts"], axis=0)
+    return best
+
+
+def sampled_seasons(
+    ev: dict[str, np.ndarray], masks: dict[str, np.ndarray], rate: np.ndarray, n: int, seed: int
+) -> tuple[dict[str, np.ndarray], dict[str, np.ndarray]]:
+    rng = np.random.default_rng(seed)
+    draws = season_draws(rate, rng, n)
+    prior = generator_prior(ev)
+    unknown_gen = np.flatnonzero(
+        (ev["shelter_generator"] == "UNRECORDED") & ~masks["shelter_powered"]
+    )
+    params = {
+        "relocation_share": rng.triangular(0.10, 0.20, 0.40, size=n),
+        "florida_inflow": rng.uniform(0.05, 0.25, size=n),
+        "dialysis_per_station": rng.uniform(1.0, 2.0, size=n),
+        "no_vehicle_share": rng.uniform(0.0, 1.0, size=n),
+    }
+    gen = rng.random((n, len(unknown_gen))) < prior["p"]
+    params["unrecorded_generators"] = (gen * ev["shelter_seats"][unknown_gen]).sum(axis=1)
+
+    picks = draws["picks"]
+    s_of = np.repeat(np.arange(n), draws["k"])
+    cats = ev["category"][picks][:, None]
+    keep = (1.0 - params["florida_inflow"][s_of])[:, None]
+
+    powered = np.repeat(masks["shelter_powered"][None, :], len(picks), axis=0)
+    powered[:, unknown_gen] = gen[s_of]
+    seats = ev["shelter_seats"][None, :] * powered * masks["shelter_open"][None, :] * keep
+    seats = np.where(ev["shelter_surge"][None, :] <= cats, 0.0, seats).astype(np.float32)
+    pd = ev["pd_affected"][picks]
+    seekers = (params["relocation_share"][s_of][:, None] * pd).astype(np.float32)
+    reach_s = ev["shelter_reach"].astype(np.float32)
+    no_seat = np.maximum(seekers - allocate(seekers, seats, reach_s), 0)
+
+    county = ev["dialysis_county"]
+    valid = county >= 0
+    down = np.zeros((len(picks), len(county)), bool)
+    down[:, valid] = ev["down50"][picks][:, county[valid]]
+    flooded = ev["dialysis_surge"][None, :] <= cats
+    chairs = (
+        ev["dialysis_stations"][None, :]
+        * masks["dialysis_open"][None, :]
+        * params["dialysis_per_station"][s_of][:, None]
+        * keep
+    )
+    chairs = np.where(flooded | down, 0.0, chairs).astype(np.float32)
+    displaced = ev["displaced"][picks]
+    no_chair = np.maximum(
+        displaced - allocate(displaced, chairs, ev["dialysis_reach"].astype(np.float32)), 0
+    )
+
+    s65, sall = vehicle_shares(tuple(str(f) for f in ev["county_fips"]))
+    share = sall[None, :] + params["no_vehicle_share"][s_of][:, None] * (s65 - sall)[None, :]
+    per_pick = {
+        "pd_affected": pd,
+        "no_powered_seat": no_seat,
+        "no_dialysis_chair": no_chair,
+        "lacking_shelter": no_seat + no_chair,
+        "no_vehicle": pd * share,
+        "no_vehicle_low": pd * sall[None, :],
+    }
+    return {k: _per_pick_worst(v, draws) for k, v in per_pick.items()}, params
+
+
+def unknown_ranges(ev: dict[str, np.ndarray]) -> dict[str, str]:
+    prior = generator_prior(ev)
+    return {
+        k: v.format(**prior) if k == "unrecorded_generators" else v for k, v in UNKNOWNS.items()
+    }
+
+
+def first_order(y: np.ndarray, x: np.ndarray, bins: int = SOBOL_BINS) -> dict[str, float]:
+    var = float(y.var())
+    if var <= 0:
+        return {"sobol_first_order": 0.0, "correlation_squared": 0.0}
+    order = np.argsort(x, kind="stable")
+    groups = np.array_split(order, bins)
+    means = np.array([y[g].mean() for g in groups])
+    sizes = np.array([len(g) for g in groups])
+    between = float((sizes * (means - y.mean()) ** 2).sum() / len(y))
+    between = max(0.0, between - var * (bins - 1) / len(y))
+    corr = float(np.corrcoef(x, y)[0, 1]) if x.std() > 0 else 0.0
+    return {"sobol_first_order": round(between / var, 4), "correlation_squared": round(corr**2, 4)}
+
+
+def spread_attribution(seasons: dict[str, np.ndarray], params: dict[str, np.ndarray]) -> dict:
+    out = {}
+    for target, key in (
+        ("lacking_shelter", "lacking_shelter"),
+        ("needing_transport", "no_vehicle"),
+    ):
+        y = seasons[key].sum(axis=1)
+        sd = float(y.std())
+        rows = {}
+        for name, x in params.items():
+            fo = first_order(y, x)
+            left = max(0.0, 1 - fo["sobol_first_order"])
+            rows[name] = {
+                **fo,
+                "sd_reduction_if_known": round(sd - sd * math.sqrt(left), 1),
+            }
+        out[target] = {"statewide_sd": round(sd, 1), "unknowns": rows}
+    return out
 
 
 def exceedance(lacking: np.ndarray, no_chair: np.ndarray) -> dict[str, np.ndarray]:
@@ -577,7 +724,10 @@ def run_season(
     add_sites: Any = (),
     as_of_date: Any = None,
     custom: Any = None,
+    uncertainty: str = "fixed",
 ) -> dict:
+    if uncertainty not in UNCERTAINTY_MODES:
+        raise ValueError(f"uncertainty must be one of {', '.join(UNCERTAINTY_MODES)}")
     years, _ = outlook_years("long_run" if outlook == CUSTOM else outlook)
     rate = outlook_event_rates(outlook, custom, as_of_date)
     ev, masks, meta = _prepare(
@@ -592,16 +742,32 @@ def run_season(
             "add_sites": add_sites,
         },
     )
-    values = per_event(
-        ev,
-        relocation_share=RELOCATION_SHARE[case],
-        shelter_open=masks["shelter_open"],
-        shelter_powered=masks["shelter_powered"],
-        dialysis_open=masks["dialysis_open"],
-    )
-    s = summarize(values, rate, ev["out25"], n_seasons, seed)
+    if uncertainty == "sampled":
+        seasons, params = sampled_seasons(ev, masks, rate, n_seasons, seed)
+        s = summarize_seasons(seasons, rate, ev["out25"])
+        spread = {
+            "mode": "sampled",
+            "unknowns": unknown_ranges(ev),
+            "spread_attribution": spread_attribution(seasons, params),
+            "note": "Each simulated season draws its own value for every unknown; case does "
+            "not apply. Spread attribution: share of the variance of the statewide total "
+            "explained by each unknown alone (first-order Sobol from 20 equal-count bins, less "
+            "the (bins - 1) / seasons bias a pure-noise input would show, with the squared "
+            "correlation alongside); the rest is the storms themselves.",
+        }
+    else:
+        values = per_event(
+            ev,
+            relocation_share=RELOCATION_SHARE[case],
+            shelter_open=masks["shelter_open"],
+            shelter_powered=masks["shelter_powered"],
+            dialysis_open=masks["dialysis_open"],
+        )
+        s = summarize(values, rate, ev["out25"], n_seasons, seed)
+        spread = {"mode": "fixed", "case": case}
     fips, names = ev["county_fips"], ev["county_name"]
     return {
+        "uncertainty": spread,
         "outlook": outlook,
         "label": OUTLOOKS.get(outlook, "Custom season: " + str((custom or {}).get("source"))),
         "storms_per_year": round(float(rate.sum()), 3),

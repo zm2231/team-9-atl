@@ -243,3 +243,38 @@ def test_as_of_after_last_storm_gives_an_empty_season():
     assert r["statewide"]["lacking_shelter"]["total"]["one_in_10"] == 0
     assert r["statewide"]["probability"]["p_lacking_shelter_any"] == 0
     assert season.siting_base(as_of_date="2026-12-31")["before"]["state_1in10"] == 0
+
+
+def test_fixed_default_is_unchanged():
+    a, b = season.run_season(), season.run_season(uncertainty="fixed")
+    assert a["statewide"] == b["statewide"] and a["uncertainty"]["mode"] == "fixed"
+
+
+def test_sampled_mode_reports_ranges_and_attribution():
+    r = season.run_season(uncertainty="sampled")
+    u = r["uncertainty"]
+    assert u["mode"] == "sampled"
+    assert set(u["unknowns"]) == set(season.UNKNOWNS)
+    assert "0.375" in u["unknowns"]["unrecorded_generators"]
+    assert "8 medical shelters" in u["unknowns"]["unrecorded_generators"]
+    rows = u["spread_attribution"]["lacking_shelter"]["unknowns"]
+    assert sum(x["sobol_first_order"] for x in rows.values()) <= 1
+    total = r["statewide"]["lacking_shelter"]["total"]
+    assert total["typical"] <= total["one_in_10"] <= total["one_in_100"]
+    with pytest.raises(ValueError):
+        season.run_season(uncertainty="maybe")
+
+
+def test_first_order_estimator_on_known_cases():
+    rng = np.random.default_rng(0)
+    x = rng.random(5000)
+    assert season.first_order(x, x)["sobol_first_order"] > 0.99
+    assert season.first_order(rng.random(5000), x)["sobol_first_order"] < 0.01
+    y = x + rng.random(5000)
+    assert abs(season.first_order(y, x)["sobol_first_order"] - 0.5) < 0.05
+
+
+def test_tools_accept_uncertainty():
+    r = scenario_tools.season_county_risk(county_fips="13051", uncertainty="sampled")
+    assert r["uncertainty"]["mode"] == "sampled"
+    assert scenario_tools.season_county_risk(uncertainty="bogus")["status"] == "unknown_uncertainty"

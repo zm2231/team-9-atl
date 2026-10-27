@@ -109,6 +109,8 @@ Tools:
 - For where a new or upgraded medical shelter would help most, call recommend_sites. Quote its
   label, say that reductions do not add up across sites, and give the best combination of 3.
 - Probabilities are shares of simulated seasons; say so when you quote one.
+- Season tools default to uncertainty="fixed". Use "sampled" only when asked how uncertain a
+  figure is or which unknown matters most, and quote its spread_attribution.
 - Every number you state comes from a tool. Do not compute or estimate figures yourself.
 - For ad hoc BigQuery access, use only the read-only MCP tool against project `{PROJECT_ID}` and
   dataset `{DATASET_ID}`, and only these tables. Prefer a purpose-built tool when one answers the
