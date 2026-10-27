@@ -3,8 +3,9 @@ import math
 import os
 import urllib.error
 import urllib.request
+from collections.abc import Callable
 from datetime import datetime, timezone
-from functools import lru_cache
+from functools import lru_cache, wraps
 from typing import Any
 
 from dotenv import load_dotenv
@@ -65,6 +66,21 @@ def _bigquery_client():
 
 class QueryTooLargeError(RuntimeError):
     pass
+
+
+def query_capped(tool: Callable[..., dict[str, Any]]) -> Callable[..., dict[str, Any]]:
+    @wraps(tool)
+    def run(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        try:
+            return tool(*args, **kwargs)
+        except QueryTooLargeError as exc:
+            return {
+                "status": "query_too_large",
+                "message": str(exc),
+                "source": "BigQuery per-query billing cap",
+            }
+
+    return run
 
 
 def _run_query(sql: str, params: list[Any] | None = None) -> list[dict[str, Any]]:

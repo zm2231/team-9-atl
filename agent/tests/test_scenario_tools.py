@@ -255,3 +255,25 @@ def test_county_storm_profile_returns_sourced_error(monkeypatch):
     r = scenario_tools.county_storm_profile("13275")
     assert r["status"] == "error" and r["source"]
     assert scenario_tools.county_storm_profile("01001")["status"] == "needs_county"
+
+
+def test_every_registered_query_tool_returns_the_cap_as_a_result(monkeypatch):
+    from google.adk.tools import FunctionTool
+    from google.api_core.exceptions import BadRequest
+
+    from readiness_agent import agent, evacuation_tools
+
+    class Client:
+        def query(self, sql, job_config):
+            raise BadRequest("too big", errors=[{"reason": "bytesBilledLimitExceeded"}])
+
+    monkeypatch.setattr(evacuation_tools, "_bigquery_client", lambda: Client())
+    tools = {getattr(t, "__name__", ""): t for t in agent.root_agent.tools}
+    for name in ("build_readiness_brief", "find_power_dependent_counties", "get_shelters"):
+        assert tools[name].__wrapped__
+        declaration = FunctionTool(tools[name])._get_declaration()
+        assert declaration is not None and declaration.name == name
+    brief = tools["build_readiness_brief"]("13051")
+    assert brief["status"] == "query_too_large" and brief["source"]
+    assert tools["find_power_dependent_counties"]()["status"] == "query_too_large"
+    assert tools["get_shelters"](["S1"])["status"] == "query_too_large"
