@@ -32,6 +32,13 @@ def table(name: str) -> str:
 def flag(v) -> str:
     if v is None or (isinstance(v, float) and np.isnan(v)) or pd.isna(v):
         return "UNRECORDED"
+    if isinstance(v, str):
+        s = v.strip().upper()
+        if s in {"Y", "YES", "TRUE", "1"}:
+            return "YES"
+        if s in {"N", "NO", "FALSE", "0"}:
+            return "NO"
+        return "UNRECORDED"
     return "YES" if bool(v) else "NO"
 
 

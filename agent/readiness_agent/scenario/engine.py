@@ -68,6 +68,20 @@ def run(tracks: list[list[TrackPoint]], n_draws: int = 400, seed: int = 20261027
     )
 
 
+def one_draw(result: Result, i: int) -> Result:
+    outage = result.outage[i:i + 1]
+    return Result(
+        outage=outage,
+        track_of_draw=result.track_of_draw[i:i + 1],
+        peak_wind_kt=result.peak_wind_kt,
+        hours_34kt=result.hours_34kt,
+        ts_arrival_h=result.ts_arrival_h,
+        outside_support=result.outside_support,
+        ts_arrival_share=result.ts_arrival_share,
+        p_affected=(outage >= AFFECTED_SHARE).mean(axis=0),
+    )
+
+
 def people_at_risk(result: Result, counties: list[dict]) -> dict[str, np.ndarray]:
     share = result.outage
 
