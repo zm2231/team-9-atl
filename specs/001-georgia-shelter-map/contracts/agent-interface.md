@@ -71,7 +71,7 @@ in rank order).
 | `error` / `error_details` | ADK `/run_sse` mid-stream failure (verified in ADK 2.13). Shows the failed state with Retry (FR-015) |
 | `errorCode` / `errorMessage` | Model-side error on an event. Shows the failed state with Retry (FR-015) |
 
-**Tools whose results the frontend reads** (`agent/readiness_agent/evacuation_tools.py`). Every
+**Tools whose results the frontend reads** (`agent/readiness_agent/evacuation_tools.py`; `build_readiness_brief` in `readiness_brief.py`). Every
 result carries a `source` naming its dataset and table (Constitution III):
 
 | Tool | Result | Used for |
