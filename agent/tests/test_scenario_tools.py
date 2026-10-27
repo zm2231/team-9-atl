@@ -107,3 +107,60 @@ def test_season_tools_return_sourced_error_when_bigquery_fails(monkeypatch):
     assert risk["status"] == gaps["status"] == "error"
     assert risk["counties"] == [] and gaps["gaps"] == []
     assert risk["source"] and gaps["source"]
+
+
+def test_switches_merge_context_and_arguments():
+    from readiness_agent.scenario_tools import _switches
+
+    s = _switches({"site_overrides": {"off": ["a", 3], "assume_generator": "b"}}, ["c"], None)
+    assert s["sites_off"] == frozenset({"a", "c"})
+    assert s["assume_generator"] == frozenset({"b"})
+    assert _switches({"site_overrides": "x"}, None, None)["sites_off"] == frozenset()
+
+
+def test_season_rejects_unknown_outlook_with_source():
+    from readiness_agent.scenario_tools import season_county_risk
+
+    r = season_county_risk(outlook="bogus")
+    assert r["status"] == "unknown_outlook" and r["source"]
+
+
+def test_season_with_switches_runs_live_and_reports_ignored_ids():
+    from readiness_agent.scenario_tools import season_county_risk
+
+    r = season_county_risk(county_fips="13127", outlook="el_nino", sites_off=["nope"])
+    assert r["run"] == "live" and r["ignored_ids"] == ["nope"]
+    assert len(r["counties"]) == 1
+    assert "ENSO" in r["outlook_note"]
+
+
+def test_outlook_notes_state_backtest_honestly():
+    from readiness_agent.scenario_tools import season_outlook_note
+
+    assert "not an independent check" in season_outlook_note("recent")
+    assert "cpc.ncep.noaa.gov" in season_outlook_note("noaa_aug_2026")
+
+
+def test_county_plan_marks_failed_sections_not_determined(monkeypatch):
+    from google.api_core.exceptions import Forbidden
+
+    from readiness_agent import evacuation_tools, scenario_tools
+
+    def fail(*_a, **_k):
+        raise Forbidden("denied")
+
+    monkeypatch.setattr(evacuation_tools, "build_readiness_brief", fail)
+    monkeypatch.setattr(scenario_tools, "_run_query", fail)
+    plan = scenario_tools.county_plan("13127")
+    assert plan["readiness_brief"]["status"] == "not_determined"
+    assert plan["audit"]["status"] == "not_determined"
+    assert plan["power_outage_frequency"]["by_outlook"]["long_run"]["county_fips"] == "13127"
+    eff = plan["generator_switch_effect"]
+    assert eff["statewide_lacking_shelter"]["all_assumed"]["one_in_10"] <= (
+        eff["statewide_lacking_shelter"]["recorded_only"]["one_in_10"])
+
+
+def test_county_plan_rejects_non_georgia():
+    from readiness_agent.scenario_tools import county_plan
+
+    assert county_plan("12001")["status"] == "needs_county"
