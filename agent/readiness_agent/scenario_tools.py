@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import UTC, datetime
 from datetime import date as Date
 from pathlib import Path
@@ -41,6 +42,7 @@ RELOCATION_SHARE = {"low": 0.10, "base": 0.20, "high": 0.40}
 SITE_UPDATES_TABLE = "scenario_site_updates"
 SITING_TABLE = "scenario_siting"
 SITING_POOL = 60
+PERSONAL_DETAIL = re.compile(r"\S+@\S+\.\w+|\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}")
 SOURCES["planner"] = (
     "Planner-reported site updates (scenario_site_updates), shown next to the registry"
 )
@@ -719,12 +721,19 @@ def record_site_update(
     note: str | None = None,
     tool_context: Any = None,
 ) -> dict[str, Any]:
-    """Record one thing a planner knows about a medical shelter or dialysis centre, so every later scenario, season and county plan uses it. site_kind is medical_shelter or dialysis; site_id is the shelter_id or ccn, or a new id for a site not in the registry (a new medical shelter needs lat, lon, seats and generator, one update each); field is generator (YES, NO, UNRECORDED), seats, stations, open (true or false), lat, lon, name or county_fips. Registry values are never overwritten; results show both."""
+    """Record one thing a planner knows about a medical shelter or dialysis centre, so every later scenario, season and county plan uses it. site_kind is medical_shelter or dialysis; site_id is the shelter_id or ccn, or a new id for a site not in the registry (a new medical shelter needs lat, lon, seats and generator, one update each); field is generator (YES, NO, UNRECORDED), seats, stations, open (true or false), lat, lon, name or county_fips. Registry values are never overwritten; results show both. note names only the source of the fact (for example "county EMA call, 27 Oct"); it is stored without expiry, so never put a person's name, phone number, email or address in it."""
     from .scenario import site_updates
 
     clean, reason = site_updates.validate(site_kind, site_id, field, value)
     if clean is None:
         return {"status": "invalid", "message": reason, "source": SOURCES["planner"]}
+    if isinstance(note, str) and PERSONAL_DETAIL.search(note):
+        return {
+            "status": "invalid",
+            "message": "note: name the source of the fact only, with no email address or "
+            "phone number",
+            "source": SOURCES["planner"],
+        }
     if note is not None and (not isinstance(note, str) or len(note) > 500):
         return {
             "status": "invalid",

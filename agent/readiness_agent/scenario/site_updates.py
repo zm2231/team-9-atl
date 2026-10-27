@@ -101,6 +101,8 @@ def planner_inputs(rows: list[dict], sites: dict) -> dict[str, Any]:
         "seats_override": {},
         "stations_override": {},
         "location_override": {},
+        "attribute_override": {},
+        "dialysis_county_override": {},
         "sites_off": [],
         "add_sites": [],
         "changes": [],
@@ -144,6 +146,10 @@ def planner_inputs(rows: list[dict], sites: dict) -> dict[str, Any]:
                     out["sites_off"].append(site_id)
             elif field in ("lat", "lon"):
                 out["location_override"].setdefault(site_id, {})[field] = float(value)
+            elif field in ("name", "county_fips"):
+                out["attribute_override"].setdefault(site_id, {})[field] = value
+                if field == "county_fips" and kind == "dialysis":
+                    out["dialysis_county_override"][site_id] = value
             out["changes"].append(
                 {
                     "site_kind": kind,
@@ -179,6 +185,9 @@ def effective_sites(sites: dict, planner: dict) -> dict:
     for sid, loc in planner.get("location_override", {}).items():
         if sid in by_id:
             by_id[sid].update(loc)
+    for sid, attrs in planner.get("attribute_override", {}).items():
+        if sid in by_id:
+            by_id[sid].update(attrs)
     for (sid, field), text in labels.items():
         if sid in by_id and field != "added_site":
             by_id[sid].setdefault("planner_reported", {})[field] = text
@@ -256,5 +265,6 @@ def season_kwargs(planner: dict, request: dict) -> dict[str, Any]:
             **request["stations_override"],
         },
         "location_override": planner.get("location_override") or None,
+        "dialysis_county_override": planner.get("dialysis_county_override") or None,
         "add_sites": [*planner.get("add_sites", []), *request["add_sites"]],
     }
