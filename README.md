@@ -2,6 +2,12 @@
 
 **Agents for Impact 2026**
 
+**Team 9 · Georgia Shelter Readiness**
+
+- Demo video (3 min): https://www.tella.tv/video/hurricane-response-simulation-forecasting-fj1e8ijd
+- Live app: https://georgia-shelter-readiness-256576640429.us-east1.run.app (shared password, any username)
+- Deployment and access: [`deploy/README.md`](deploy/README.md)
+
 ---
 
 ## Why this one matters
