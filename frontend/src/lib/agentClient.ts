@@ -43,6 +43,7 @@ export async function createSession(signal?: AbortSignal): Promise<string> {
   if (!res.ok) throw new Error(`Could not start a session (HTTP ${res.status})`);
   const body = (await res.json()) as { id?: string };
   if (!body.id) throw new Error("Session response had no id");
+  createdThisPage.add(body.id);
   return body.id;
 }
 
@@ -125,7 +126,7 @@ export async function checkWheelchair(shelterIds: string[], outer?: AbortSignal)
 }
 
 let chatSession: Promise<string> | null = null;
-let chatSessionResumed = false;
+const createdThisPage = new Set<string>();
 
 /**
  * Chooses the agent session for the next question: a saved scenario's session to continue it, or
@@ -133,7 +134,6 @@ let chatSessionResumed = false;
  */
 export function resetChatSession(sessionId?: string): void {
   chatSession = sessionId ? Promise.resolve(sessionId) : null;
-  chatSessionResumed = !!sessionId;
 }
 
 export function contextPart(context: ChatContext): string {
@@ -186,14 +186,12 @@ export async function streamChat(opts: {
     });
     let sessionId = await chatSession;
     let res = await send(sessionId);
-    if (!res.ok && chatSessionResumed) {
-      // The saved session expired or belongs to another browser: continue in a fresh one.
-      chatSessionResumed = false;
+    if (!res.ok && !createdThisPage.has(sessionId)) {
+      // A saved session that expired or belongs to another browser: continue in a fresh one.
       chatSession = createSession(signal);
       sessionId = await chatSession;
       res = await send(sessionId);
     }
-    chatSessionResumed = false;
     if (!res.ok || !res.body) throw new Error(`The agent did not answer (HTTP ${res.status})`);
     opts.onSession?.(sessionId);
     const reader = res.body.getReader();

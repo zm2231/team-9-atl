@@ -88,7 +88,7 @@ export type Action =
   | { type: "setDrawing"; drawing: boolean }
   | { type: "setDetailsOpen"; open: boolean }
   | { type: "chatStart"; exchange: ChatExchange; now?: string }
-  | { type: "chatSession"; sessionId: string }
+  | { type: "chatSession"; scenarioId: string; sessionId: string }
   | { type: "chatUpdate"; id: string; patch: Partial<ChatExchange> }
   | { type: "liveCheck"; shelterId: string; status: LiveCheckStatus; placeIds: string[] }
   | { type: "wheelchairChecked"; results: WheelchairCheck[] };
@@ -214,7 +214,9 @@ export function reducer(state: State, action: Action): State {
     case "chatSession":
       return {
         ...state,
-        history: updateCurrent(state, (h) => (h.session_id === action.sessionId ? h : { ...h, session_id: action.sessionId })),
+        history: state.history.map((h) =>
+          h.id === action.scenarioId && h.session_id !== action.sessionId ? { ...h, session_id: action.sessionId } : h,
+        ),
       };
     case "chatStart": {
       const now = action.now ?? new Date().toISOString();

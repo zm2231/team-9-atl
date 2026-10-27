@@ -113,13 +113,22 @@ export function loadHistory(storage: Pick<Storage, "getItem"> | null): LoadResul
   if (!isObj(doc) || doc.version !== 1 || !Array.isArray(doc.scenarios)) {
     return { scenarios: [], available: true, dropped: 0, unreadable: true };
   }
-  const valid = doc.scenarios.filter(isValidScenario);
+  const valid = doc.scenarios.map(compactLegacy).filter(isValidScenario);
   return {
     scenarios: valid.sort(byLastOpened).slice(0, MAX_SCENARIOS),
     available: true,
     dropped: doc.scenarios.length - valid.length,
     unreadable: false,
   };
+}
+
+/** Fits entries saved under earlier, larger caps: newest questions kept, text truncated. */
+function compactLegacy(s: unknown): unknown {
+  if (!isObj(s) || !Array.isArray(s.questions)) return s;
+  const questions = s.questions
+    .slice(-MAX_QUESTIONS)
+    .map((q) => (isObj(q) && typeof q.text === "string" ? { ...q, text: q.text.slice(0, MAX_QUESTION_CHARS) } : q));
+  return { ...s, questions };
 }
 
 /** Writes the whole document. Returns false if storage is unavailable or the write throws. */

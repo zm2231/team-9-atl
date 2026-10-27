@@ -83,3 +83,19 @@ describe("resuming a saved scenario's session", () => {
     expect(used).toEqual(["fresh"]);
   });
 });
+
+describe("sessions created on this page", () => {
+  it("surfaces an error for a session this page created instead of switching sessions", async () => {
+    const sent: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.includes("/sessions")) return new Response(JSON.stringify({ id: "mine" }), { status: 200 });
+      sent.push(JSON.parse(String(init?.body)).session_id);
+      return new Response("boom", { status: 500 });
+    }));
+    resetChatSession();
+    await expect(
+      streamChat({ question: "q", context: { county_fips: null, shelter_id: null, scenario: null }, onEvent: () => {} }),
+    ).rejects.toThrow("HTTP 500");
+    expect(sent).toEqual(["mine"]);
+  });
+});

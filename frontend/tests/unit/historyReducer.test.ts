@@ -153,8 +153,19 @@ describe("agent session on the current scenario", () => {
   it("records the session the current scenario's questions went to", () => {
     const s = run([
       { type: "setTrack", track: glynn, id: "a", now: iso(1) },
-      { type: "chatSession", sessionId: "sess-1" },
+      { type: "chatSession", scenarioId: "a", sessionId: "sess-1" },
     ]);
     expect(s.history[0].session_id).toBe("sess-1");
+  });
+
+  it("stores a late session on the scenario that asked, not the one now current", () => {
+    const s = run([
+      { type: "setTrack", track: glynn, id: "a", now: iso(1) },
+      { type: "newSimulation" } as Action,
+      { type: "setTrack", track: chatham, id: "b", now: iso(2) },
+      { type: "chatSession", scenarioId: "a", sessionId: "sess-a" },
+    ]);
+    expect(s.history.find((h) => h.id === "a")?.session_id).toBe("sess-a");
+    expect(s.history.find((h) => h.id === "b")?.session_id).toBeUndefined();
   });
 });

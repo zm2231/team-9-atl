@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   MAX_QUESTION_CHARS,
+  MAX_QUESTIONS,
   MAX_SCENARIOS,
   STORAGE_KEY,
   abbreviateCounties,
@@ -61,7 +62,7 @@ describe("load/save (T007 a–c)", () => {
   });
 
   it("drops only the invalid entry, keeping the rest (analysis H1)", () => {
-    const tooLong = scenario("bad", 5, { questions: [{ text: "x".repeat(MAX_QUESTION_CHARS + 1), asked_at: iso(5) }] });
+    const tooLong = { ...scenario("bad", 5), category: 9 };
     const extraKey = { ...scenario("bad2", 6), answer: "an agent answer" };
     const s = fakeStorage({
       [STORAGE_KEY]: JSON.stringify({ version: 1, scenarios: [scenario("ok", 4), tooLong, extraKey] }),
@@ -155,5 +156,21 @@ describe("saved session ids", () => {
     const base = JSON.parse(JSON.stringify(scenario("s1", 1)));
     expect(isValidScenario({ ...base, session_id: "123456789" })).toBe(true);
     expect(isValidScenario({ ...base, session_id: "bad id!" })).toBe(false);
+  });
+});
+
+describe("entries saved under earlier caps", () => {
+  it("keeps the newest questions and truncates long text instead of dropping the scenario", () => {
+    const base = JSON.parse(JSON.stringify(scenario("old", 1)));
+    base.questions = Array.from({ length: MAX_QUESTIONS + 5 }, (_, i) => ({
+      text: `${i}`.padEnd(MAX_QUESTION_CHARS + 100, "x"),
+      asked_at: new Date(Date.UTC(2026, 9, 27, 12, i)).toISOString(),
+    }));
+    const raw = JSON.stringify({ version: 1, scenarios: [base] });
+    const out = loadHistory({ getItem: () => raw });
+    expect(out.scenarios).toHaveLength(1);
+    expect(out.scenarios[0].questions).toHaveLength(MAX_QUESTIONS);
+    expect(out.scenarios[0].questions[0].text.startsWith("5")).toBe(true);
+    expect(out.scenarios[0].questions[0].text).toHaveLength(MAX_QUESTION_CHARS);
   });
 });

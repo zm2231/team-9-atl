@@ -50,12 +50,13 @@ export default function ChatPanel() {
   async function run(question: string, context: ChatContext, id: string) {
     let acc: Fold = emptyFold;
     const update = (patch: Partial<ChatExchange>) => dispatch({ type: "chatUpdate", id, patch });
+    const scenarioId = state.currentScenarioId;
 
     try {
       await streamChat({
         question,
         context,
-        onSession: (sessionId) => dispatch({ type: "chatSession", sessionId }),
+        onSession: (sessionId) => scenarioId && dispatch({ type: "chatSession", scenarioId, sessionId }),
         onEvent: (e: AgentEvent) => {
           acc = foldEvent(acc, e);
           update({
