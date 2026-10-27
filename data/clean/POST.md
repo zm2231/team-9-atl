@@ -15,6 +15,10 @@ bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuatio
 bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.contraflow_intersections_flow_staging data/clean/out/contraflow_intersections.parquet
 bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.storm_events_flow_staging data/clean/out/storm_events.parquet
 bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.storm_history_flow_staging data/clean/out/storm_history.parquet
+bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.overture_places_flow_staging data/clean/out/overture_places.parquet
+bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.shelter_activation_history_flow_staging data/clean/out/shelter_activation_history.parquet
+bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.evac_orders_flow_staging data/clean/out/evac_orders.parquet
+bq load --source_format=PARQUET --replace qwiklabs-gcp-04-edc952746633:evacuation_readiness.outage_events_flow_staging data/clean/out/outage_events.parquet
 ```
 
 Check the leading columns before replacing:
@@ -33,9 +37,8 @@ CREATE OR REPLACE TABLE `qwiklabs-gcp-04-edc952746633.evacuation_readiness.hazar
 CREATE OR REPLACE TABLE `qwiklabs-gcp-04-edc952746633.evacuation_readiness.power_dependent_counties_clean` AS SELECT * FROM `qwiklabs-gcp-04-edc952746633.evacuation_readiness.power_dependent_counties_flow_staging`;
 ```
 
-The other tables (`dialysis_centers`, `assisted_living`, `contraflow_intersections`, `storm_events`, `storm_history`) are new and stay as `<name>_flow_staging` until the team names them.
+The other tables (`dialysis_centers`, `assisted_living`, `contraflow_intersections`, `storm_events`, `storm_history`, `overture_places`, `shelter_activation_history`, `evac_orders`, `outage_events`) are new and stay as `<name>_flow_staging` until the team names them.
 `gema_shelter_feed` is an input for the teammate shelters table and is not loaded here.
-`overture_places` is held pending the licence ruling and is not loaded.
 
 Column counts:
 
@@ -48,3 +51,7 @@ Column counts:
 - `gema_shelter_feed`: 16 columns (0 leading BigQuery columns)
 - `storm_events`: 40 columns (0 leading BigQuery columns)
 - `storm_history`: 16 columns (0 leading BigQuery columns)
+- `overture_places`: 21 columns (0 leading BigQuery columns)
+- `shelter_activation_history`: 36 columns (0 leading BigQuery columns)
+- `evac_orders`: 36 columns (0 leading BigQuery columns)
+- `outage_events`: 22 columns (0 leading BigQuery columns)

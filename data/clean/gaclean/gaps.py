@@ -11,7 +11,8 @@ def measure(nums: dict) -> list[dict]:
     c = nums["care_facilities"]
     d = nums["dialysis_centers"]
     h = nums["hazard_tracts"]
-    o = {g: v["not_permanently_closed"] for g, v in nums["overture_places_held"].items()}
+    o = {g: v["not_permanently_closed"] for g, v in nums["overture_places"].items()}
+    sa = nums["shelter_activation_history"]
     al = nums["assisted_living"]
     return [
         {"id": "nursing_home_occupancy", "table": "care_facilities", "gap": "Residents to move per nursing home",
@@ -46,16 +47,17 @@ def measure(nums: dict) -> list[dict]:
                    "carry no name or address and sit at their tract centroid. Licensed beds, not residents."},
         {"id": "home_health_hospice_listings", "table": None,
          "gap": "Home health and hospice agencies serving people at home",
-         "size": {"overture_home_health_held": o["home_health"], "overture_hospice_held": o["hospice"]},
+         "size": {"overture_home_health": o["home_health"], "overture_hospice": o["hospice"]},
          "affects": "medically dependent population at home",
-         "fill": "external_source",
-         "detail": "Overture listings are built locally but held (out/held/, not committed) pending the licence "
-                   "ruling on CDLA-Permissive and Apache rows."},
+         "fill": "external_source", "fill_status": "partially_filled",
+         "detail": "overture_places (Overture Maps, per-row licence kept): listings only, no caseload or service area. "
+                   "CMS Home Health and Hospice provider files (US Government work) are the next source; not fetched."},
         {"id": "nemt_ambulance_inventory", "table": None, "gap": "NEMT, para-transit and ambulance fleet",
-         "size": {"overture_ambulance_ems_held": o["ambulance_ems"], "overture_medical_transport_held": o["medical_transport"]},
+         "size": {"overture_ambulance_ems": o["ambulance_ems"], "overture_medical_transport": o["medical_transport"]},
          "affects": "transport capacity for medically dependent evacuees",
-         "fill": "assumption_range",
-         "detail": "Overture locates operators (held), never fleet size or wheelchair vans. Fleet is a labelled "
+         "fill": "assumption_range", "fill_status": "partially_filled",
+         "detail": "overture_places locates operators, never fleet size or wheelchair vans; NPPES type-2 provider "
+                   "records (US Government work) are another operator list, not fetched. Fleet is a labelled "
                    "low/base/high input until a county or state inventory is supplied."},
         {"id": "medical_shelter_distance", "table": "care_facilities",
          "gap": "Distance from each facility to a usable medical-needs shelter",
@@ -102,12 +104,99 @@ def measure(nums: dict) -> list[dict]:
          "affects": "operational shelter capacity during an event",
          "fill": "external_source",
          "detail": "GEMA WebEOC feed had no rows when fetched; gema_shelter_feed is its facility and status schema, "
-                   "an input for the teammate shelters table. Contact, phone and remarks fields are never read."},
+                   "an input for the teammate shelters table. Contact, phone and remarks fields are never read. "
+                   "FEMA OpenShelters total_population is a live query only."},
         {"id": "tracts_without_hazard_row", "table": "hazard_tracts", "gap": "2020 tracts with no NRI hazard row",
          "size": {"tracts": h["vulnerability_tracts_without_hazard_row"],
                   "population": h["vulnerability_tracts_without_hazard_row_population"]},
          "affects": "nothing while population is 0 (water tracts)",
          "fill": "never_filled", "detail": "Asserted at build: the build fails if any populated tract lacks a row."},
+        {"id": "shelter_opening_evidence", "table": "shelter_activation_history",
+         "gap": "Which shelters actually open in an incident",
+         "size": {"ga_shelters": sa["GA"]["shelters"], "ga_activated": sa["GA"]["activated"],
+                  "ga_never_activated": sa["ga_never_activated"]},
+         "affects": "shelter-opening probability per shelter",
+         "fill": "external_source", "fill_status": "partially_filled",
+         "detail": "FEMA NSS last-activation layer (US Government work), 1:1 on shelter_id. Only the most recent "
+                   "activation per shelter survives, so earlier openings are lost."},
+        {"id": "shelter_fill_history", "table": "shelter_activation_history",
+         "gap": "Shelter fill and occupancy in past storms",
+         "size": {"ga_activated_with_population": sa["GA"]["activated_with_population"],
+                  "ga_population_reported": sa["GA"]["population_reported"]},
+         "affects": "shelter demand against capacity",
+         "fill": "assumption_range",
+         "detail": "No shelter-level history. NSS populations are a lower bound (status reported_lower_bound). "
+                   "Anchor a labelled range on Red Cross statewide peaks once their releases are cited; live "
+                   "occupancy only from the GEMA feed during an incident."},
+        {"id": "stub_shelter_activations", "table": "shelter_activation_history",
+         "gap": "Activated shelters with no readiness data",
+         "size": {"ga_activated_readiness_unrecorded": sa["GA"]["activated_readiness_unrecorded"],
+                  "in_incidents_155_26_and_193_25": sa["ga_stub_incident_rows"]},
+         "affects": "shelter capacity and opening evidence",
+         "fill": "external_source", "fill_status": "filled",
+         "detail": "Real activations: status activated_readiness_unrecorded, kept as opening evidence and never "
+                   "counted as extra seats."},
+        {"id": "shelter_hurricane_suitability", "table": None,
+         "gap": "Whether a shelter is rated for hurricane use",
+         "size": {"ga_pre_landfall_shelter_blank_or_unk": sa["ga_blank_pre_landfall_shelter"],
+                  "ga_never_activated": sa["ga_never_activated"],
+                  "ga_evac_or_both_in_surge_area": sa["ga_evac_or_both_in_surge"]},
+         "affects": "which shelters can be used before landfall",
+         "fill": "maps_verify",
+         "detail": "No ARC 4496 or FEMA P-361 rating in any source. Fill: NSS hurricane-activation evidence "
+                   "(proven, excluded, unknown) plus Maps verification of the largest unknowns; the shelters "
+                   "table itself is owned by a teammate."},
+        {"id": "warning_lead_time", "table": None, "gap": "Warning lead time by storm origin",
+         "size": {},
+         "affects": "evacuation window per scenario",
+         "fill": "external_source", "fill_status": "filled",
+         "detail": "analysis/flow storm library: first NWS VTEC watch and warning for any Georgia zone to Georgia "
+                   "tropical-storm-wind onset (NHC best track), our calculation."},
+        {"id": "evac_order_timing", "table": "evac_orders", "gap": "Evacuation order timing and areas",
+         "size": {"orders": nums["evac_orders"]["orders"]},
+         "affects": "departure start time per county",
+         "fill": "external_source", "fill_status": "partially_filled",
+         "detail": "OpenFEMA IPAWS holds no Georgia coastal evacuation order before 2022 (none for Matthew, Irma, "
+                   "Michael or Dorian). evac_orders takes Matthew, Irma and Dorian from cited governor releases. "
+                   "Gulf storms (Michael, Helene, Milton, Isaias 2026): no coastal mandatory order found, unverified."},
+        {"id": "hurricane_evacuation_clearance_times", "table": None,
+         "gap": "Official clearance times from the Hurricane Evacuation Study",
+         "size": {},
+         "affects": "how long the coast needs to clear",
+         "fill": "never_filled",
+         "detail": "Published only in HURREVAC, which is restricted to emergency managers."},
+        {"id": "power_outage_extent", "table": "outage_events", "gap": "Power outage extent and duration per storm",
+         "size": {"oe417_filings": nums["outage_events"]["filings"], "oe417_ga_filings": nums["outage_events"]["ga_filings"]},
+         "affects": "when power-dependent residents become an emergency",
+         "fill": "external_source", "fill_status": "filled",
+         "detail": "County storm outages from EAGLE-I (ORNL, CC BY 4.0) as published by the grid analysis "
+                   "(analysis/grid county_storm_outages), used by the storm library; DOE OE-417 filings in "
+                   "outage_events. The trigger is county outage share, not coastal zone."},
+        {"id": "departure_timing", "table": None, "gap": "Departure-timing curve", "size": {},
+         "affects": "congestion and clearance time", "fill": "assumption_range",
+         "detail": "Not in hand: a labelled curve from cited departure-timing studies (Matthew)."},
+        {"id": "florida_inflow", "table": None, "gap": "Florida inflow competing for Georgia capacity", "size": {},
+         "affects": "Georgia medical seats, dialysis chairs and I-75/I-16 load in Gulf and NE Florida scenarios",
+         "fill": "external_source", "fill_status": "filled",
+         "detail": "Florida snapshot tables; analysis/flow scenarios (b) and (c)."},
+        {"id": "dialysis_schedule_cohort", "table": None, "gap": "Dialysis schedule cohort (MWF or TTS)", "size": {},
+         "affects": "which patients miss a session for a given landfall day", "fill": "assumption_range",
+         "detail": "Not published: half and half, swept 40-60%."},
+        {"id": "staff_availability", "table": None,
+         "gap": "Staff available at dialysis centers, nursing homes and shelters", "size": {},
+         "affects": "usable capacity when staff evacuate too", "fill": "assumption_range",
+         "detail": "Not published: a labelled range correlated with storm category."},
+        {"id": "nursing_home_evacuation_mortality", "table": None,
+         "gap": "Evacuation mortality risk for nursing-home residents", "size": {},
+         "affects": "evacuate or shelter in place per facility", "fill": "assumption_range",
+         "detail": "Range from cited post-Rita and Gustav cohort studies."},
+        {"id": "shelter_failure", "table": None, "gap": "Shelter failure in the storm (power, roof, cooling, water)",
+         "size": {}, "affects": "post-impact capacity", "fill": "assumption_range",
+         "detail": "Florida after-action documents give failure modes, not rates: a labelled range."},
+        {"id": "duration_clocks", "table": None,
+         "gap": "Time to harm: portable oxygen, dialysis interval, shelter stay", "size": {},
+         "affects": "time-to-harm per person type", "fill": "assumption_range",
+         "detail": "Clinical norms, cited."},
         {"id": "evacuation_route_geometry", "table": "contraflow_intersections", "gap": "Official evacuation route geometry",
          "size": {"contraflow_intersections": nums["contraflow_intersections"]["points"]},
          "affects": "which roads evacuees use",

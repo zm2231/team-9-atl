@@ -1,4 +1,5 @@
-STATUSES = ("recorded", "unrecorded", "imputed", "assumption", "suspect", "external", "aggregated_small_home")
+STATUSES = ("recorded", "unrecorded", "imputed", "assumption", "suspect", "external", "aggregated_small_home",
+            "reported_lower_bound", "activated_readiness_unrecorded")
 SMALL_HOME_BEDS = 6
 
 PROJ = "'EPSG:4326', 'EPSG:32617', always_xy := true"
@@ -54,6 +55,28 @@ RULES = {
     "webeoc_facility_fields": (
         "GEMA WebEOC shelter feed restricted to facility and status fields; contact names, phones, fax, "
         "remarks, subscriber and editor fields are never read."),
+    "nss_last_activation": (
+        "FEMA NSS keeps only the most recent activation per shelter (incident_id > 0); earlier activations are "
+        "overwritten. Evidence that the shelter has opened, not a count of openings."),
+    "nss_no_activation": "incident_id 0 or null: NSS records no activation for this shelter (populations unused).",
+    "nss_stub_activation": (
+        "Activated (incident_id > 0) with no evacuation or post-impact capacity: a real activation whose "
+        "readiness fields are unrecorded. Kept, never counted as extra seats."),
+    "nss_population_lower_bound": (
+        "NSS populations are sparse and undercounted (Helene 2024: 38 people in 19 GA shelters against Red Cross "
+        "reports of 680+ in 35): a lower bound and evidence of opening, never a fill rate."),
+    "nss_snapshot_join": "True when shelter_id is in the Georgia snapshot shelters table (1:1).",
+    "order_time_stated": "Local time stated in the cited release, converted to UTC.",
+    "order_time_day_range": "Only the date is stated: the range is 00:00 to 24:00 local that day.",
+    "order_time_evening_range": "Stated as 'evening': the range is 18:00 to 24:00 local that day.",
+    "order_time_absent": "No time stated for this step.",
+    "order_hours_before_ga_ts_winds": (
+        "Hours from the order step to Georgia tropical-storm-wind onset (NHC best-track R34 reaching Georgia, "
+        "storm_lead_times; our calculation). Low and high follow the time range."),
+    "oe417_filing": (
+        "DOE OE-417 filing as published: utility-reported, per filing; several filings can describe one storm, "
+        "so customer counts are not additive across rows."),
+    "oe417_unknown": "Value published as Unknown or blank.",
     "ncei_storm_match_narrative": "NCEI event matched to a HURDAT2 storm by the storm name in its narrative and active dates.",
     "ncei_storm_match_nearest": "NCEI event assigned to the nearest active HURDAT2 storm (no name in the narrative).",
     "ncei_storm_unmatched": "No HURDAT2 storm matched.",

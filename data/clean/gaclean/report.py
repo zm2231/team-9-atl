@@ -130,7 +130,27 @@ def checks(con) -> dict[str, list[tuple]]:
             ("census_geocoder", sum(v for k, v in d.items() if k != "unmatched"), "no coordinates",
              ", ".join(f"{k} {v}" for k, v in d.items())),
         ],
-        "overture_places (held: built to out/held/, not committed or posted)": [
+        "shelter_activation_history (FEMA NSS)": [
+            (rule, n, before, after) for rule, n, before, after in con.execute("""
+                SELECT activated_rule, COUNT(*), 'NSS last-activation fields',
+                       'activated_status ' || activated_status
+                FROM shelter_activation_history GROUP BY activated_rule, activated_status ORDER BY 1""").fetchall()
+        ] + [("nss_population_lower_bound", _q(con, """SELECT COUNT(*) FROM shelter_activation_history
+                                                      WHERE population_status = 'reported_lower_bound'""")[0],
+              "NSS population counts", "status reported_lower_bound: evidence of opening, never a fill rate")],
+        "evac_orders (cited governor releases)": [
+            (rule, n, "order step time text (3 steps per order)", "UTC range and hours before Georgia tropical-storm winds")
+            for rule, n in con.execute("""
+                SELECT r, COUNT(*) FROM (SELECT announced_utc_rule AS r FROM evac_orders UNION ALL
+                                         SELECT effective_utc_rule FROM evac_orders UNION ALL
+                                         SELECT contraflow_utc_rule FROM evac_orders) GROUP BY 1 ORDER BY 1""").fetchall()
+        ],
+        "outage_events (DOE OE-417)": [
+            (rule, n, "Number of Customers Affected", "customers_affected")
+            for rule, n in con.execute("SELECT customers_affected_rule, COUNT(*) FROM outage_events GROUP BY 1 ORDER BY 1")
+            .fetchall()
+        ],
+        "overture_places (gap fill)": [
             ("overture_places", n, f"Overture `{g}`", f"status external, licences: {lic}") for g, n, lic in o
         ],
     }
@@ -170,7 +190,7 @@ def write_post(con, root: Path = ROOT) -> None:
     lines += ["```", "", "The other tables (" + ", ".join(f"`{n}`" for n in staged if n not in BQ_COLUMNS)
               + ") are new and stay as `<name>_flow_staging` until the team names them.",
               "`gema_shelter_feed` is an input for the teammate shelters table and is not loaded here.",
-              "`overture_places` is held pending the licence ruling and is not loaded.", "",
+              "",
               "Column counts:", ""]
     for name in TABLES:
         n = len(con.execute(f"DESCRIBE {name}").fetchall())

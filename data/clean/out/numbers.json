@@ -39,6 +39,71 @@
     },
     "stations_without_coordinates": 505
   },
+  "evac_orders": {
+    "by_storm": {
+      "DORIAN mandatory": {
+        "announced": [
+          53.0,
+          59.0
+        ],
+        "contraflow": [
+          21.0,
+          21.0
+        ],
+        "effective": [
+          41.0,
+          41.0
+        ]
+      },
+      "IRMA mandatory": {
+        "announced": [
+          95.9,
+          95.9
+        ],
+        "contraflow": [
+          35.0,
+          35.0
+        ],
+        "effective": [
+          35.0,
+          35.0
+        ]
+      },
+      "MATTHEW mandatory": {
+        "announced": [
+          9.0,
+          33.0
+        ],
+        "contraflow": [
+          null,
+          null
+        ],
+        "effective": [
+          9.0,
+          33.0
+        ]
+      },
+      "MATTHEW voluntary": {
+        "announced": [
+          33.0,
+          57.0
+        ],
+        "contraflow": [
+          null,
+          null
+        ],
+        "effective": [
+          null,
+          null
+        ]
+      }
+    },
+    "effective_hours_before_ga_ts_winds_recorded": [
+      35.0,
+      41.0
+    ],
+    "orders": 4
+  },
   "evacuation_zones": {
     "assisted_living_beds_in_zone": 1884.0,
     "assisted_living_in_zone": 78,
@@ -65,7 +130,13 @@
     "vulnerability_tracts_without_hazard_row_population": 0.0,
     "without_vulnerability_tract": 0
   },
-  "overture_places_held": {
+  "outage_events": {
+    "customers_unknown": 7,
+    "filings": 73,
+    "ga_filings": 47,
+    "storm_window_filings": 26
+  },
+  "overture_places": {
     "ambulance_ems": {
       "not_permanently_closed": 258,
       "places": 272
@@ -114,11 +185,35 @@
     "care_facilities": 356,
     "contraflow_intersections": 32,
     "dialysis_centers": 355,
+    "evac_orders": 4,
     "gema_shelter_feed": 0,
     "hazard_tracts": 2791,
+    "outage_events": 73,
+    "overture_places": 4858,
     "power_dependent_counties": 159,
+    "shelter_activation_history": 4590,
     "storm_events": 6934,
     "storm_history": 192
+  },
+  "shelter_activation_history": {
+    "FL": {
+      "activated": 538,
+      "activated_readiness_unrecorded": 281,
+      "activated_with_population": 62,
+      "population_reported": 3841.0,
+      "shelters": 2798
+    },
+    "GA": {
+      "activated": 205,
+      "activated_readiness_unrecorded": 93,
+      "activated_with_population": 41,
+      "population_reported": 1227.0,
+      "shelters": 1792
+    },
+    "ga_blank_pre_landfall_shelter": 1792,
+    "ga_evac_or_both_in_surge": 21,
+    "ga_never_activated": 1587,
+    "ga_stub_incident_rows": 56
   },
   "storm_events": {
     "events": 6934,

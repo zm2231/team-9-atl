@@ -24,6 +24,10 @@ Inputs and licences are in [SOURCES.md](SOURCES.md). The build stops with a list
 | `gema_shelter_feed.parquet` | 0 | `GlobalID` | WebEOC shelter feed, facility and status fields only; an input for the teammate shelters table |
 | `storm_events.parquet` | 6,934 | `event_id` | NCEI tropical-related storm events, GA and FL, 1996-2025 |
 | `storm_history.parquet` | 192 | `storm_atcf_id`, `state` | per-storm, per-state totals for the scenario library |
+| `overture_places.parquet` | 4,858 | `id` | Overture care and transport listings, per-row licence |
+| `shelter_activation_history.parquet` | 4,590 | `shelter_id` | FEMA NSS last activation per GA and FL shelter; not merged into shelters |
+| `evac_orders.parquet` | 4 | `storm`, `order_type` | Georgia governor evacuation orders (Matthew, Irma, Dorian) from cited releases |
+| `outage_events.parquet` | 73 | `event_key` | DOE OE-417 weather outage filings for GA and FL, 2013-2023 |
 | `numbers.json` | | | every count quoted here and in the generated docs |
 | `rules.json` | | | the text of every rule named in a `_rule` column |
 | `gaps.json` | | | the gap register behind `GAPS.md` |
@@ -35,13 +39,12 @@ snapshot values unchanged, one row per source row. Every cleaned or added column
 `coordinates_confidence` share `coordinates_status`, and `storm_history` totals share
 `aggregate_status`.
 
-Overture listings are built to `out/held/` (gitignored) and are not committed or posted while their
-licence question is open.
 
 Status values: `recorded` (the source has a value), `unrecorded` (the source has none),
 `imputed` (filled or assigned by a stated rule; a plain calculation on recorded inputs stays `recorded`), `assumption` (depends on an input not yet settled),
 `suspect` (kept but contradicted by a better source), `external` (from a gap-fill source),
-`aggregated_small_home` (identity removed, see below).
+`aggregated_small_home` (identity removed, see below), `reported_lower_bound` (NSS populations),
+`activated_readiness_unrecorded` (NSS activations with no capacity recorded).
 
 ## Decisions
 
@@ -80,5 +83,15 @@ Status values: `recorded` (the source has a value), `unrecorded` (the source has
   facility and status fields; 23 contact, phone, remarks and editor fields are never read.
 - **Storm history.** NCEI events keep their HURDAT2 match: 6,347 by narrative name (`external`),
   577 by nearest active storm (`imputed`), 10 unmatched.
+
+- **Shelter activations.** NSS keeps only each shelter's latest activation. 205 of 1,792 Georgia
+  shelters show one; 93 of those have no capacity recorded (56 in incidents 155-26 and 193-25) and are
+  kept as `activated_readiness_unrecorded`, never as extra seats. Populations are a lower bound.
+- **Evacuation orders.** Hours before Georgia tropical-storm-wind onset (our calculation from NHC best
+  track): orders took effect 35 h (Irma) and 41 h (Dorian) ahead, the two recorded times. Matthew's
+  release gives dates only, so its hours are a range. No coastal mandatory order was found for Gulf
+  storms (unverified).
+- **Outages.** OE-417 filings are per utility filing and are not additive across rows; 7 publish no
+  customer count. County outage share by storm comes from EAGLE-I through the grid analysis.
 
 Rule-by-rule counts are in [CLEANING.md](CLEANING.md); unfilled gaps in [GAPS.md](GAPS.md).

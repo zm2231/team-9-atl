@@ -75,7 +75,32 @@ its published value; cleaned values go in appended columns with `_status` and `_
 | `zip_to_county_empower` | 355 | CMS county text | `county_fips` from ZIP |
 | `census_geocoder` | 323 | no coordinates | geocoded_census_exact 242, geocoded_census_non_exact 81, unmatched 32 |
 
-## overture_places (held: built to out/held/, not committed or posted)
+## shelter_activation_history (FEMA NSS)
+
+| Rule | Rows | Before | After |
+|---|---:|---|---|
+| `nss_last_activation` | 369 | NSS last-activation fields | activated_status recorded |
+| `nss_no_activation` | 3,847 | NSS last-activation fields | activated_status unrecorded |
+| `nss_stub_activation` | 374 | NSS last-activation fields | activated_status activated_readiness_unrecorded |
+| `nss_population_lower_bound` | 690 | NSS population counts | status reported_lower_bound: evidence of opening, never a fill rate |
+
+## evac_orders (cited governor releases)
+
+| Rule | Rows | Before | After |
+|---|---:|---|---|
+| `order_time_absent` | 3 | order step time text (3 steps per order) | UTC range and hours before Georgia tropical-storm winds |
+| `order_time_day_range` | 3 | order step time text (3 steps per order) | UTC range and hours before Georgia tropical-storm winds |
+| `order_time_evening_range` | 1 | order step time text (3 steps per order) | UTC range and hours before Georgia tropical-storm winds |
+| `order_time_stated` | 5 | order step time text (3 steps per order) | UTC range and hours before Georgia tropical-storm winds |
+
+## outage_events (DOE OE-417)
+
+| Rule | Rows | Before | After |
+|---|---:|---|---|
+| `oe417_filing` | 66 | Number of Customers Affected | customers_affected |
+| `oe417_unknown` | 7 | Number of Customers Affected | customers_affected |
+
+## overture_places (gap fill)
 
 | Rule | Rows | Before | After |
 |---|---:|---|---|

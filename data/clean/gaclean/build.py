@@ -1,4 +1,6 @@
 import json
+import re
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import duckdb
@@ -51,14 +53,22 @@ SHELTER_FEED_FIELDS = [
 SOURCE_COLUMNS["gema_shelter_feed"] = SHELTER_FEED_FIELDS
 SMALL_HOME_KEPT = ("facility_type", "licensed_beds")
 RAW_SOURCE = {"assisted_living": "raw_gamap2care", "contraflow_intersections": "raw_contraflow",
-              "storm_events": "raw_ncei"}
+              "storm_events": "raw_ncei", "shelter_activation_history": "raw_nss", "evac_orders": "raw_evac_orders",
+              "outage_events": "raw_oe417"}
+NSS_POPULATION = ["general_population", "medical_needs_population", "other_population", "total_population",
+                  "pet_population"]
 STORM_AGGREGATES = ["storm_name", "year", "events", "tropical_type_events", "counties", "deaths_direct",
                     "deaths_indirect", "injuries_direct", "damage_property_usd", "damage_crops_usd", "first_event",
                     "last_event"]
 SOURCE_COLUMNS["storm_history"] = ["storm_atcf_id", "state"]
 PROVENANCE_GROUPS = {"latitude": "coordinates", "longitude": "coordinates", "coordinates_confidence": "coordinates",
                      **{f"{name}_live_low": f"{name}_live" for name in EMPOWER_FIELDS},
-                     **{c: "aggregate" for c in STORM_AGGREGATES}}
+                     **{c: "aggregate" for c in STORM_AGGREGATES},
+                     **{f"{s}_utc_{e}": f"{s}_utc" for s in ("announced", "effective", "contraflow")
+                        for e in ("earliest", "latest")},
+                     **{f"{s}_hours_before_{e}": f"{s}_hours_before" for s in ("announced", "effective", "contraflow")
+                        for e in ("low", "high")},
+                     "activated": "activated", "event_key": "customers_affected"}
 
 
 def source_columns(con, table: str) -> list[str]:
@@ -136,6 +146,12 @@ def register(con, src: Sources) -> None:
                     FROM ST_Read('{src.gema / 'contraflow_intersections.geojson'}')""")
     con.execute(f"CREATE VIEW raw_gamap2care AS SELECT * FROM read_parquet('{src.gamap2care}')")
     con.execute(f"CREATE VIEW raw_ncei AS SELECT * FROM read_parquet('{src.ncei_storm_events}')")
+    con.execute(f"CREATE VIEW raw_nss AS SELECT * FROM read_parquet('{src.nss_activation}')")
+    con.execute(f"CREATE VIEW raw_evac_orders AS SELECT * FROM read_csv('{src.evac_orders}', all_varchar = true)")
+    con.execute(f"CREATE VIEW raw_oe417 AS SELECT * FROM read_csv('{src.oe417}', all_varchar = true)")
+    con.execute(f"""CREATE VIEW raw_nhc_lead_times AS SELECT storm_id, season, storm_name,
+                    timezone('UTC', ga_ts_wind_onset_utc) AS ga_ts_wind_onset_utc
+                    FROM read_parquet('{src.nhc_lead_times}')""")
     con.execute(f"""CREATE TABLE raw_shelter_feed_fields AS
                     SELECT f.name, f.type FROM (SELECT UNNEST(fields) AS f
                     FROM read_json('{src.gema / 'shelters_v2_schema.json'}'))""")
@@ -441,22 +457,128 @@ def build_storm_events(con) -> None:
     unmatched(con, "storm events without a storm", "SELECT event_id FROM storm_events WHERE storm_atcf_id IS NULL")
 
 
+def build_shelter_activation_history(con) -> None:
+    readiness = ("evacuation_capacity", "post_impact_capacity")
+    empty = " AND ".join(f"NULLIF(TRIM(CAST({c} AS VARCHAR)), '') IS NULL" for c in readiness)
+    con.execute(f"""
+        CREATE TABLE shelter_activation_history AS
+        SELECT n.*,
+               COALESCE(n.incident_id, 0) > 0 AS activated,
+               CASE WHEN COALESCE(n.incident_id, 0) = 0 THEN 'unrecorded'
+                    WHEN {empty} THEN 'activated_readiness_unrecorded' ELSE 'recorded' END AS activated_status,
+               CASE WHEN COALESCE(n.incident_id, 0) = 0 THEN 'nss_no_activation'
+                    WHEN {empty} THEN 'nss_stub_activation' ELSE 'nss_last_activation' END AS activated_rule,
+               CASE WHEN COALESCE(n.incident_id, 0) > 0 AND n.total_population IS NOT NULL
+                    THEN 'reported_lower_bound' ELSE 'unrecorded' END AS population_status,
+               CASE WHEN COALESCE(n.incident_id, 0) = 0 THEN 'nss_no_activation'
+                    WHEN n.total_population IS NULL THEN 'source_value' ELSE 'nss_population_lower_bound' END
+                   AS population_rule,
+               {R.tag("s.shelter_id IS NOT NULL", "in_ga_snapshot", "'recorded'", "nss_snapshot_join")}
+        FROM raw_nss n LEFT JOIN (SELECT shelter_id FROM raw_shelters) s USING (shelter_id)
+    """)
+    expect(con, "shelter_activation_history", count(con, "SELECT * FROM raw_nss"))
+    assert count(con, "SELECT DISTINCT shelter_id FROM shelter_activation_history") == count(
+        con, "SELECT * FROM shelter_activation_history")
+    unmatched(con, "GA NSS rows not in the snapshot",
+              "SELECT shelter_id FROM shelter_activation_history WHERE state = 'GA' AND NOT in_ga_snapshot")
+    unmatched(con, "NSS rows with a population but no incident",
+              "SELECT shelter_id FROM shelter_activation_history WHERE NOT activated AND total_population > 0")
+    unmatched(con, "snapshot shelters without an NSS row",
+              "SELECT shelter_id FROM raw_shelters ANTI JOIN raw_nss USING (shelter_id)")
+
+
+ORDER_TIME = re.compile(r"^(\d{4}-\d{2}-\d{2})(?: (\d{2}:\d{2}) (EDT|EST)| (evening))?")
+UTC_OFFSET = {"EDT": 4, "EST": 5}
+
+
+def order_window(text: str | None, tz: str) -> tuple[str | None, str | None, str, str]:
+    m = ORDER_TIME.match((text or "").strip())
+    if not m:
+        return None, None, "unrecorded", "order_time_absent"
+    day = datetime.fromisoformat(m.group(1))
+    if m.group(2):
+        t = datetime.fromisoformat(f"{m.group(1)} {m.group(2)}") + timedelta(hours=UTC_OFFSET[m.group(3)])
+        return str(t), str(t), "recorded", "order_time_stated"
+    start, rule = (timedelta(hours=18), "order_time_evening_range") if m.group(4) else (timedelta(0), "order_time_day_range")
+    off = timedelta(hours=UTC_OFFSET[tz])
+    return str(day + start + off), str(day + timedelta(days=1) + off), "imputed", rule
+
+
+def build_evac_orders(con) -> None:
+    src = con.execute("SELECT * FROM raw_evac_orders").fetchall()
+    cols = [d[0] for d in con.execute("SELECT * FROM raw_evac_orders LIMIT 0").description]
+    steps = ("announced", "effective", "contraflow")
+    rows = []
+    for r in src:
+        rec = dict(zip(cols, r))
+        tz = "EDT"
+        rows.append([rec["storm"], rec["order_type"]]
+                    + [v for s in steps for v in order_window(rec[f"{s}_local"], tz)])
+    con.execute("CREATE TABLE evac_order_times (storm VARCHAR, order_type VARCHAR, "
+                + ", ".join(f"{s}_utc_earliest TIMESTAMP, {s}_utc_latest TIMESTAMP, {s}_status VARCHAR, "
+                            f"{s}_rule VARCHAR" for s in steps) + ")")
+    con.executemany(f"INSERT INTO evac_order_times VALUES ({', '.join('?' for _ in range(2 + 4 * len(steps)))})", rows)
+    hours = ", ".join(
+        f"""t.{s}_utc_earliest, t.{s}_utc_latest, t.{s}_status AS {s}_utc_status, t.{s}_rule AS {s}_utc_rule,
+            round(date_diff('minute', t.{s}_utc_latest, l.ga_ts_wind_onset_utc) / 60.0, 1) AS {s}_hours_before_low,
+            round(date_diff('minute', t.{s}_utc_earliest, l.ga_ts_wind_onset_utc) / 60.0, 1) AS {s}_hours_before_high,
+            CASE WHEN t.{s}_utc_earliest IS NULL OR l.ga_ts_wind_onset_utc IS NULL THEN 'unrecorded'
+                 WHEN t.{s}_status = 'recorded' THEN 'recorded' ELSE 'imputed' END AS {s}_hours_before_status,
+            'order_hours_before_ga_ts_winds' AS {s}_hours_before_rule"""
+        for s in steps)
+    con.execute(f"""
+        CREATE TABLE evac_orders AS
+        SELECT o.*, l.ga_ts_wind_onset_utc, CASE WHEN l.ga_ts_wind_onset_utc IS NULL THEN 'unrecorded'
+                    ELSE 'external' END AS ga_ts_wind_onset_utc_status,
+               'order_hours_before_ga_ts_winds' AS ga_ts_wind_onset_utc_rule, {hours}
+        FROM raw_evac_orders o
+        JOIN evac_order_times t ON t.storm = o.storm AND t.order_type = o.order_type
+        LEFT JOIN raw_nhc_lead_times l ON upper(l.storm_name) = upper(o.storm) AND l.season = CAST(o.season AS INTEGER)
+    """)
+    expect(con, "evac_orders", count(con, "SELECT * FROM raw_evac_orders"))
+    unmatched(con, "evacuation orders without a GA TS-wind onset",
+              "SELECT storm FROM evac_orders WHERE ga_ts_wind_onset_utc IS NULL")
+
+
+def build_outage_events(con) -> None:
+    con.execute("""
+        CREATE TABLE outage_events AS
+        SELECT printf('oe417_%03d', ROW_NUMBER() OVER (ORDER BY date_event_began, "Time Event Began", "Area Affected",
+                                                        "Event Type", "Number of Customers Affected")) AS event_key,
+               o.*,
+               TRY_CAST(replace("Number of Customers Affected", ',', '') AS BIGINT) AS customers_affected,
+               CASE WHEN TRY_CAST(replace("Number of Customers Affected", ',', '') AS BIGINT) IS NULL THEN 'unrecorded'
+                    ELSE 'recorded' END AS customers_affected_status,
+               CASE WHEN TRY_CAST(replace("Number of Customers Affected", ',', '') AS BIGINT) IS NULL
+                    THEN 'oe417_unknown' ELSE 'oe417_filing' END AS customers_affected_rule,
+               TRY_CAST("Demand Loss (MW)" AS DOUBLE) AS demand_loss_mw,
+               CASE WHEN TRY_CAST("Demand Loss (MW)" AS DOUBLE) IS NULL THEN 'unrecorded' ELSE 'recorded' END
+                   AS demand_loss_mw_status,
+               CASE WHEN TRY_CAST("Demand Loss (MW)" AS DOUBLE) IS NULL THEN 'oe417_unknown' ELSE 'oe417_filing' END
+                   AS demand_loss_mw_rule
+        FROM raw_oe417 o
+    """)
+    expect(con, "outage_events", count(con, "SELECT * FROM raw_oe417"))
+    assert count(con, "SELECT DISTINCT event_key FROM outage_events") == count(con, "SELECT * FROM outage_events")
+
+
 KEYS = {
     "care_facilities": "cms_certification_number_ccn", "hazard_tracts": "geo_id", "power_dependent_counties": "fips_code",
     "dialysis_centers": "ccn", "assisted_living": "FACID", "contraflow_intersections": "OBJECTID",
     "gema_shelter_feed": "GlobalID", "storm_events": "event_id", "storm_history": "storm_atcf_id, state",
+    "overture_places": "id", "shelter_activation_history": "shelter_id", "evac_orders": "storm, order_type",
+    "outage_events": "event_key",
 }
 TABLES = {name: f"SELECT * FROM {name} ORDER BY {key}" for name, key in KEYS.items()}
-HELD = {"overture_places": "SELECT * FROM overture_places ORDER BY id"}
 
 
 def build_all(con) -> None:
     for step in (build_hazard_tracts, build_power_dependent_counties, build_care_facilities, build_dialysis_centers,
                  build_overture_places, build_assisted_living, build_contraflow_intersections, build_gema_shelter_feed,
-                 build_storm_events):
+                 build_storm_events, build_shelter_activation_history, build_evac_orders, build_outage_events):
         print(step.__name__)
         step(con)
-    for table in (*TABLES, *HELD):
+    for table in TABLES:
         missing = unprovenanced(con, table)
         assert not missing, f"{table}: columns without _status and _rule: {missing}"
         bad = invalid_provenance(con, table)
@@ -545,7 +667,42 @@ def numbers(con) -> dict:
             "ga_events": q("SELECT COUNT(*) FROM storm_events WHERE state = 'GA'")[0],
             "ga_storms": q("SELECT COUNT(DISTINCT storm_atcf_id) FROM storm_events WHERE state = 'GA'")[0],
         },
-        "overture_places_held": {
+        "shelter_activation_history": {
+            st: {"shelters": n, "activated": a, "activated_readiness_unrecorded": stub,
+                 "activated_with_population": pop, "population_reported": tot}
+            for st, n, a, stub, pop, tot in con.execute("""
+                SELECT state, COUNT(*), COUNT(*) FILTER (WHERE activated),
+                       COUNT(*) FILTER (WHERE activated_status = 'activated_readiness_unrecorded'),
+                       COUNT(*) FILTER (WHERE population_status = 'reported_lower_bound' AND total_population > 0),
+                       SUM(total_population) FILTER (WHERE population_status = 'reported_lower_bound')
+                FROM shelter_activation_history GROUP BY 1 ORDER BY 1""").fetchall()
+        } | {"ga_never_activated": q("SELECT COUNT(*) FROM shelter_activation_history "
+                                     "WHERE state = 'GA' AND NOT activated")[0],
+             "ga_blank_pre_landfall_shelter": q("""SELECT COUNT(*) FROM shelter_activation_history WHERE state = 'GA'
+                 AND COALESCE(NULLIF(TRIM(pre_landfall_shelter), ''), 'UNK') = 'UNK'""")[0],
+             "ga_evac_or_both_in_surge": q("""SELECT COUNT(*) FROM raw_shelters
+                 WHERE usage IN ('EVAC', 'BOTH') AND in_surge_slosh_area""")[0],
+             "ga_stub_incident_rows": q("""SELECT COUNT(*) FROM shelter_activation_history
+                 WHERE activated_status = 'activated_readiness_unrecorded' AND incident_name IN ('155-26', '193-25')""")[0]},
+        "evac_orders": {
+            "orders": q("SELECT COUNT(*) FROM evac_orders")[0],
+            "effective_hours_before_ga_ts_winds_recorded": [v for (v,) in con.execute(
+                "SELECT effective_hours_before_low FROM evac_orders WHERE effective_hours_before_status = 'recorded' "
+                "ORDER BY 1").fetchall()],
+            "by_storm": {f"{s} {t}": {"announced": [al, ah], "effective": [el, eh], "contraflow": [cl, ch]}
+                         for s, t, al, ah, el, eh, cl, ch in con.execute("""
+                SELECT storm, order_type, announced_hours_before_low, announced_hours_before_high,
+                       effective_hours_before_low, effective_hours_before_high,
+                       contraflow_hours_before_low, contraflow_hours_before_high
+                FROM evac_orders ORDER BY storm, order_type""").fetchall()},
+        },
+        "outage_events": {
+            "filings": q("SELECT COUNT(*) FROM outage_events")[0],
+            "ga_filings": q("SELECT COUNT(*) FROM outage_events WHERE state_ga = 'True'")[0],
+            "storm_window_filings": q("SELECT COUNT(*) FROM outage_events WHERE storm_window IS NOT NULL")[0],
+            "customers_unknown": q("SELECT COUNT(*) FROM outage_events WHERE customers_affected IS NULL")[0],
+        },
+        "overture_places": {
             g: {"places": n, "not_permanently_closed": o}
             for g, n, o in con.execute("""
                 SELECT place_group, COUNT(*), COUNT(*) FILTER (WHERE operating_status IS DISTINCT FROM 'permanently_closed')
@@ -564,11 +721,8 @@ def rounded(value):
 
 def write(con, out: Path = OUT) -> dict:
     out.mkdir(parents=True, exist_ok=True)
-    (out / "held").mkdir(exist_ok=True)
     for name, sql in TABLES.items():
         con.execute(f"COPY ({sql}) TO '{out / (name + '.parquet')}' (FORMAT parquet, COMPRESSION zstd)")
-    for name, sql in HELD.items():
-        con.execute(f"COPY ({sql}) TO '{out / 'held' / (name + '.parquet')}' (FORMAT parquet, COMPRESSION zstd)")
     nums = rounded(numbers(con))
     (out / "numbers.json").write_text(json.dumps(nums, indent=2, sort_keys=True, default=float) + "\n")
     (out / "rules.json").write_text(json.dumps(R.RULES, indent=2, sort_keys=True) + "\n")

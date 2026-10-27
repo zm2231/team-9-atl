@@ -21,6 +21,10 @@ class Sources:
     gema: Path
     gamap2care: Path
     ncei_storm_events: Path
+    nss_activation: Path
+    evac_orders: Path
+    oe417: Path
+    nhc_lead_times: Path
 
     @classmethod
     def from_env(cls) -> "Sources":
@@ -36,6 +40,10 @@ class Sources:
             gema=extdata / "gema",
             gamap2care=extdata / "gamap2care" / "gamap2care_alc_pch_facility_fields.parquet",
             ncei_storm_events=extdata / "ncei_storm_events" / "ga_fl_tropical.parquet",
+            nss_activation=extdata / "fema_nss" / "nss_ga_fl_last_activation.parquet",
+            evac_orders=extdata / "ga_evac_orders" / "orders.csv",
+            oe417=extdata / "oe417" / "oe417_ga_fl_weather_events.csv",
+            nhc_lead_times=extdata / "nhc_advisories" / "storm_lead_times.parquet",
         )
 
     def check(self) -> None:
@@ -44,7 +52,8 @@ class Sources:
         paths += [self.empower_live_county, self.empower_live_zip, self.cms / "nursing_homes_ga.parquet",
                   self.cms / "dialysis_facilities_ga.parquet", self.dialysis_geocoded, self.overture_places,
                   self.gema / "evacuation_zones.geojson", self.gema / "contraflow_intersections.geojson",
-                  self.gema / "shelters_v2_schema.json", self.gamap2care, self.ncei_storm_events]
+                  self.gema / "shelters_v2_schema.json", self.gamap2care, self.ncei_storm_events,
+                  self.nss_activation, self.evac_orders, self.oe417, self.nhc_lead_times]
         missing = [str(p) for p in paths if not p.exists()]
         if missing:
             raise FileNotFoundError("missing inputs (see data/clean/SOURCES.md):\n  " + "\n  ".join(missing))

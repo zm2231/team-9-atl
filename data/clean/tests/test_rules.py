@@ -249,6 +249,57 @@ def test_contraflow_points_get_county_and_zone(con):
     assert B.invalid_provenance(con, "contraflow_intersections") == {}
 
 
+def test_nss_activation_keeps_stubs_and_bounds_populations(con):
+    con.execute("DROP TABLE raw_shelters")
+    table(con, "raw_shelters", ["shelter_id BIGINT", "latitude DOUBLE", "longitude DOUBLE", "is_medical BOOLEAN"],
+          [[1, 33.0, -84.0, False], [2, 32.0, -83.0, True]])
+    table(con, "raw_nss", ["shelter_id BIGINT", "state VARCHAR", "incident_id DOUBLE", "incident_name VARCHAR",
+                           "evacuation_capacity DOUBLE", "post_impact_capacity DOUBLE", "total_population DOUBLE"], [
+        [1, "GA", 10453, "193-25", None, None, 0],
+        [2, "GA", 9000, "100-20", 250, None, 38],
+        [3, "FL", 0, None, 100, 100, 5]])
+    B.build_shelter_activation_history(con)
+    rows = con.execute("SELECT shelter_id, activated, activated_status, population_status, in_ga_snapshot "
+                       "FROM shelter_activation_history ORDER BY 1").fetchall()
+    assert rows == [(1, True, "activated_readiness_unrecorded", "reported_lower_bound", True),
+                    (2, True, "recorded", "reported_lower_bound", True),
+                    (3, False, "unrecorded", "unrecorded", False)]
+    assert B.invalid_provenance(con, "shelter_activation_history") == {}
+
+
+def test_evac_order_times_become_ranges_before_ts_winds(con):
+    table(con, "raw_evac_orders", ["storm VARCHAR", "season VARCHAR", "order_type VARCHAR", "area VARCHAR",
+                                   "announced_local VARCHAR", "effective_local VARCHAR", "contraflow_local VARCHAR",
+                                   "source_url VARCHAR", "note VARCHAR"], [
+        ["IRMA", "2017", "mandatory", "x", "2017-09-06 19:05 EDT (first report)", "2017-09-09 08:00 EDT",
+         "2017-09-09 08:00 EDT I-16", "u", None],
+        ["DORIAN", "2019", "mandatory", "x", "2019-09-01 evening", "2016-10-06", None, "u", None]])
+    table(con, "raw_nhc_lead_times", ["storm_id VARCHAR", "season INTEGER", "storm_name VARCHAR",
+                                      "ga_ts_wind_onset_utc TIMESTAMP"],
+          [["AL112017", 2017, "IRMA", "2017-09-10 23:00"], ["AL052019", 2019, "DORIAN", "2019-09-04 09:00"]])
+    B.build_evac_orders(con)
+    got = {r[0]: r[1:] for r in con.execute(
+        "SELECT storm, effective_hours_before_low, effective_hours_before_high, effective_hours_before_status, "
+        "announced_hours_before_low, announced_hours_before_high, announced_utc_rule, contraflow_utc_status "
+        "FROM evac_orders").fetchall()}
+    assert got["IRMA"] == (35.0, 35.0, "recorded", 95.9, 95.9, "order_time_stated", "recorded")
+    assert got["DORIAN"][2] == "imputed" and got["DORIAN"][0] < got["DORIAN"][1]
+    assert got["DORIAN"][3:7] == (53.0, 59.0, "order_time_evening_range", "unrecorded")
+    assert B.invalid_provenance(con, "evac_orders") == {}
+
+
+def test_oe417_unknown_customers_stay_null(con):
+    table(con, "raw_oe417", ["date_event_began VARCHAR", '"Time Event Began" VARCHAR', '"Area Affected" VARCHAR',
+                             '"Event Type" VARCHAR', '"Number of Customers Affected" VARCHAR',
+                             '"Demand Loss (MW)" VARCHAR'],
+          [["2017-09-10", "10:00", "Georgia", "Weather", "1,200,000", "Unknown"],
+           ["2018-10-10", "12:00", "Georgia", "Weather", "Unknown", "300"]])
+    B.build_outage_events(con)
+    rows = con.execute("SELECT event_key, customers_affected, customers_affected_status, demand_loss_mw_status "
+                       "FROM outage_events ORDER BY 1").fetchall()
+    assert rows == [("oe417_001", 1200000, "recorded", "unrecorded"), ("oe417_002", None, "unrecorded", "recorded")]
+
+
 SRC = Sources.from_env()
 
 
@@ -260,7 +311,11 @@ def test_real_inputs_canonical_numbers():
     nums = B.numbers(con)
     assert nums["rows"] == {"care_facilities": 356, "hazard_tracts": 2791, "power_dependent_counties": 159,
                             "dialysis_centers": 355, "assisted_living": 1894, "contraflow_intersections": 32,
-                            "gema_shelter_feed": 0, "storm_events": 6934, "storm_history": 192}
+                            "gema_shelter_feed": 0, "storm_events": 6934, "storm_history": 192,
+                            "overture_places": 4858, "shelter_activation_history": 4590, "evac_orders": 4,
+                            "outage_events": 73}
+    assert nums["shelter_activation_history"]["ga_stub_incident_rows"] == 56
+    assert nums["evac_orders"]["effective_hours_before_ga_ts_winds_recorded"] == [35.0, 41.0]
     assert nums["assisted_living"]["PERSONAL CARE HOME"]["small_homes_aggregated"] == 1044
     small = con.execute("""
         SELECT COUNT(*) FROM assisted_living a WHERE facility_identity_status = 'aggregated_small_home' AND (
