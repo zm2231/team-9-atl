@@ -299,7 +299,8 @@ def run_report(result: dict) -> dict[str, Any]:
         "Whether a shelter will open during this storm is not known from this data."])
     s["audit"] = not_applicable("The audit compares a county plan's ranked tracts.")
     scope = "run" if one else "runs"
-    subject = {"county_fips": result.get("selected_county_fips"), "county_name": None,
+    subject = {"county_fips": result.get("selected_county_fips"),
+               "county_name": result.get("selected_county_name"),
                "runs": runs, "scenario": {k: sc.get(k) for k in
                                           ("source", "origin", "category", "month")}}
     return _wrap(scope, subject, None, s, result.get("source", ""))

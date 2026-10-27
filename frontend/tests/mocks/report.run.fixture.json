@@ -2,8 +2,8 @@
  "report_version": 1,
  "scope": "run",
  "subject": {
-  "county_fips": "13095",
-  "county_name": null,
+  "county_fips": "13051",
+  "county_name": "Chatham",
   "runs": {
    "n": 20,
    "seed": 20261027,
@@ -36,7 +36,7 @@
      "unit": "count",
      "provenance": "simulated",
      "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
-     "value": 65,
+     "value": 57,
      "range": null,
      "range_kind": null
     }
@@ -46,11 +46,11 @@
      "county_fips": "13121",
      "county_name": "Fulton",
      "outage_share": {
-      "p10": 0.441,
-      "p50": 0.441,
-      "p90": 0.441
+      "p10": 0.377,
+      "p50": 0.377,
+      "p90": 0.377
      },
-     "peak_wind_kt": 33.9,
+     "peak_wind_kt": 32.5,
      "ts_winds_arrive_h": null,
      "status": [
       "modelled"
@@ -60,26 +60,12 @@
      "county_fips": "13077",
      "county_name": "Coweta",
      "outage_share": {
-      "p10": 0.941,
-      "p50": 0.941,
-      "p90": 0.941
+      "p10": 0.885,
+      "p50": 0.885,
+      "p90": 0.885
      },
-     "peak_wind_kt": 34.6,
-     "ts_winds_arrive_h": 31.0,
-     "status": [
-      "modelled"
-     ]
-    },
-    {
-     "county_fips": "13151",
-     "county_name": "Henry",
-     "outage_share": {
-      "p10": 0.545,
-      "p50": 0.545,
-      "p90": 0.545
-     },
-     "peak_wind_kt": 36.2,
-     "ts_winds_arrive_h": 31.0,
+     "peak_wind_kt": 32.4,
+     "ts_winds_arrive_h": null,
      "status": [
       "modelled"
      ]
@@ -88,67 +74,25 @@
      "county_fips": "13185",
      "county_name": "Lowndes",
      "outage_share": {
-      "p10": 0.58,
-      "p50": 0.58,
-      "p90": 0.58
+      "p10": 0.924,
+      "p50": 0.924,
+      "p90": 0.924
      },
-     "peak_wind_kt": 40.2,
-     "ts_winds_arrive_h": 21.0,
+     "peak_wind_kt": 56.4,
+     "ts_winds_arrive_h": 13.3,
      "status": [
       "modelled"
      ]
     },
     {
-     "county_fips": "13215",
-     "county_name": "Muscogee",
+     "county_fips": "13151",
+     "county_name": "Henry",
      "outage_share": {
-      "p10": 0.297,
-      "p50": 0.297,
-      "p90": 0.297
+      "p10": 0.246,
+      "p50": 0.246,
+      "p90": 0.246
      },
-     "peak_wind_kt": 42.5,
-     "ts_winds_arrive_h": 23.0,
-     "status": [
-      "modelled"
-     ]
-    },
-    {
-     "county_fips": "13089",
-     "county_name": "Dekalb",
-     "outage_share": {
-      "p10": 0.111,
-      "p50": 0.111,
-      "p90": 0.111
-     },
-     "peak_wind_kt": 34.0,
-     "ts_winds_arrive_h": null,
-     "status": [
-      "modelled"
-     ]
-    },
-    {
-     "county_fips": "13153",
-     "county_name": "Houston",
-     "outage_share": {
-      "p10": 0.296,
-      "p50": 0.296,
-      "p90": 0.296
-     },
-     "peak_wind_kt": 44.1,
-     "ts_winds_arrive_h": 26.0,
-     "status": [
-      "modelled"
-     ]
-    },
-    {
-     "county_fips": "13015",
-     "county_name": "Bartow",
-     "outage_share": {
-      "p10": 0.364,
-      "p50": 0.364,
-      "p90": 0.364
-     },
-     "peak_wind_kt": 33.7,
+     "peak_wind_kt": 32.7,
      "ts_winds_arrive_h": null,
      "status": [
       "modelled"
@@ -158,11 +102,39 @@
      "county_fips": "13233",
      "county_name": "Polk",
      "outage_share": {
-      "p10": 0.618,
-      "p50": 0.618,
-      "p90": 0.618
+      "p10": 0.565,
+      "p50": 0.565,
+      "p90": 0.565
      },
-     "peak_wind_kt": 33.7,
+     "peak_wind_kt": 32.1,
+     "ts_winds_arrive_h": null,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13089",
+     "county_name": "Dekalb",
+     "outage_share": {
+      "p10": 0.086,
+      "p50": 0.086,
+      "p90": 0.086
+     },
+     "peak_wind_kt": 32.6,
+     "ts_winds_arrive_h": null,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13015",
+     "county_name": "Bartow",
+     "outage_share": {
+      "p10": 0.312,
+      "p50": 0.312,
+      "p90": 0.312
+     },
+     "peak_wind_kt": 32.2,
      "ts_winds_arrive_h": null,
      "status": [
       "modelled"
@@ -172,124 +144,12 @@
      "county_fips": "13045",
      "county_name": "Carroll",
      "outage_share": {
-      "p10": 0.219,
-      "p50": 0.219,
-      "p90": 0.219
+      "p10": 0.182,
+      "p50": 0.182,
+      "p90": 0.182
      },
-     "peak_wind_kt": 33.7,
+     "peak_wind_kt": 32.2,
      "ts_winds_arrive_h": null,
-     "status": [
-      "modelled"
-     ]
-    },
-    {
-     "county_fips": "13113",
-     "county_name": "Fayette",
-     "outage_share": {
-      "p10": 0.318,
-      "p50": 0.318,
-      "p90": 0.318
-     },
-     "peak_wind_kt": 35.0,
-     "ts_winds_arrive_h": 31.0,
-     "status": [
-      "modelled"
-     ]
-    },
-    {
-     "county_fips": "13261",
-     "county_name": "Sumter",
-     "outage_share": {
-      "p10": 0.745,
-      "p50": 0.745,
-      "p90": 0.745
-     },
-     "peak_wind_kt": 48.3,
-     "ts_winds_arrive_h": 21.0,
-     "status": [
-      "modelled"
-     ]
-    },
-    {
-     "county_fips": "13205",
-     "county_name": "Mitchell",
-     "outage_share": {
-      "p10": 0.915,
-      "p50": 0.915,
-      "p90": 0.915
-     },
-     "peak_wind_kt": 52.0,
-     "ts_winds_arrive_h": 16.0,
-     "status": [
-      "modelled"
-     ]
-    },
-    {
-     "county_fips": "13225",
-     "county_name": "Peach",
-     "outage_share": {
-      "p10": 0.528,
-      "p50": 0.528,
-      "p90": 0.528
-     },
-     "peak_wind_kt": 45.1,
-     "ts_winds_arrive_h": 25.0,
-     "status": [
-      "modelled"
-     ]
-    },
-    {
-     "county_fips": "13131",
-     "county_name": "Grady",
-     "outage_share": {
-      "p10": 0.855,
-      "p50": 0.855,
-      "p90": 0.855
-     },
-     "peak_wind_kt": 56.8,
-     "ts_winds_arrive_h": 14.0,
-     "status": [
-      "modelled"
-     ]
-    },
-    {
-     "county_fips": "13009",
-     "county_name": "Baldwin",
-     "outage_share": {
-      "p10": 0.469,
-      "p50": 0.469,
-      "p90": 0.469
-     },
-     "peak_wind_kt": 39.0,
-     "ts_winds_arrive_h": 29.0,
-     "status": [
-      "modelled"
-     ]
-    },
-    {
-     "county_fips": "13129",
-     "county_name": "Gordon",
-     "outage_share": {
-      "p10": 0.307,
-      "p50": 0.307,
-      "p90": 0.307
-     },
-     "peak_wind_kt": 33.7,
-     "ts_winds_arrive_h": null,
-     "status": [
-      "modelled"
-     ]
-    },
-    {
-     "county_fips": "13145",
-     "county_name": "Harris",
-     "outage_share": {
-      "p10": 0.861,
-      "p50": 0.861,
-      "p90": 0.861
-     },
-     "peak_wind_kt": 39.5,
-     "ts_winds_arrive_h": 25.0,
      "status": [
       "modelled"
      ]
@@ -298,12 +158,124 @@
      "county_fips": "13275",
      "county_name": "Thomas",
      "outage_share": {
-      "p10": 0.328,
-      "p50": 0.328,
-      "p90": 0.328
+      "p10": 0.455,
+      "p50": 0.455,
+      "p90": 0.455
      },
-     "peak_wind_kt": 55.3,
-     "ts_winds_arrive_h": 15.0,
+     "peak_wind_kt": 61.9,
+     "ts_winds_arrive_h": 12.3,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13205",
+     "county_name": "Mitchell",
+     "outage_share": {
+      "p10": 0.927,
+      "p50": 0.927,
+      "p90": 0.927
+     },
+     "peak_wind_kt": 54.5,
+     "ts_winds_arrive_h": 13.3,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13305",
+     "county_name": "Wayne",
+     "outage_share": {
+      "p10": 0.545,
+      "p50": 0.545,
+      "p90": 0.545
+     },
+     "peak_wind_kt": 43.8,
+     "ts_winds_arrive_h": 24.6,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13131",
+     "county_name": "Grady",
+     "outage_share": {
+      "p10": 0.892,
+      "p50": 0.892,
+      "p90": 0.892
+     },
+     "peak_wind_kt": 61.4,
+     "ts_winds_arrive_h": 12.3,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13019",
+     "county_name": "Berrien",
+     "outage_share": {
+      "p10": 0.708,
+      "p50": 0.708,
+      "p90": 0.708
+     },
+     "peak_wind_kt": 55.5,
+     "ts_winds_arrive_h": 16.4,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13267",
+     "county_name": "Tattnall",
+     "outage_share": {
+      "p10": 0.885,
+      "p50": 0.885,
+      "p90": 0.885
+     },
+     "peak_wind_kt": 43.3,
+     "ts_winds_arrive_h": 25.6,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13261",
+     "county_name": "Sumter",
+     "outage_share": {
+      "p10": 0.48,
+      "p50": 0.48,
+      "p90": 0.48
+     },
+     "peak_wind_kt": 37.4,
+     "ts_winds_arrive_h": 20.5,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13129",
+     "county_name": "Gordon",
+     "outage_share": {
+      "p10": 0.262,
+      "p50": 0.262,
+      "p90": 0.262
+     },
+     "peak_wind_kt": 32.1,
+     "ts_winds_arrive_h": null,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13153",
+     "county_name": "Houston",
+     "outage_share": {
+      "p10": 0.125,
+      "p50": 0.125,
+      "p90": 0.125
+     },
+     "peak_wind_kt": 35.9,
+     "ts_winds_arrive_h": 26.6,
      "status": [
       "modelled"
      ]
@@ -312,26 +284,40 @@
      "county_fips": "13241",
      "county_name": "Rabun",
      "outage_share": {
-      "p10": 0.699,
-      "p50": 0.699,
-      "p90": 0.699
+      "p10": 0.633,
+      "p50": 0.633,
+      "p90": 0.633
      },
-     "peak_wind_kt": 33.8,
+     "peak_wind_kt": 32.4,
      "ts_winds_arrive_h": null,
      "status": [
       "modelled"
      ]
     },
     {
-     "county_fips": "13095",
-     "county_name": "Dougherty",
+     "county_fips": "13051",
+     "county_name": "Chatham",
      "outage_share": {
-      "p10": 0.109,
-      "p50": 0.109,
-      "p90": 0.109
+      "p10": 0.086,
+      "p50": 0.086,
+      "p90": 0.086
      },
-     "peak_wind_kt": 53.9,
-     "ts_winds_arrive_h": 18.0,
+     "peak_wind_kt": 39.2,
+     "ts_winds_arrive_h": 28.7,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13069",
+     "county_name": "Coffee",
+     "outage_share": {
+      "p10": 0.246,
+      "p50": 0.246,
+      "p90": 0.246
+     },
+     "peak_wind_kt": 48.7,
+     "ts_winds_arrive_h": 19.4,
      "status": [
       "modelled"
      ]
@@ -349,7 +335,7 @@
      "unit": "people",
      "provenance": "simulated",
      "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
-     "value": 17266,
+     "value": 14702,
      "range": null,
      "range_kind": null
     },
@@ -359,7 +345,7 @@
      "unit": "people",
      "provenance": "simulated",
      "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
-     "value": 4363,
+     "value": 3686,
      "range": null,
      "range_kind": null
     },
@@ -369,7 +355,7 @@
      "unit": "people",
      "provenance": "simulated",
      "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
-     "value": 1885,
+     "value": 1158,
      "range": null,
      "range_kind": null
     },
@@ -379,7 +365,7 @@
      "unit": "beds",
      "provenance": "simulated",
      "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
-     "value": 6558,
+     "value": 4496,
      "range": null,
      "range_kind": null
     },
@@ -389,7 +375,7 @@
      "unit": "people",
      "provenance": "simulated",
      "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
-     "value": 1686,
+     "value": 1416,
      "range": null,
      "range_kind": null
     },
@@ -399,7 +385,7 @@
      "unit": "people",
      "provenance": "simulated",
      "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
-     "value": 1147,
+     "value": 977,
      "range": null,
      "range_kind": null
     }
@@ -417,7 +403,7 @@
      "unit": "people",
      "provenance": "simulated",
      "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
-     "value": 29,
+     "value": 40,
      "range": null,
      "range_kind": null
     },
@@ -427,7 +413,7 @@
      "unit": "seats",
      "provenance": "registry",
      "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
-     "value": 450,
+     "value": 737,
      "range": null,
      "range_kind": null
     },
@@ -455,38 +441,16 @@
    "items": [
     {
      "kind": "dialysis_centre",
-     "ccn": "112801",
-     "stations": 9,
-     "name": "DCI - CLARK HOME TRAINING CENTER",
-     "county_fips": "13095",
-     "generator": "UNRECORDED",
-     "generator_assumed": false,
-     "generator_assumption": null,
-     "straight_line_km": 2.6,
-     "drive_minutes": {
-      "value": 6,
-      "status": "live"
-     },
-     "evacuation_delay_minutes": {
-      "low": 0,
-      "base": 0,
-      "high": 0
-     },
-     "corridor": null,
-     "arrives_before_ts_winds": true
-    },
-    {
-     "kind": "dialysis_centre",
-     "ccn": "112509",
+     "ccn": "112639",
      "stations": 26,
-     "name": "DCI ALBANY",
-     "county_fips": "13095",
+     "name": "DaVita Derenne Dialysis",
+     "county_fips": "13051",
      "generator": "UNRECORDED",
      "generator_assumed": false,
      "generator_assumption": null,
-     "straight_line_km": 2.7,
+     "straight_line_km": 1.8,
      "drive_minutes": {
-      "value": 7,
+      "value": 3,
       "status": "live"
      },
      "evacuation_delay_minutes": {
@@ -499,60 +463,82 @@
     },
     {
      "kind": "dialysis_centre",
-     "ccn": "852506",
+     "ccn": "112507",
+     "stations": 43,
+     "name": "FMC - BMA OF COASTAL DIALYSIS",
+     "county_fips": "13051",
+     "generator": "UNRECORDED",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 5.2,
+     "drive_minutes": {
+      "value": 12,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": null,
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "dialysis_centre",
+     "ccn": "112891",
+     "stations": 16,
+     "name": "DaVita Savannah Riverside at Home",
+     "county_fips": "13051",
+     "generator": "UNRECORDED",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 6.1,
+     "drive_minutes": {
+      "value": 15,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": null,
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "dialysis_centre",
+     "ccn": "112811",
+     "stations": 12,
+     "name": "DaVita Pooler Dialysis",
+     "county_fips": "13051",
+     "generator": "UNRECORDED",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 16.0,
+     "drive_minutes": {
+      "value": 21,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": null,
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "dialysis_centre",
+     "ccn": "112802",
      "stations": 11,
-     "name": "Fresenius Medical Care of Albany",
-     "county_fips": "13095",
+     "name": "FRESENIUS MEDICAL CARE RINCON",
+     "county_fips": "13103",
      "generator": "UNRECORDED",
      "generator_assumed": false,
      "generator_assumption": null,
-     "straight_line_km": 4.7,
+     "straight_line_km": 27.1,
      "drive_minutes": {
-      "value": 7,
-      "status": "live"
-     },
-     "evacuation_delay_minutes": {
-      "low": 0,
-      "base": 0,
-      "high": 0
-     },
-     "corridor": null,
-     "arrives_before_ts_winds": true
-    },
-    {
-     "kind": "dialysis_centre",
-     "ccn": "112704",
-     "stations": 22,
-     "name": "DCI ALBANY WEST TOWN",
-     "county_fips": "13095",
-     "generator": "UNRECORDED",
-     "generator_assumed": false,
-     "generator_assumption": null,
-     "straight_line_km": 4.8,
-     "drive_minutes": {
-      "value": 7,
-      "status": "live"
-     },
-     "evacuation_delay_minutes": {
-      "low": 0,
-      "base": 0,
-      "high": 0
-     },
-     "corridor": null,
-     "arrives_before_ts_winds": true
-    },
-    {
-     "kind": "dialysis_centre",
-     "ccn": "112587",
-     "stations": 20,
-     "name": "DCI EAST ALBANY",
-     "county_fips": "13095",
-     "generator": "UNRECORDED",
-     "generator_assumed": false,
-     "generator_assumption": null,
-     "straight_line_km": 3.5,
-     "drive_minutes": {
-      "value": 8,
+      "value": 32,
       "status": "live"
      },
      "evacuation_delay_minutes": {
@@ -565,112 +551,112 @@
     },
     {
      "kind": "medical_shelter",
-     "shelter_id": "140129",
-     "seats": 150,
-     "name": "Dudley Baptist Church",
-     "county_fips": "13175",
-     "generator": "UNRECORDED",
-     "generator_assumed": false,
-     "generator_assumption": null,
-     "straight_line_km": 149.6,
-     "drive_minutes": {
-      "value": 123,
-      "status": "live"
-     },
-     "evacuation_delay_minutes": {
-      "low": 0,
-      "base": 319,
-      "high": 369
-     },
-     "corridor": "I-75 S",
-     "arrives_before_ts_winds": true
-    },
-    {
-     "kind": "medical_shelter",
-     "shelter_id": "140058",
-     "seats": 57,
-     "name": "Gordon College Nursing & Allied Health Building",
-     "county_fips": "13171",
-     "generator": "UNRECORDED",
-     "generator_assumed": false,
-     "generator_assumption": null,
-     "straight_line_km": 165.1,
-     "drive_minutes": {
-      "value": 129,
-      "status": "live"
-     },
-     "evacuation_delay_minutes": {
-      "low": 0,
-      "base": 335,
-      "high": 387
-     },
-     "corridor": "I-75 S",
-     "arrives_before_ts_winds": true
-    },
-    {
-     "kind": "medical_shelter",
-     "shelter_id": "338230",
-     "seats": 20,
-     "name": "Ridge Road Elementary School",
-     "county_fips": "13303",
-     "generator": "UNRECORDED",
-     "generator_assumed": false,
-     "generator_assumption": null,
-     "straight_line_km": 202.4,
-     "drive_minutes": {
-      "value": 163,
-      "status": "live"
-     },
-     "evacuation_delay_minutes": {
-      "low": 0,
-      "base": 423,
-      "high": 489
-     },
-     "corridor": "I-75 S",
-     "arrives_before_ts_winds": true
-    },
-    {
-     "kind": "medical_shelter",
-     "shelter_id": "331528",
-     "seats": 450,
-     "name": "Metter High School",
-     "county_fips": "13043",
+     "shelter_id": "331512",
+     "seats": 375,
+     "name": "Langston Chapel Elementary School",
+     "county_fips": "13031",
      "generator": "YES",
      "generator_assumed": false,
      "generator_assumption": null,
-     "straight_line_km": 217.8,
+     "straight_line_km": 72.0,
      "drive_minutes": {
-      "value": 173,
+      "value": 53,
       "status": "live"
      },
      "evacuation_delay_minutes": {
       "low": 0,
-      "base": 449,
-      "high": 518
+      "base": 0,
+      "high": 0
      },
-     "corridor": "I-75 S",
+     "corridor": "I-16",
      "arrives_before_ts_winds": true
     },
     {
      "kind": "medical_shelter",
-     "shelter_id": "331530",
-     "seats": 505,
-     "name": "Metter Pre K-8 School",
+     "shelter_id": "331513",
+     "seats": 362,
+     "name": "Langston Chapel Middle School",
+     "county_fips": "13031",
+     "generator": "YES",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 72.1,
+     "drive_minutes": {
+      "value": 53,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": "I-16",
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "medical_shelter",
+     "shelter_id": "331534",
+     "seats": 120,
+     "name": "Metter United Methodist Church",
      "county_fips": "13043",
      "generator": "NO",
      "generator_assumed": false,
      "generator_assumption": null,
-     "straight_line_km": 218.4,
+     "straight_line_km": 96.3,
      "drive_minutes": {
-      "value": 173,
+      "value": 63,
       "status": "live"
      },
      "evacuation_delay_minutes": {
       "low": 0,
-      "base": 449,
-      "high": 519
+      "base": 0,
+      "high": 0
      },
-     "corridor": "I-75 S",
+     "corridor": "I-16",
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "medical_shelter",
+     "shelter_id": "331526",
+     "seats": 200,
+     "name": "Guido Evangelistic Association",
+     "county_fips": "13043",
+     "generator": "NO",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 96.5,
+     "drive_minutes": {
+      "value": 63,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": "I-16",
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "medical_shelter",
+     "shelter_id": "331524",
+     "seats": 53,
+     "name": "Cedar St Baptist Church",
+     "county_fips": "13043",
+     "generator": "NO",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 96.6,
+     "drive_minutes": {
+      "value": 64,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": "I-16",
      "arrives_before_ts_winds": true
     }
    ],
@@ -689,20 +675,19 @@
    "figures": [],
    "items": [
     {
-     "matching_storms": 7,
+     "matching_storms": 4,
      "years": [
       1950,
       2026
      ],
-     "per_year": 0.0909,
-     "return_period_years": 11.0,
-     "p_at_least_one_per_season": 0.0869,
+     "per_year": 0.0519,
+     "return_period_years": 19.2,
+     "p_at_least_one_per_season": 0.0506,
      "per_year_range80": [
-      0.0519,
-      0.1299
+      0.026,
+      0.0909
      ],
      "example_storms": [
-      "Isaias 2026",
       "Helene 2024",
       "Idalia 2023",
       "Michael 2018",

@@ -2,8 +2,8 @@
  "report_version": 1,
  "scope": "county",
  "subject": {
-  "county_fips": "13095",
-  "county_name": "Dougherty"
+  "county_fips": "13051",
+  "county_name": "Chatham"
  },
  "season": {
   "outlook": "long_run",
@@ -23,7 +23,7 @@
      "unit": "people",
      "provenance": "registry",
      "source": "HHS emPOWER",
-     "value": 1347,
+     "value": 2328,
      "range": null,
      "range_kind": null
     }
@@ -31,135 +31,265 @@
    "items": [
     {
      "kind": "tract",
-     "geo_id": "13095000200",
-     "total_pop": 2655,
-     "households_no_vehicle": 455,
+     "geo_id": "13051001200",
+     "total_pop": 2719,
+     "households_no_vehicle": 391,
      "reasons": [
-      "455 households without a vehicle",
-      "36% with a disability",
-      "32% with a mobility difficulty (modeled)",
-      "13% with a self-care difficulty (modeled)",
-      "655 residents aged 65+",
-      "17 in group quarters"
+      "391 households without a vehicle",
+      "18% with a disability",
+      "30% with a mobility difficulty (modeled)",
+      "14% with a self-care difficulty (modeled)",
+      "68 residents aged 65+"
      ]
     },
     {
      "kind": "tract",
-     "geo_id": "13095001500",
-     "total_pop": 2433,
-     "households_no_vehicle": 370,
+     "geo_id": "13051010502",
+     "total_pop": 4558,
+     "households_no_vehicle": 343,
      "reasons": [
-      "370 households without a vehicle",
-      "34% with a disability",
-      "29% with a mobility difficulty (modeled)",
-      "11% with a self-care difficulty (modeled)",
-      "380 residents aged 65+",
+      "343 households without a vehicle",
+      "23% with a disability",
+      "22% with a mobility difficulty (modeled)",
+      "8% with a self-care difficulty (modeled)",
+      "474 residents aged 65+",
+      "11 in group quarters"
+     ]
+    },
+    {
+     "kind": "tract",
+     "geo_id": "13051010901",
+     "total_pop": 4079,
+     "households_no_vehicle": 341,
+     "reasons": [
+      "341 households without a vehicle",
+      "16% with a disability",
+      "18% with a mobility difficulty (modeled)",
+      "6% with a self-care difficulty (modeled)",
+      "603 residents aged 65+",
+      "55 in group quarters"
+     ]
+    },
+    {
+     "kind": "tract",
+     "geo_id": "13051000601",
+     "total_pop": 5387,
+     "households_no_vehicle": 333,
+     "reasons": [
+      "333 households without a vehicle",
+      "22% with a disability",
+      "17% with a mobility difficulty (modeled)",
+      "6% with a self-care difficulty (modeled)",
+      "483 residents aged 65+",
+      "1564 in group quarters"
+     ]
+    },
+    {
+     "kind": "tract",
+     "geo_id": "13051011900",
+     "total_pop": 2034,
+     "households_no_vehicle": 330,
+     "reasons": [
+      "330 households without a vehicle",
+      "13% with a disability",
+      "12% with a mobility difficulty (modeled)",
+      "3% with a self-care difficulty (modeled)",
+      "603 residents aged 65+",
+      "5 in group quarters"
+     ]
+    },
+    {
+     "kind": "tract",
+     "geo_id": "13051004001",
+     "total_pop": 4268,
+     "households_no_vehicle": 294,
+     "reasons": [
+      "294 households without a vehicle",
+      "20% with a disability",
+      "16% with a mobility difficulty (modeled)",
+      "4% with a self-care difficulty (modeled)",
+      "1129 residents aged 65+",
+      "79 in group quarters"
+     ]
+    },
+    {
+     "kind": "tract",
+     "geo_id": "13051004500",
+     "total_pop": 4367,
+     "households_no_vehicle": 251,
+     "reasons": [
+      "251 households without a vehicle",
+      "18% with a disability",
+      "23% with a mobility difficulty (modeled)",
+      "8% with a self-care difficulty (modeled)",
+      "556 residents aged 65+",
       "19 in group quarters"
      ]
     },
     {
      "kind": "tract",
-     "geo_id": "13095010701",
-     "total_pop": 3399,
-     "households_no_vehicle": 369,
+     "geo_id": "13051004207",
+     "total_pop": 3115,
+     "households_no_vehicle": 249,
      "reasons": [
-      "369 households without a vehicle",
-      "13% with a disability",
-      "30% with a mobility difficulty (modeled)",
-      "13% with a self-care difficulty (modeled)",
-      "161 residents aged 65+"
-     ]
-    },
-    {
-     "kind": "tract",
-     "geo_id": "13095010302",
-     "total_pop": 5845,
-     "households_no_vehicle": 357,
-     "reasons": [
-      "357 households without a vehicle",
-      "20% with a disability",
-      "26% with a mobility difficulty (modeled)",
-      "11% with a self-care difficulty (modeled)",
-      "640 residents aged 65+",
-      "1023 in group quarters"
-     ]
-    },
-    {
-     "kind": "tract",
-     "geo_id": "13095001100",
-     "total_pop": 4646,
-     "households_no_vehicle": 264,
-     "reasons": [
-      "264 households without a vehicle",
-      "22% with a disability",
-      "25% with a mobility difficulty (modeled)",
-      "9% with a self-care difficulty (modeled)",
-      "908 residents aged 65+",
-      "21 in group quarters"
-     ]
-    },
-    {
-     "kind": "tract",
-     "geo_id": "13095000400",
-     "total_pop": 6047,
-     "households_no_vehicle": 263,
-     "reasons": [
-      "263 households without a vehicle",
-      "13% with a disability",
+      "249 households without a vehicle",
+      "21% with a disability",
       "15% with a mobility difficulty (modeled)",
       "5% with a self-care difficulty (modeled)",
-      "811 residents aged 65+"
-     ]
-    },
-    {
-     "kind": "tract",
-     "geo_id": "13095010601",
-     "total_pop": 2103,
-     "households_no_vehicle": 201,
-     "reasons": [
-      "201 households without a vehicle",
-      "20% with a disability",
-      "30% with a mobility difficulty (modeled)",
-      "12% with a self-care difficulty (modeled)",
-      "377 residents aged 65+"
-     ]
-    },
-    {
-     "kind": "tract",
-     "geo_id": "13095001403",
-     "total_pop": 2107,
-     "households_no_vehicle": 183,
-     "reasons": [
-      "183 households without a vehicle",
-      "29% with a disability",
-      "29% with a mobility difficulty (modeled)",
-      "12% with a self-care difficulty (modeled)",
-      "337 residents aged 65+"
+      "584 residents aged 65+",
+      "74 in group quarters"
      ]
     },
     {
      "kind": "facility",
-     "ccn": "115628",
-     "name": "PruittHealth - Palmyra",
-     "city": "Albany",
-     "certified_beds": 250,
-     "coastal_flood_exposed": "NO",
-     "tract_coastal_flood_share_pct": 0.0,
+     "ccn": "115641",
+     "name": "RIVERVIEW HEALTH & REHAB CTR",
+     "city": "SAVANNAH",
+     "certified_beds": 284,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 20.4,
      "reasons": [
-      "250 certified nursing-home beds",
+      "284 certified nursing-home beds",
+      "tract with 20.4% of residents exposed to coastal flooding (FEMA NRI)",
       "generator, fuel and evacuation-agreement status not recorded in any source"
      ]
     },
     {
      "kind": "facility",
-     "ccn": "115625",
-     "name": "WYNFIELD PARK HEALTH AND REHABILITATION",
-     "city": "ALBANY",
-     "certified_beds": 186,
+     "ccn": "115339",
+     "name": "PRUITTHEALTH - SAVANNAH",
+     "city": "SAVANNAH",
+     "certified_beds": 140,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 6.0,
+     "reasons": [
+      "140 certified nursing-home beds",
+      "tract with 6.0% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115293",
+     "name": "RESORTS AT POOLER INC",
+     "city": "POOLER",
+     "certified_beds": 122,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 12.0,
+     "reasons": [
+      "122 certified nursing-home beds",
+      "tract with 12.0% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115120",
+     "name": "SAVANNAH POST ACUTE LLC",
+     "city": "SAVANNAH",
+     "certified_beds": 120,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 25.6,
+     "reasons": [
+      "120 certified nursing-home beds",
+      "tract with 25.6% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115534",
+     "name": "Savannah Crossing of Journey LLC",
+     "city": "SAVANNAH",
+     "certified_beds": 107,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 22.5,
+     "reasons": [
+      "107 certified nursing-home beds",
+      "tract with 22.5% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115547",
+     "name": "PRUITTHEALTH - SEASIDE",
+     "city": "PORT WENTWORTH",
+     "certified_beds": 101,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 14.7,
+     "reasons": [
+      "101 certified nursing-home beds",
+      "tract with 14.7% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115132",
+     "name": "ABERCORN REHABILITATION CENTER",
+     "city": "SAVANNAH",
+     "certified_beds": 100,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 13.8,
+     "reasons": [
+      "100 certified nursing-home beds",
+      "tract with 13.8% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115730",
+     "name": "Rosewood at Tybee Island of Journey LLC, The",
+     "city": "Tybee Island",
+     "certified_beds": 85,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 96.5,
+     "reasons": [
+      "85 certified nursing-home beds",
+      "tract with 96.5% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115633",
+     "name": "Tybee Island Trails of Journey LLC",
+     "city": "TYBEE ISLAND",
+     "certified_beds": 50,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 96.5,
+     "reasons": [
+      "50 certified nursing-home beds",
+      "tract with 96.5% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115715",
+     "name": "OAKS HEALTH CTR AT THE MARSHES OF SKIDAWAY ISLAND",
+     "city": "SAVANNAH",
+     "certified_beds": 23,
+     "coastal_flood_exposed": "YES",
+     "tract_coastal_flood_share_pct": 88.0,
+     "reasons": [
+      "23 certified nursing-home beds",
+      "tract with 88.0% of residents exposed to coastal flooding (FEMA NRI)",
+      "generator, fuel and evacuation-agreement status not recorded in any source"
+     ]
+    },
+    {
+     "kind": "facility",
+     "ccn": "115610",
+     "name": "CANDLER SKILLED NURSING UNIT",
+     "city": "SAVANNAH",
+     "certified_beds": 22,
      "coastal_flood_exposed": "NO",
      "tract_coastal_flood_share_pct": 0.0,
      "reasons": [
-      "186 certified nursing-home beds",
+      "22 certified nursing-home beds",
       "generator, fuel and evacuation-agreement status not recorded in any source"
      ]
     }
@@ -176,7 +306,7 @@
      "unit": "share",
      "provenance": "simulated",
      "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
-     "value": 0.022,
+     "value": 0.2269,
      "range": null,
      "range_kind": null
     }
@@ -196,29 +326,15 @@
      "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
      "value": null,
      "range": {
-      "typical": 5,
-      "one_in_10": 60,
-      "one_in_100": 546
+      "typical": 139,
+      "one_in_10": 1288,
+      "one_in_100": 2156
      },
      "range_kind": "season"
     },
     {
      "key": "no_powered_seat",
      "label": "Lacking shelter: no powered seat",
-     "unit": "people",
-     "provenance": "simulated",
-     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
-     "value": null,
-     "range": {
-      "typical": 1,
-      "one_in_10": 12,
-      "one_in_100": 109
-     },
-     "range_kind": "season"
-    },
-    {
-     "key": "no_dialysis_chair",
-     "label": "Lacking shelter: no dialysis chair",
      "unit": "people",
      "provenance": "simulated",
      "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
@@ -231,6 +347,20 @@
      "range_kind": "season"
     },
     {
+     "key": "no_dialysis_chair",
+     "label": "Lacking shelter: no dialysis chair",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": null,
+     "range": {
+      "typical": 0,
+      "one_in_10": 318,
+      "one_in_100": 423
+     },
+     "range_kind": "season"
+    },
+    {
      "key": "lacking_shelter_total",
      "label": "Lacking shelter: total",
      "unit": "people",
@@ -238,9 +368,9 @@
      "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
      "value": null,
      "range": {
-      "typical": 1,
-      "one_in_10": 12,
-      "one_in_100": 109
+      "typical": 0,
+      "one_in_10": 318,
+      "one_in_100": 427
      },
      "range_kind": "season"
     },
@@ -252,9 +382,9 @@
      "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
      "value": null,
      "range": {
-      "typical": 1,
-      "one_in_10": 8,
-      "one_in_100": 72
+      "typical": 11,
+      "one_in_10": 103,
+      "one_in_100": 172
      },
      "range_kind": "season"
     },
@@ -266,9 +396,9 @@
      "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
      "value": null,
      "range": {
-      "typical": 1,
-      "one_in_10": 7,
-      "one_in_100": 59
+      "typical": 10,
+      "one_in_10": 94,
+      "one_in_100": 158
      },
      "range_kind": "season"
     }
@@ -282,334 +412,333 @@
    "figures": [],
    "items": [
     {
-     "shelter_id": "346084",
-     "name": "Civic Center",
-     "address": "100 W Oglethorpe Blvd, Albany, 31701",
-     "county_fips": "13095",
-     "county_name": "Dougherty",
-     "lat": 31.5753523,
-     "lon": -84.1490571,
-     "evacuation_capacity": 800.0,
-     "post_impact_capacity": 400.0,
+     "shelter_id": "363515",
+     "name": "Windsor Forest High School",
+     "address": "12419 Largo Drive, SAVANNAH, 31419",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 31.976029,
+     "lon": -81.152755,
+     "evacuation_capacity": 595.0,
+     "post_impact_capacity": 297.0,
      "usage": "BOTH",
-     "wheelchair_accessible": "UNRECORDED",
-     "generator_onsite": "UNRECORDED",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
      "is_medical": "UNRECORDED",
-     "in_surge_slosh_area": "NO",
-     "in_surge_source": "noaa_slosh",
-     "surge_noaa": {
-      "status": "dry",
-      "first_category": null
-     },
-     "quality_flags": [],
-     "serves_tracts": [
-      "13095000200",
-      "13095000400",
-      "13095001100",
-      "13095001403",
-      "13095001500",
-      "13095010302",
-      "13095010601",
-      "13095010701"
-     ],
-     "nearest_km": 1.9
-    },
-    {
-     "shelter_id": "362810",
-     "name": "Oakridge Baptist Church",
-     "address": "1708 W Oakridge Dr, ALBANY, 31701",
-     "county_fips": "13095",
-     "county_name": "Dougherty",
-     "lat": 31.548105,
-     "lon": -84.205326,
-     "evacuation_capacity": 375.0,
-     "post_impact_capacity": 187.0,
-     "usage": "BOTH",
-     "wheelchair_accessible": "UNRECORDED",
-     "generator_onsite": "UNRECORDED",
-     "is_medical": "UNRECORDED",
-     "in_surge_slosh_area": "NO",
+     "in_surge_slosh_area": "YES",
      "in_surge_source": "registry",
      "surge_noaa": {
-      "status": "dry",
-      "first_category": null
+      "status": "inundated",
+      "first_category": 3
      },
      "quality_flags": [],
      "serves_tracts": [
-      "13095000200",
-      "13095000400",
-      "13095001100",
-      "13095001403",
-      "13095001500",
-      "13095010302",
-      "13095010601",
-      "13095010701"
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
      ],
-     "nearest_km": 1.9
+     "nearest_km": 2.7
     },
     {
-     "shelter_id": "362811",
-     "name": "Second Mt Zion Baptist Church",
-     "address": "1010 Old Pretoria Rd, ALBANY, 31721",
-     "county_fips": "13095",
-     "county_name": "Dougherty",
-     "lat": 31.539118,
-     "lon": -84.210832,
-     "evacuation_capacity": 350.0,
-     "post_impact_capacity": 175.0,
+     "shelter_id": "363520",
+     "name": "Alfred E. Beach High School",
+     "address": "3001 Hopkins Street, SAVANNAH, 31405",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.0547935,
+     "lon": -81.115891,
+     "evacuation_capacity": 548.0,
+     "post_impact_capacity": 274.0,
      "usage": "BOTH",
-     "wheelchair_accessible": "UNRECORDED",
-     "generator_onsite": "UNRECORDED",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
      "is_medical": "UNRECORDED",
-     "in_surge_slosh_area": "NO",
+     "in_surge_slosh_area": "YES",
      "in_surge_source": "registry",
      "surge_noaa": {
-      "status": "dry",
-      "first_category": null
+      "status": "inundated",
+      "first_category": 3
      },
      "quality_flags": [],
      "serves_tracts": [
-      "13095000200",
-      "13095000400",
-      "13095001100",
-      "13095001403",
-      "13095001500",
-      "13095010302",
-      "13095010601",
-      "13095010701"
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
      ],
-     "nearest_km": 3.1
+     "nearest_km": 1.3
     },
     {
-     "shelter_id": "140906",
-     "name": "ALBANY HIGH SCHOOL",
-     "address": "801 W RESIDENCE AVE, ALBANY, 31701",
-     "county_fips": "13095",
-     "county_name": "Dougherty",
-     "lat": 31.58306805,
-     "lon": -84.16790592,
-     "evacuation_capacity": 250.0,
-     "post_impact_capacity": 125.0,
-     "usage": "EVAC",
-     "wheelchair_accessible": "UNRECORDED",
-     "generator_onsite": "UNRECORDED",
-     "is_medical": "NO",
-     "in_surge_slosh_area": "NO",
-     "in_surge_source": "noaa_slosh",
+     "shelter_id": "363517",
+     "name": "Jenkins High School",
+     "address": "1800 DeRenne Avenue, SAVANNAH, 31406",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.0230981,
+     "lon": -81.0832346,
+     "evacuation_capacity": 495.0,
+     "post_impact_capacity": 247.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "registry",
      "surge_noaa": {
-      "status": "dry",
-      "first_category": null
+      "status": "inundated",
+      "first_category": 2
      },
      "quality_flags": [],
      "serves_tracts": [
-      "13095000200",
-      "13095000400",
-      "13095001100",
-      "13095001403",
-      "13095001500",
-      "13095010302",
-      "13095010601",
-      "13095010701"
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
      ],
-     "nearest_km": 1.9
+     "nearest_km": 1.8
     },
     {
-     "shelter_id": "140905",
-     "name": "MONROE HIGH SCHOOL",
-     "address": "900 LIPPITT DR, ALBANY, 31701",
-     "county_fips": "13095",
-     "county_name": "Dougherty",
-     "lat": 31.55902917,
-     "lon": -84.17118845,
-     "evacuation_capacity": 200.0,
-     "post_impact_capacity": 100.0,
-     "usage": "EVAC",
-     "wheelchair_accessible": "UNRECORDED",
-     "generator_onsite": "UNRECORDED",
-     "is_medical": "NO",
-     "in_surge_slosh_area": "NO",
-     "in_surge_source": "noaa_slosh",
+     "shelter_id": "363512",
+     "name": "Hesse K-8 School",
+     "address": "9116 Whitfield Avenue, SAVANNAH, 31406",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 31.9775643,
+     "lon": -81.1046034,
+     "evacuation_capacity": 479.0,
+     "post_impact_capacity": 239.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "registry",
      "surge_noaa": {
-      "status": "dry",
-      "first_category": null
+      "status": "inundated",
+      "first_category": 3
      },
      "quality_flags": [],
      "serves_tracts": [
-      "13095000200",
-      "13095000400",
-      "13095001100",
-      "13095001403",
-      "13095001500",
-      "13095010302",
-      "13095010601",
-      "13095010701"
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
      ],
-     "nearest_km": 0.9
+     "nearest_km": 3.8
     },
     {
-     "shelter_id": "140911",
-     "name": "Turner Gymnasium",
-     "address": "3201 GEORGE ST, ALBANY, 31705",
-     "county_fips": "13095",
-     "county_name": "Dougherty",
-     "lat": 31.60398313,
-     "lon": -84.09433929,
-     "evacuation_capacity": 160.0,
-     "post_impact_capacity": 80.0,
-     "usage": "EVAC",
-     "wheelchair_accessible": "UNRECORDED",
-     "generator_onsite": "UNRECORDED",
-     "is_medical": "NO",
-     "in_surge_slosh_area": "NO",
-     "in_surge_source": "noaa_slosh",
+     "shelter_id": "363514",
+     "name": "Oglethorpe Charter School",
+     "address": "7202 Central Avenue, SAVANNAH, 31406",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 31.9955317,
+     "lon": -81.0761071,
+     "evacuation_capacity": 430.0,
+     "post_impact_capacity": 215.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "registry",
      "surge_noaa": {
-      "status": "dry",
-      "first_category": null
+      "status": "inundated",
+      "first_category": 3
      },
      "quality_flags": [],
      "serves_tracts": [
-      "13095000200",
-      "13095000400",
-      "13095001100",
-      "13095001403",
-      "13095001500",
-      "13095010302",
-      "13095010601",
-      "13095010701"
-     ],
-     "nearest_km": 2.8
-    },
-    {
-     "shelter_id": "140908",
-     "name": "BILL MILLER GYM",
-     "address": "312 VICK ST, Albany, 31705",
-     "county_fips": "13095",
-     "county_name": "Dougherty",
-     "lat": 31.55064749,
-     "lon": -84.13178015,
-     "evacuation_capacity": 150.0,
-     "post_impact_capacity": 75.0,
-     "usage": "EVAC",
-     "wheelchair_accessible": "UNRECORDED",
-     "generator_onsite": "UNRECORDED",
-     "is_medical": "NO",
-     "in_surge_slosh_area": "NO",
-     "in_surge_source": "noaa_slosh",
-     "surge_noaa": {
-      "status": "dry",
-      "first_category": null
-     },
-     "quality_flags": [],
-     "serves_tracts": [
-      "13095000200",
-      "13095000400",
-      "13095001100",
-      "13095001403",
-      "13095001500",
-      "13095010302",
-      "13095010601",
-      "13095010701"
-     ],
-     "nearest_km": 0.4
-    },
-    {
-     "shelter_id": "140910",
-     "name": "Radium Springs Middle Magnet School",
-     "address": "2600 RADIUM SPRINGS RD, ALBANY, 31705",
-     "county_fips": "13095",
-     "county_name": "Dougherty",
-     "lat": 31.52315521,
-     "lon": -84.13351585,
-     "evacuation_capacity": 150.0,
-     "post_impact_capacity": 75.0,
-     "usage": "EVAC",
-     "wheelchair_accessible": "UNRECORDED",
-     "generator_onsite": "UNRECORDED",
-     "is_medical": "NO",
-     "in_surge_slosh_area": "NO",
-     "in_surge_source": "noaa_slosh",
-     "surge_noaa": {
-      "status": "dry",
-      "first_category": null
-     },
-     "quality_flags": [],
-     "serves_tracts": [
-      "13095000200",
-      "13095000400",
-      "13095001100",
-      "13095001403",
-      "13095001500",
-      "13095010302",
-      "13095010601",
-      "13095010701"
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
      ],
      "nearest_km": 3.3
     },
     {
-     "shelter_id": "140907",
-     "name": "Southside Middle School",
-     "address": "1615 NEWTON RD, ALBANY, 31705",
-     "county_fips": "13095",
-     "county_name": "Dougherty",
-     "lat": 31.55818381,
-     "lon": -84.16642204,
-     "evacuation_capacity": 100.0,
-     "post_impact_capacity": 50.0,
-     "usage": "EVAC",
-     "wheelchair_accessible": "UNRECORDED",
-     "generator_onsite": "UNRECORDED",
-     "is_medical": "NO",
-     "in_surge_slosh_area": "NO",
-     "in_surge_source": "noaa_slosh",
-     "surge_noaa": {
-      "status": "dry",
-      "first_category": null
-     },
-     "quality_flags": [],
-     "serves_tracts": [
-      "13095000200",
-      "13095000400",
-      "13095001100",
-      "13095001403",
-      "13095001500",
-      "13095010302",
-      "13095010601",
-      "13095010701"
-     ],
-     "nearest_km": 0.8
-    },
-    {
-     "shelter_id": "140915",
-     "name": "Covenant Presbyterian Church",
-     "address": "2126 Edgwater Drive, ALBANY, 31707",
-     "county_fips": "13095",
-     "county_name": "Dougherty",
-     "lat": 31.59651291,
-     "lon": -84.20252083,
-     "evacuation_capacity": 100.0,
-     "post_impact_capacity": 50.0,
+     "shelter_id": "358590",
+     "name": "End Times Commision",
+     "address": "1402 Mills B Lane Blvd, GARDEN CITY, 31405",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.0524331,
+     "lon": -81.1282948,
+     "evacuation_capacity": 200.0,
+     "post_impact_capacity": 100.0,
      "usage": "BOTH",
      "wheelchair_accessible": "UNRECORDED",
      "generator_onsite": "UNRECORDED",
-     "is_medical": "NO",
-     "in_surge_slosh_area": "NO",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
      "in_surge_source": "noaa_slosh",
+     "surge_noaa": {
+      "status": "inundated",
+      "first_category": 3
+     },
+     "quality_flags": [],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
+     ],
+     "nearest_km": 0.4
+    },
+    {
+     "shelter_id": "358557",
+     "name": "Savannah Classical School",
+     "address": "705 E. Anderson Street, SAVANNAH, 31401",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.0593342,
+     "lon": -81.0873171,
+     "evacuation_capacity": 1.0,
+     "post_impact_capacity": 1.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "UNRECORDED",
+     "generator_onsite": "UNRECORDED",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "noaa_slosh",
+     "surge_noaa": {
+      "status": "inundated",
+      "first_category": 3
+     },
+     "quality_flags": [],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901",
+      "13051011900"
+     ],
+     "nearest_km": 1.2
+    },
+    {
+     "shelter_id": "363518",
+     "name": "Savannah High School",
+     "address": "400 Pennsylvania Avenue, SAVANNAH, 31404",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.0630035,
+     "lon": -81.0572033,
+     "evacuation_capacity": 632.0,
+     "post_impact_capacity": 316.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "registry",
      "surge_noaa": {
       "status": "dry",
       "first_category": null
      },
+     "quality_flags": [
+      "surge_disagrees"
+     ],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051011900"
+     ],
+     "nearest_km": 3.4
+    },
+    {
+     "shelter_id": "363510",
+     "name": "Compassion Christian Church (The Adult Center)",
+     "address": "50 Al Henderson Blvd., SAVANNAH, 31419",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.00639,
+     "lon": -81.251804,
+     "evacuation_capacity": 162.0,
+     "post_impact_capacity": 81.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "YES",
+     "generator_onsite": "NO",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "registry",
+     "surge_noaa": {
+      "status": "inundated",
+      "first_category": 3
+     },
      "quality_flags": [],
      "serves_tracts": [
-      "13095000200",
-      "13095000400",
-      "13095001100",
-      "13095001403",
-      "13095001500",
-      "13095010302",
-      "13095010601",
-      "13095010701"
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051010901"
      ],
-     "nearest_km": 2.1
+     "nearest_km": 8.3
+    },
+    {
+     "shelter_id": "358517",
+     "name": "Savannah International Trade & Convention Center",
+     "address": "1 International Drive, SAVANNAH, 31421",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lat": 32.0842436,
+     "lon": -81.0872041,
+     "evacuation_capacity": 1.0,
+     "post_impact_capacity": 1.0,
+     "usage": "BOTH",
+     "wheelchair_accessible": "UNRECORDED",
+     "generator_onsite": "UNRECORDED",
+     "is_medical": "UNRECORDED",
+     "in_surge_slosh_area": "YES",
+     "in_surge_source": "noaa_slosh",
+     "surge_noaa": {
+      "status": "inundated",
+      "first_category": 2
+     },
+     "quality_flags": [],
+     "serves_tracts": [
+      "13051000601",
+      "13051001200",
+      "13051004001",
+      "13051004207",
+      "13051004500",
+      "13051010502",
+      "13051011900"
+     ],
+     "nearest_km": 1.7
     }
    ],
    "note": "Assumption: reachable means within 16 km (10 miles) straight-line of the tract centre, a county transport run for households without a vehicle. Drive times come from Routes in run_scenario. Not yet verified: ground each destination with Google Maps before relying on it."
@@ -623,262 +752,425 @@
      "kind": "tracts_without_recorded_accessible_shelter_in_reach",
      "entries": [
       {
-       "geo_id": "13095000200",
-       "households_no_vehicle": 455,
+       "geo_id": "13051011110",
+       "households_no_vehicle": 7,
        "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 16,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 15,
-       "nearest_shelter_km": 1.9
-      },
-      {
-       "geo_id": "13095001500",
-       "households_no_vehicle": 370,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 16,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 15,
-       "nearest_shelter_km": 0.9
-      },
-      {
-       "geo_id": "13095010701",
-       "households_no_vehicle": 369,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 15,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 14,
-       "nearest_shelter_km": 0.4
-      },
-      {
-       "geo_id": "13095010302",
-       "households_no_vehicle": 357,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 17,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 16,
-       "nearest_shelter_km": 2.8
-      },
-      {
-       "geo_id": "13095001100",
-       "households_no_vehicle": 264,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 16,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 15,
-       "nearest_shelter_km": 1.9
-      },
-      {
-       "geo_id": "13095000400",
-       "households_no_vehicle": 263,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 18,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 17,
-       "nearest_shelter_km": 2.1
-      },
-      {
-       "geo_id": "13095010601",
-       "households_no_vehicle": 201,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 16,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 15,
-       "nearest_shelter_km": 1.7
-      },
-      {
-       "geo_id": "13095001403",
-       "households_no_vehicle": 183,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 16,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 15,
-       "nearest_shelter_km": 0.8
-      },
-      {
-       "geo_id": "13095011300",
-       "households_no_vehicle": 183,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 18,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 17,
-       "nearest_shelter_km": 1.8
-      },
-      {
-       "geo_id": "13095000600",
-       "households_no_vehicle": 164,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 17,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 16,
-       "nearest_shelter_km": 1.3
-      },
-      {
-       "geo_id": "13095000800",
-       "households_no_vehicle": 158,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 16,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 15,
-       "nearest_shelter_km": 1.1
-      },
-      {
-       "geo_id": "13095000101",
-       "households_no_vehicle": 133,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 15,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 14,
-       "nearest_shelter_km": 0.5
-      },
-      {
-       "geo_id": "13095010602",
-       "households_no_vehicle": 122,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 14,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 13,
-       "nearest_shelter_km": 6.8
-      },
-      {
-       "geo_id": "13095000501",
-       "households_no_vehicle": 119,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 16,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 15,
-       "nearest_shelter_km": 1.5
-      },
-      {
-       "geo_id": "13095011400",
-       "households_no_vehicle": 118,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 16,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 15,
-       "nearest_shelter_km": 0.8
-      },
-      {
-       "geo_id": "13095000900",
-       "households_no_vehicle": 107,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 16,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 15,
-       "nearest_shelter_km": 0.9
-      },
-      {
-       "geo_id": "13095011200",
-       "households_no_vehicle": 100,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 11,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 10,
-       "nearest_shelter_km": 5.4
-      },
-      {
-       "geo_id": "13095010900",
-       "households_no_vehicle": 85,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 15,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 14,
-       "nearest_shelter_km": 1.3
-      },
-      {
-       "geo_id": "13095001000",
-       "households_no_vehicle": 64,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 16,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 15,
-       "nearest_shelter_km": 2.1
-      },
-      {
-       "geo_id": "13095010500",
-       "households_no_vehicle": 53,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 16,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 15,
-       "nearest_shelter_km": 1.9
-      },
-      {
-       "geo_id": "13095011000",
-       "households_no_vehicle": 49,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 12,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 11,
-       "nearest_shelter_km": 6.1
-      },
-      {
-       "geo_id": "13095010702",
-       "households_no_vehicle": 49,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 15,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 14,
-       "nearest_shelter_km": 1.3
-      },
-      {
-       "geo_id": "13095010402",
-       "households_no_vehicle": 46,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 15,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 14,
-       "nearest_shelter_km": 3.1
-      },
-      {
-       "geo_id": "13095000700",
-       "households_no_vehicle": 43,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 17,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 16,
-       "nearest_shelter_km": 1.6
-      },
-      {
-       "geo_id": "13095010403",
-       "households_no_vehicle": 43,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 6,
+       "shelters_within_reach": 1,
        "wheelchair_no_within_reach": 0,
-       "wheelchair_unrecorded_within_reach": 6,
-       "nearest_shelter_km": 11.6
-      },
-      {
-       "geo_id": "13095010401",
-       "households_no_vehicle": 36,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 16,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 15,
-       "nearest_shelter_km": 2.7
-      },
-      {
-       "geo_id": "13095000102",
-       "households_no_vehicle": 29,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 15,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 14,
-       "nearest_shelter_km": 2.3
-      },
-      {
-       "geo_id": "13095000502",
-       "households_no_vehicle": 25,
-       "gap": "shelters within reach, but none recorded accessible: unknown, not no",
-       "shelters_within_reach": 16,
-       "wheelchair_no_within_reach": 1,
-       "wheelchair_unrecorded_within_reach": 15,
-       "nearest_shelter_km": 0.4
+       "wheelchair_unrecorded_within_reach": 1,
+       "nearest_shelter_km": 9.5
       }
      ]
     },
     {
      "kind": "shelters_in_surge_or_flood_zone",
-     "entries": []
+     "entries": [
+      {
+       "shelter_id": "367768",
+       "name": "Union Mission",
+       "usage": null,
+       "evacuation_capacity": null,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "346354",
+       "name": "Island's High School",
+       "usage": "BOTH",
+       "evacuation_capacity": 261.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "358557",
+       "name": "Savannah Classical School",
+       "usage": "BOTH",
+       "evacuation_capacity": 1.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "346390",
+       "name": "Coastal Middle School",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "363511",
+       "name": "Godley Station School",
+       "usage": "BOTH",
+       "evacuation_capacity": 407.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": false
+      },
+      {
+       "shelter_id": "363517",
+       "name": "Jenkins High School",
+       "usage": "BOTH",
+       "evacuation_capacity": 495.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "363520",
+       "name": "Alfred E. Beach High School",
+       "usage": "BOTH",
+       "evacuation_capacity": 548.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": false
+      },
+      {
+       "shelter_id": "363512",
+       "name": "Hesse K-8 School",
+       "usage": "BOTH",
+       "evacuation_capacity": 479.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": false
+      },
+      {
+       "shelter_id": "358517",
+       "name": "Savannah International Trade & Convention Center",
+       "usage": "BOTH",
+       "evacuation_capacity": 1.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "363518",
+       "name": "Savannah High School",
+       "usage": "BOTH",
+       "evacuation_capacity": 632.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": false
+      },
+      {
+       "shelter_id": "358555",
+       "name": "Rice Creek K-8 School",
+       "usage": "BOTH",
+       "evacuation_capacity": 1.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "363510",
+       "name": "Compassion Christian Church (The Adult Center)",
+       "usage": "BOTH",
+       "evacuation_capacity": 162.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "363515",
+       "name": "Windsor Forest High School",
+       "usage": "BOTH",
+       "evacuation_capacity": 595.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": false
+      },
+      {
+       "shelter_id": "358590",
+       "name": "End Times Commision",
+       "usage": "BOTH",
+       "evacuation_capacity": 200.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "363514",
+       "name": "Oglethorpe Charter School",
+       "usage": "BOTH",
+       "evacuation_capacity": 430.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": false
+      },
+      {
+       "shelter_id": "358556",
+       "name": "New Hempstead High School",
+       "usage": "BOTH",
+       "evacuation_capacity": 1.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "366331",
+       "name": "Enmarket Arena",
+       "usage": null,
+       "evacuation_capacity": null,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "366351",
+       "name": "Coastal Georgia Academy",
+       "usage": null,
+       "evacuation_capacity": null,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "366100",
+       "name": "Tompkins Regional Center",
+       "usage": null,
+       "evacuation_capacity": null,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "358566",
+       "name": "Compassion Christian Church",
+       "usage": "BOTH",
+       "evacuation_capacity": null,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "367738",
+       "name": "Greenbriar Children\u00bfs Center Gymnasium",
+       "usage": null,
+       "evacuation_capacity": null,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140738",
+       "name": "East Broad Street Elementary School",
+       "usage": "POST",
+       "evacuation_capacity": 270.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140740",
+       "name": "Esther F Garrison School of Visual & Performing Arts",
+       "usage": "POST",
+       "evacuation_capacity": 240.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140745",
+       "name": "Haven Elementary School",
+       "usage": "POST",
+       "evacuation_capacity": 226.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140714",
+       "name": "West Chatham Elementary School",
+       "usage": "POST",
+       "evacuation_capacity": 293.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140759",
+       "name": "Skidaway Island Presbyterian Church",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140764",
+       "name": "Windsor Forest Baptist Church",
+       "usage": "POST",
+       "evacuation_capacity": 263.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140716",
+       "name": "YMCA - Pooler Branch",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "139702",
+       "name": "YMCA - Habersham",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "139703",
+       "name": "Woodlawn Baptist Church",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "140743",
+       "name": "Sol C. Johnson High School",
+       "usage": "POST",
+       "evacuation_capacity": 712.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140751",
+       "name": "First Baptist Church",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140752",
+       "name": "Port Wentworth Recreation Center",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140761",
+       "name": "Southwest Middle School",
+       "usage": "EVAC",
+       "evacuation_capacity": 394.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140755",
+       "name": "Robert W. Groves High School",
+       "usage": "POST",
+       "evacuation_capacity": 750.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140756",
+       "name": "Woodville-Tompkins High School",
+       "usage": "POST",
+       "evacuation_capacity": 432.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "139704",
+       "name": "YMCA - Islands Branch",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "140762",
+       "name": "Southwest Elementary School",
+       "usage": "EVAC",
+       "evacuation_capacity": 204.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140712",
+       "name": "Savannah First Seventh Day Adventist Church",
+       "usage": "POST",
+       "evacuation_capacity": 150.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140750",
+       "name": "White Bluff Elementary School",
+       "usage": "POST",
+       "evacuation_capacity": 293.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140763",
+       "name": "Georgetown K-8 School",
+       "usage": "POST",
+       "evacuation_capacity": 266.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140729",
+       "name": "YMCA - Tybee Island Branch",
+       "usage": "POST",
+       "evacuation_capacity": 0.0,
+       "in_surge": "YES",
+       "in_surge_source": "registry",
+       "in_100_yr_floodplain": true
+      },
+      {
+       "shelter_id": "140715",
+       "name": "West Chatham Middle School",
+       "usage": "POST",
+       "evacuation_capacity": 538.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140749",
+       "name": "Immanuel Baptist Church",
+       "usage": "POST",
+       "evacuation_capacity": 258.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      },
+      {
+       "shelter_id": "140758",
+       "name": "Marshpoint Elementary School",
+       "usage": "POST",
+       "evacuation_capacity": 128.0,
+       "in_surge": "YES",
+       "in_surge_source": "noaa_slosh",
+       "in_100_yr_floodplain": null
+      }
+     ]
     },
     {
      "kind": "confirm_unrecorded_generators",
@@ -893,9 +1185,9 @@
        "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
        "value": null,
        "range": {
-        "typical": 1,
-        "one_in_10": 12,
-        "one_in_100": 109
+        "typical": 0,
+        "one_in_10": 318,
+        "one_in_100": 427
        },
        "range_kind": "season"
       },
@@ -908,8 +1200,8 @@
        "value": null,
        "range": {
         "typical": 0,
-        "one_in_10": 2,
-        "one_in_100": 85
+        "one_in_10": 318,
+        "one_in_100": 427
        },
        "range_kind": "season"
       }
@@ -929,7 +1221,7 @@
      "unit": "years",
      "provenance": "simulated",
      "source": "outage model fitted on 35 labelled storms (7,808 county-storm rows); held-out storms: 79% of counties inside the 10-90 range",
-     "value": 45.0,
+     "value": 3.9,
      "range": null,
      "range_kind": null
     },
@@ -939,7 +1231,7 @@
      "unit": "years",
      "provenance": "simulated",
      "source": "outage model fitted on 35 labelled storms (7,808 county-storm rows); held-out storms: 79% of counties inside the 10-90 range",
-     "value": 135.1,
+     "value": 8.6,
      "range": null,
      "range_kind": null
     },
@@ -949,396 +1241,396 @@
      "unit": "rank",
      "provenance": "simulated",
      "source": "outage model fitted on 35 labelled storms (7,808 county-storm rows); held-out storms: 79% of counties inside the 10-90 range",
-     "value": 154,
+     "value": 43,
      "range": null,
      "range_kind": null
     }
    ],
    "items": [
     {
-     "storm": "Michael 2018",
-     "observed": 0.0769,
+     "storm": "Matthew 2016",
+     "observed": 0.9846,
      "modelled": {
-      "p10": 0.0209,
-      "p50": 0.2154,
-      "p90": 0.7718
+      "p10": 0.0483,
+      "p50": 0.3825,
+      "p90": 0.8762
      },
-     "inside_10_90": true,
-     "peak_wind_kt": 73.9
-    },
-    {
-     "storm": "Irma 2017",
-     "observed": 0.032,
-     "modelled": {
-      "p10": 0.001,
-      "p50": 0.0138,
-      "p90": 0.1588
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 44.2
+     "inside_10_90": false,
+     "peak_wind_kt": 63.8
     },
     {
      "storm": "Helene 2024",
-     "observed": 0.0119,
+     "observed": 0.827,
      "modelled": {
-      "p10": 0.0078,
-      "p50": 0.0721,
-      "p90": 0.5406
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 64.3
-    },
-    {
-     "storm": "Ida 2021",
-     "observed": 0.0113,
-     "modelled": {
-      "p10": 0.0,
-      "p50": 0.0003,
-      "p90": 0.0047
+      "p10": 0.004,
+      "p50": 0.058,
+      "p90": 0.4663
      },
      "inside_10_90": false,
-     "peak_wind_kt": 33.3
+     "peak_wind_kt": 43.6
     },
     {
-     "storm": "Danny 2021",
-     "observed": 0.0108,
+     "storm": "Irma 2017",
+     "observed": 0.5291,
      "modelled": {
-      "p10": 0.0,
-      "p50": 0.0004,
-      "p90": 0.0049
+      "p10": 0.0022,
+      "p50": 0.03,
+      "p90": 0.2548
      },
      "inside_10_90": false,
-     "peak_wind_kt": 17.9
-    },
-    {
-     "storm": "Colin 2022",
-     "observed": 0.0089,
-     "modelled": {
-      "p10": 0.0,
-      "p50": 0.0004,
-      "p90": 0.005
-     },
-     "inside_10_90": false,
-     "peak_wind_kt": 26.8
-    },
-    {
-     "storm": "Omar 2020",
-     "observed": 0.0074,
-     "modelled": {
-      "p10": 0.0,
-      "p50": 0.0003,
-      "p90": 0.0043
-     },
-     "inside_10_90": false,
-     "peak_wind_kt": 23.0
-    },
-    {
-     "storm": "Debby 2024",
-     "observed": 0.0072,
-     "modelled": {
-      "p10": 0.0003,
-      "p50": 0.0042,
-      "p90": 0.0474
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 38.1
-    },
-    {
-     "storm": "Sally 2020",
-     "observed": 0.0064,
-     "modelled": {
-      "p10": 0.0001,
-      "p50": 0.0013,
-      "p90": 0.0183
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 33.9
-    },
-    {
-     "storm": "Ian 2022",
-     "observed": 0.0064,
-     "modelled": {
-      "p10": 0.0001,
-      "p50": 0.0007,
-      "p90": 0.0075
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 31.5
+     "peak_wind_kt": 38.2
     },
     {
      "storm": "Hermine 2016",
-     "observed": 0.0058,
+     "observed": 0.3339,
      "modelled": {
-      "p10": 0.0004,
-      "p50": 0.0038,
-      "p90": 0.0472
+      "p10": 0.0085,
+      "p50": 0.0833,
+      "p90": 0.5634
      },
      "inside_10_90": true,
-     "peak_wind_kt": 40.7
-    },
-    {
-     "storm": "Zeta 2020",
-     "observed": 0.0039,
-     "modelled": {
-      "p10": 0.0,
-      "p50": 0.0007,
-      "p90": 0.0094
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 29.8
-    },
-    {
-     "storm": "Fay 2020",
-     "observed": 0.0022,
-     "modelled": {
-      "p10": 0.0001,
-      "p50": 0.0011,
-      "p90": 0.0148
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 31.0
+     "peak_wind_kt": 48.5
     },
     {
      "storm": "Idalia 2023",
-     "observed": 0.0021,
+     "observed": 0.2587,
+     "modelled": {
+      "p10": 0.0185,
+      "p50": 0.2073,
+      "p90": 0.7855
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 53.4
+    },
+    {
+     "storm": "Dorian 2019",
+     "observed": 0.107,
+     "modelled": {
+      "p10": 0.0056,
+      "p50": 0.0746,
+      "p90": 0.5253
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 43.7
+    },
+    {
+     "storm": "Elsa 2021",
+     "observed": 0.0802,
+     "modelled": {
+      "p10": 0.0038,
+      "p50": 0.0432,
+      "p90": 0.3873
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 43.2
+    },
+    {
+     "storm": "Michael 2018",
+     "observed": 0.054,
+     "modelled": {
+      "p10": 0.0041,
+      "p50": 0.0528,
+      "p90": 0.4335
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 42.5
+    },
+    {
+     "storm": "Debby 2024",
+     "observed": 0.0471,
+     "modelled": {
+      "p10": 0.0257,
+      "p50": 0.2613,
+      "p90": 0.8261
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 49.7
+    },
+    {
+     "storm": "Ida 2021",
+     "observed": 0.0281,
      "modelled": {
       "p10": 0.0003,
-      "p50": 0.0042,
-      "p90": 0.0609
+      "p50": 0.0036,
+      "p90": 0.0436
      },
      "inside_10_90": true,
-     "peak_wind_kt": 39.1
+     "peak_wind_kt": 33.0
     },
     {
-     "storm": "Bonnie 2016",
-     "observed": 0.0019,
+     "storm": "Chantal 2025",
+     "observed": 0.0278,
      "modelled": {
-      "p10": 0.0,
-      "p50": 0.0005,
-      "p90": 0.0068
+      "p10": 0.0006,
+      "p50": 0.0092,
+      "p90": 0.1054
      },
      "inside_10_90": true,
-     "peak_wind_kt": 20.2
+     "peak_wind_kt": 32.7
     },
     {
-     "storm": "Fred 2021",
-     "observed": 0.0018,
+     "storm": "Ian 2022",
+     "observed": 0.0274,
      "modelled": {
-      "p10": 0.0001,
-      "p50": 0.001,
-      "p90": 0.0125
+      "p10": 0.0051,
+      "p50": 0.0597,
+      "p90": 0.4375
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 41.4
+    },
+    {
+     "storm": "Harvey 2017",
+     "observed": 0.0256,
+     "modelled": {
+      "p10": 0.0002,
+      "p50": 0.0029,
+      "p90": 0.0378
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 22.4
+    },
+    {
+     "storm": "Nicole 2022",
+     "observed": 0.0226,
+     "modelled": {
+      "p10": 0.0007,
+      "p50": 0.0085,
+      "p90": 0.0833
      },
      "inside_10_90": true,
      "peak_wind_kt": 33.6
     },
     {
-     "storm": "Colin 2016",
-     "observed": 0.0015,
-     "modelled": {
-      "p10": 0.0004,
-      "p50": 0.005,
-      "p90": 0.0509
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 44.4
-    },
-    {
-     "storm": "Alberto 2018",
-     "observed": 0.0012,
-     "modelled": {
-      "p10": 0.0001,
-      "p50": 0.0007,
-      "p90": 0.0102
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 28.2
-    },
-    {
      "storm": "Claudette 2021",
-     "observed": 0.0012,
+     "observed": 0.0219,
      "modelled": {
-      "p10": 0.0001,
-      "p50": 0.0007,
-      "p90": 0.0076
+      "p10": 0.0006,
+      "p50": 0.007,
+      "p90": 0.0781
      },
      "inside_10_90": true,
-     "peak_wind_kt": 33.5
+     "peak_wind_kt": 33.2
     },
     {
-     "storm": "Elsa 2021",
-     "observed": 0.0012,
+     "storm": "Colin 2016",
+     "observed": 0.0194,
      "modelled": {
-      "p10": 0.0002,
-      "p50": 0.0033,
-      "p90": 0.0415
+      "p10": 0.0063,
+      "p50": 0.0632,
+      "p90": 0.4126
      },
      "inside_10_90": true,
-     "peak_wind_kt": 39.7
+     "peak_wind_kt": 45.0
     },
     {
-     "storm": "Dorian 2019",
-     "observed": 0.0009,
+     "storm": "Sally 2020",
+     "observed": 0.0153,
      "modelled": {
-      "p10": 0.0,
-      "p50": 0.0007,
-      "p90": 0.0114
+      "p10": 0.0011,
+      "p50": 0.0128,
+      "p90": 0.1214
      },
      "inside_10_90": true,
-     "peak_wind_kt": 23.4
-    },
-    {
-     "storm": "Delta 2020",
-     "observed": 0.0007,
-     "modelled": {
-      "p10": 0.0,
-      "p50": 0.0004,
-      "p90": 0.0053
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 28.3
-    },
-    {
-     "storm": "Nicole 2022",
-     "observed": 0.0007,
-     "modelled": {
-      "p10": 0.0002,
-      "p50": 0.0036,
-      "p90": 0.0433
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 34.5
-    },
-    {
-     "storm": "Julia 2016",
-     "observed": 0.0005,
-     "modelled": {
-      "p10": 0.0,
-      "p50": 0.0006,
-      "p90": 0.0068
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 30.7
-    },
-    {
-     "storm": "Florence 2018",
-     "observed": 0.0004,
-     "modelled": {
-      "p10": 0.0001,
-      "p50": 0.001,
-      "p90": 0.0117
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 30.7
-    },
-    {
-     "storm": "Harvey 2017",
-     "observed": 0.0003,
-     "modelled": {
-      "p10": 0.0,
-      "p50": 0.0004,
-      "p90": 0.0048
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 23.1
-    },
-    {
-     "storm": "Beta 2020",
-     "observed": 0.0003,
-     "modelled": {
-      "p10": 0.0,
-      "p50": 0.0004,
-      "p90": 0.0045
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 31.1
-    },
-    {
-     "storm": "Bertha 2020",
-     "observed": 0.0002,
-     "modelled": {
-      "p10": 0.0,
-      "p50": 0.0006,
-      "p90": 0.0062
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 18.7
-    },
-    {
-     "storm": "Isaias 2020",
-     "observed": 0.0002,
-     "modelled": {
-      "p10": 0.0,
-      "p50": 0.0005,
-      "p90": 0.0079
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 20.8
-    },
-    {
-     "storm": "Chantal 2025",
-     "observed": 0.0002,
-     "modelled": {
-      "p10": 0.0001,
-      "p50": 0.0007,
-      "p90": 0.0088
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 30.5
-    },
-    {
-     "storm": "Nestor 2019",
-     "observed": 0.0001,
-     "modelled": {
-      "p10": 0.0003,
-      "p50": 0.0037,
-      "p90": 0.0449
-     },
-     "inside_10_90": false,
-     "peak_wind_kt": 38.1
-    },
-    {
-     "storm": "Eta 2020",
-     "observed": 0.0001,
-     "modelled": {
-      "p10": 0.0001,
-      "p50": 0.0008,
-      "p90": 0.0099
-     },
-     "inside_10_90": true,
-     "peak_wind_kt": 31.8
+     "peak_wind_kt": 33.7
     },
     {
      "storm": "Mindy 2021",
-     "observed": 0.0001,
+     "observed": 0.0128,
      "modelled": {
-      "p10": 0.0001,
-      "p50": 0.0011,
-      "p90": 0.0118
+      "p10": 0.0009,
+      "p50": 0.0103,
+      "p90": 0.1142
      },
      "inside_10_90": true,
-     "peak_wind_kt": 32.3
+     "peak_wind_kt": 29.7
     },
     {
-     "storm": "Matthew 2016",
-     "observed": 0.0,
+     "storm": "Fay 2020",
+     "observed": 0.012,
      "modelled": {
-      "p10": 0.0001,
-      "p50": 0.0011,
-      "p90": 0.0208
+      "p10": 0.0006,
+      "p50": 0.0074,
+      "p90": 0.0762
      },
-     "inside_10_90": false,
-     "peak_wind_kt": 30.0
+     "inside_10_90": true,
+     "peak_wind_kt": 31.3
+    },
+    {
+     "storm": "Bonnie 2016",
+     "observed": 0.0116,
+     "modelled": {
+      "p10": 0.0007,
+      "p50": 0.0094,
+      "p90": 0.1118
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 29.7
+    },
+    {
+     "storm": "Florence 2018",
+     "observed": 0.0111,
+     "modelled": {
+      "p10": 0.0066,
+      "p50": 0.0787,
+      "p90": 0.5671
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 47.4
+    },
+    {
+     "storm": "Danny 2021",
+     "observed": 0.0084,
+     "modelled": {
+      "p10": 0.0008,
+      "p50": 0.0093,
+      "p90": 0.0991
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 29.6
+    },
+    {
+     "storm": "Julia 2016",
+     "observed": 0.007,
+     "modelled": {
+      "p10": 0.0039,
+      "p50": 0.0437,
+      "p90": 0.3497
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 40.0
+    },
+    {
+     "storm": "Nestor 2019",
+     "observed": 0.0056,
+     "modelled": {
+      "p10": 0.0026,
+      "p50": 0.0342,
+      "p90": 0.2773
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 39.9
+    },
+    {
+     "storm": "Isaias 2020",
+     "observed": 0.0055,
+     "modelled": {
+      "p10": 0.0011,
+      "p50": 0.0135,
+      "p90": 0.14
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 32.9
+    },
+    {
+     "storm": "Fred 2021",
+     "observed": 0.0052,
+     "modelled": {
+      "p10": 0.0006,
+      "p50": 0.0084,
+      "p90": 0.0942
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 33.6
+    },
+    {
+     "storm": "Bertha 2020",
+     "observed": 0.0047,
+     "modelled": {
+      "p10": 0.0006,
+      "p50": 0.0078,
+      "p90": 0.0931
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 27.9
     },
     {
      "storm": "Nate 2017",
-     "observed": 0.0,
+     "observed": 0.0042,
      "modelled": {
-      "p10": 0.0001,
-      "p50": 0.0006,
-      "p90": 0.0095
+      "p10": 0.0004,
+      "p50": 0.0052,
+      "p90": 0.0743
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 31.3
+    },
+    {
+     "storm": "Omar 2020",
+     "observed": 0.0035,
+     "modelled": {
+      "p10": 0.0004,
+      "p50": 0.0056,
+      "p90": 0.0635
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 24.5
+    },
+    {
+     "storm": "Colin 2022",
+     "observed": 0.0024,
+     "modelled": {
+      "p10": 0.0011,
+      "p50": 0.0148,
+      "p90": 0.1715
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 34.1
+    },
+    {
+     "storm": "Beta 2020",
+     "observed": 0.0017,
+     "modelled": {
+      "p10": 0.0003,
+      "p50": 0.0041,
+      "p90": 0.0526
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 30.9
+    },
+    {
+     "storm": "Alberto 2018",
+     "observed": 0.0016,
+     "modelled": {
+      "p10": 0.0006,
+      "p50": 0.0073,
+      "p90": 0.0734
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 27.6
+    },
+    {
+     "storm": "Zeta 2020",
+     "observed": 0.0016,
+     "modelled": {
+      "p10": 0.0005,
+      "p50": 0.0074,
+      "p90": 0.1057
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 31.3
+    },
+    {
+     "storm": "Delta 2020",
+     "observed": 0.001,
+     "modelled": {
+      "p10": 0.0003,
+      "p50": 0.0033,
+      "p90": 0.0468
+     },
+     "inside_10_90": true,
+     "peak_wind_kt": 27.3
+    },
+    {
+     "storm": "Eta 2020",
+     "observed": 0.0005,
+     "modelled": {
+      "p10": 0.0036,
+      "p50": 0.0385,
+      "p90": 0.3347
      },
      "inside_10_90": false,
-     "peak_wind_kt": 31.3
+     "peak_wind_kt": 36.8
     }
    ],
    "note": "Observed peak share of customers without power (EAGLE-I) against the model's prediction with that storm held out of the fit"
@@ -1360,7 +1652,7 @@
      "unit": "count",
      "provenance": "registry",
      "source": "readiness brief (see its own sources)",
-     "value": 16,
+     "value": 49,
      "range": null,
      "range_kind": null
     },
@@ -1370,7 +1662,7 @@
      "unit": "count",
      "provenance": "registry",
      "source": "readiness brief (see its own sources)",
-     "value": 15,
+     "value": 38,
      "range": null,
      "range_kind": null
     },
@@ -1380,7 +1672,7 @@
      "unit": "count",
      "provenance": "registry",
      "source": "readiness brief (see its own sources)",
-     "value": 15,
+     "value": 36,
      "range": null,
      "range_kind": null
     },
@@ -1390,7 +1682,7 @@
      "unit": "count",
      "provenance": "registry",
      "source": "readiness brief (see its own sources)",
-     "value": 5,
+     "value": 24,
      "range": null,
      "range_kind": null
     },
@@ -1410,7 +1702,7 @@
      "unit": "count",
      "provenance": "registry",
      "source": "readiness brief (see its own sources)",
-     "value": 16,
+     "value": 49,
      "range": null,
      "range_kind": null
     },
@@ -1420,7 +1712,7 @@
      "unit": "count",
      "provenance": "registry",
      "source": "readiness brief (see its own sources)",
-     "value": 2,
+     "value": 11,
      "range": null,
      "range_kind": null
     },
@@ -1453,18 +1745,18 @@
     {
      "tract_set": "rest_of_state",
      "tracts": 2788,
-     "pop": 10913466,
+     "pop": 10911255,
      "white_nh": 0.492,
-     "black_nh": 0.306,
+     "black_nh": 0.307,
      "hispanic": 0.11
     },
     {
      "tract_set": "ranked",
      "tracts": 8,
-     "pop": 26941,
-     "white_nh": 0.094,
-     "black_nh": 0.863,
-     "hispanic": 0.017
+     "pop": 29152,
+     "white_nh": 0.251,
+     "black_nh": 0.615,
+     "hispanic": 0.091
     }
    ],
    "note": "Did the ranked tracts land where people cannot leave, or where records happen to be filled in? Compare their make-up with the rest of the state."

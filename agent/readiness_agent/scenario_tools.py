@@ -366,6 +366,8 @@ def run_scenario(
         "counties": rows,
         "receiving": receiving,
         "selected_county_fips": county_fips if county_fips in index else None,
+        "selected_county_name": counties[index[county_fips]]["county_name"]
+        if county_fips in index else None,
     }
     out["report"] = report.run_report(out)
     return out

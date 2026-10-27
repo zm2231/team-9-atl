@@ -33,4 +33,4 @@ figure  = {key, label, unit, provenance: "registry" | "survey" | "simulated" | "
 - Lacking shelter and needing transport are separate figures and are never added together.
 - `items` are section-specific records: tracts and facilities, destinations, fix lists, labelled storms, worst events, audit rows. Render them as tables; every row carries its own fields.
 
-Fixtures, from real runs on 27 Oct 2026 (Dougherty, long_run; Gulf track, category 3, `draws=20`, `run_index=7`): `frontend/tests/mocks/report.{county,state,run,runs}.fixture.json`.
+Fixtures, from real runs on 27 Oct 2026 (Chatham, long_run; Gulf-to-Savannah track, category 3, `draws=20`, `run_index=7`): `frontend/tests/mocks/report.{county,state,run,runs}.fixture.json`.
