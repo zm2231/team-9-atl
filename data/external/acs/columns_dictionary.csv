@@ -1,0 +1,1033 @@
+table,title,universe,column,kind,line,indent,label
+B01001,Sex by Age,Total population,B01001_E001,estimate,001,0,Total:
+B01001,Sex by Age,Total population,B01001_M001,moe_90pct,001,0,Total:
+B01001,Sex by Age,Total population,B01001_E002,estimate,002,1,Male:
+B01001,Sex by Age,Total population,B01001_M002,moe_90pct,002,1,Male:
+B01001,Sex by Age,Total population,B01001_E003,estimate,003,2,Under 5 years
+B01001,Sex by Age,Total population,B01001_M003,moe_90pct,003,2,Under 5 years
+B01001,Sex by Age,Total population,B01001_E004,estimate,004,2,5 to 9 years
+B01001,Sex by Age,Total population,B01001_M004,moe_90pct,004,2,5 to 9 years
+B01001,Sex by Age,Total population,B01001_E005,estimate,005,2,10 to 14 years
+B01001,Sex by Age,Total population,B01001_M005,moe_90pct,005,2,10 to 14 years
+B01001,Sex by Age,Total population,B01001_E006,estimate,006,2,15 to 17 years
+B01001,Sex by Age,Total population,B01001_M006,moe_90pct,006,2,15 to 17 years
+B01001,Sex by Age,Total population,B01001_E007,estimate,007,2,18 and 19 years
+B01001,Sex by Age,Total population,B01001_M007,moe_90pct,007,2,18 and 19 years
+B01001,Sex by Age,Total population,B01001_E008,estimate,008,2,20 years
+B01001,Sex by Age,Total population,B01001_M008,moe_90pct,008,2,20 years
+B01001,Sex by Age,Total population,B01001_E009,estimate,009,2,21 years
+B01001,Sex by Age,Total population,B01001_M009,moe_90pct,009,2,21 years
+B01001,Sex by Age,Total population,B01001_E010,estimate,010,2,22 to 24 years
+B01001,Sex by Age,Total population,B01001_M010,moe_90pct,010,2,22 to 24 years
+B01001,Sex by Age,Total population,B01001_E011,estimate,011,2,25 to 29 years
+B01001,Sex by Age,Total population,B01001_M011,moe_90pct,011,2,25 to 29 years
+B01001,Sex by Age,Total population,B01001_E012,estimate,012,2,30 to 34 years
+B01001,Sex by Age,Total population,B01001_M012,moe_90pct,012,2,30 to 34 years
+B01001,Sex by Age,Total population,B01001_E013,estimate,013,2,35 to 39 years
+B01001,Sex by Age,Total population,B01001_M013,moe_90pct,013,2,35 to 39 years
+B01001,Sex by Age,Total population,B01001_E014,estimate,014,2,40 to 44 years
+B01001,Sex by Age,Total population,B01001_M014,moe_90pct,014,2,40 to 44 years
+B01001,Sex by Age,Total population,B01001_E015,estimate,015,2,45 to 49 years
+B01001,Sex by Age,Total population,B01001_M015,moe_90pct,015,2,45 to 49 years
+B01001,Sex by Age,Total population,B01001_E016,estimate,016,2,50 to 54 years
+B01001,Sex by Age,Total population,B01001_M016,moe_90pct,016,2,50 to 54 years
+B01001,Sex by Age,Total population,B01001_E017,estimate,017,2,55 to 59 years
+B01001,Sex by Age,Total population,B01001_M017,moe_90pct,017,2,55 to 59 years
+B01001,Sex by Age,Total population,B01001_E018,estimate,018,2,60 and 61 years
+B01001,Sex by Age,Total population,B01001_M018,moe_90pct,018,2,60 and 61 years
+B01001,Sex by Age,Total population,B01001_E019,estimate,019,2,62 to 64 years
+B01001,Sex by Age,Total population,B01001_M019,moe_90pct,019,2,62 to 64 years
+B01001,Sex by Age,Total population,B01001_E020,estimate,020,2,65 and 66 years
+B01001,Sex by Age,Total population,B01001_M020,moe_90pct,020,2,65 and 66 years
+B01001,Sex by Age,Total population,B01001_E021,estimate,021,2,67 to 69 years
+B01001,Sex by Age,Total population,B01001_M021,moe_90pct,021,2,67 to 69 years
+B01001,Sex by Age,Total population,B01001_E022,estimate,022,2,70 to 74 years
+B01001,Sex by Age,Total population,B01001_M022,moe_90pct,022,2,70 to 74 years
+B01001,Sex by Age,Total population,B01001_E023,estimate,023,2,75 to 79 years
+B01001,Sex by Age,Total population,B01001_M023,moe_90pct,023,2,75 to 79 years
+B01001,Sex by Age,Total population,B01001_E024,estimate,024,2,80 to 84 years
+B01001,Sex by Age,Total population,B01001_M024,moe_90pct,024,2,80 to 84 years
+B01001,Sex by Age,Total population,B01001_E025,estimate,025,2,85 years and over
+B01001,Sex by Age,Total population,B01001_M025,moe_90pct,025,2,85 years and over
+B01001,Sex by Age,Total population,B01001_E026,estimate,026,1,Female:
+B01001,Sex by Age,Total population,B01001_M026,moe_90pct,026,1,Female:
+B01001,Sex by Age,Total population,B01001_E027,estimate,027,2,Under 5 years
+B01001,Sex by Age,Total population,B01001_M027,moe_90pct,027,2,Under 5 years
+B01001,Sex by Age,Total population,B01001_E028,estimate,028,2,5 to 9 years
+B01001,Sex by Age,Total population,B01001_M028,moe_90pct,028,2,5 to 9 years
+B01001,Sex by Age,Total population,B01001_E029,estimate,029,2,10 to 14 years
+B01001,Sex by Age,Total population,B01001_M029,moe_90pct,029,2,10 to 14 years
+B01001,Sex by Age,Total population,B01001_E030,estimate,030,2,15 to 17 years
+B01001,Sex by Age,Total population,B01001_M030,moe_90pct,030,2,15 to 17 years
+B01001,Sex by Age,Total population,B01001_E031,estimate,031,2,18 and 19 years
+B01001,Sex by Age,Total population,B01001_M031,moe_90pct,031,2,18 and 19 years
+B01001,Sex by Age,Total population,B01001_E032,estimate,032,2,20 years
+B01001,Sex by Age,Total population,B01001_M032,moe_90pct,032,2,20 years
+B01001,Sex by Age,Total population,B01001_E033,estimate,033,2,21 years
+B01001,Sex by Age,Total population,B01001_M033,moe_90pct,033,2,21 years
+B01001,Sex by Age,Total population,B01001_E034,estimate,034,2,22 to 24 years
+B01001,Sex by Age,Total population,B01001_M034,moe_90pct,034,2,22 to 24 years
+B01001,Sex by Age,Total population,B01001_E035,estimate,035,2,25 to 29 years
+B01001,Sex by Age,Total population,B01001_M035,moe_90pct,035,2,25 to 29 years
+B01001,Sex by Age,Total population,B01001_E036,estimate,036,2,30 to 34 years
+B01001,Sex by Age,Total population,B01001_M036,moe_90pct,036,2,30 to 34 years
+B01001,Sex by Age,Total population,B01001_E037,estimate,037,2,35 to 39 years
+B01001,Sex by Age,Total population,B01001_M037,moe_90pct,037,2,35 to 39 years
+B01001,Sex by Age,Total population,B01001_E038,estimate,038,2,40 to 44 years
+B01001,Sex by Age,Total population,B01001_M038,moe_90pct,038,2,40 to 44 years
+B01001,Sex by Age,Total population,B01001_E039,estimate,039,2,45 to 49 years
+B01001,Sex by Age,Total population,B01001_M039,moe_90pct,039,2,45 to 49 years
+B01001,Sex by Age,Total population,B01001_E040,estimate,040,2,50 to 54 years
+B01001,Sex by Age,Total population,B01001_M040,moe_90pct,040,2,50 to 54 years
+B01001,Sex by Age,Total population,B01001_E041,estimate,041,2,55 to 59 years
+B01001,Sex by Age,Total population,B01001_M041,moe_90pct,041,2,55 to 59 years
+B01001,Sex by Age,Total population,B01001_E042,estimate,042,2,60 and 61 years
+B01001,Sex by Age,Total population,B01001_M042,moe_90pct,042,2,60 and 61 years
+B01001,Sex by Age,Total population,B01001_E043,estimate,043,2,62 to 64 years
+B01001,Sex by Age,Total population,B01001_M043,moe_90pct,043,2,62 to 64 years
+B01001,Sex by Age,Total population,B01001_E044,estimate,044,2,65 and 66 years
+B01001,Sex by Age,Total population,B01001_M044,moe_90pct,044,2,65 and 66 years
+B01001,Sex by Age,Total population,B01001_E045,estimate,045,2,67 to 69 years
+B01001,Sex by Age,Total population,B01001_M045,moe_90pct,045,2,67 to 69 years
+B01001,Sex by Age,Total population,B01001_E046,estimate,046,2,70 to 74 years
+B01001,Sex by Age,Total population,B01001_M046,moe_90pct,046,2,70 to 74 years
+B01001,Sex by Age,Total population,B01001_E047,estimate,047,2,75 to 79 years
+B01001,Sex by Age,Total population,B01001_M047,moe_90pct,047,2,75 to 79 years
+B01001,Sex by Age,Total population,B01001_E048,estimate,048,2,80 to 84 years
+B01001,Sex by Age,Total population,B01001_M048,moe_90pct,048,2,80 to 84 years
+B01001,Sex by Age,Total population,B01001_E049,estimate,049,2,85 years and over
+B01001,Sex by Age,Total population,B01001_M049,moe_90pct,049,2,85 years and over
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E001,estimate,001,0,Total:
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M001,moe_90pct,001,0,Total:
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E002,estimate,002,1,Not Hispanic or Latino:
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M002,moe_90pct,002,1,Not Hispanic or Latino:
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E003,estimate,003,2,White alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M003,moe_90pct,003,2,White alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E004,estimate,004,2,Black or African American alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M004,moe_90pct,004,2,Black or African American alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E005,estimate,005,2,American Indian and Alaska Native alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M005,moe_90pct,005,2,American Indian and Alaska Native alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E006,estimate,006,2,Asian alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M006,moe_90pct,006,2,Asian alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E007,estimate,007,2,Native Hawaiian and Other Pacific Islander alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M007,moe_90pct,007,2,Native Hawaiian and Other Pacific Islander alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E008,estimate,008,2,Some other race alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M008,moe_90pct,008,2,Some other race alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E009,estimate,009,2,Two or more races:
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M009,moe_90pct,009,2,Two or more races:
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E010,estimate,010,3,Two races including Some other race
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M010,moe_90pct,010,3,Two races including Some other race
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E011,estimate,011,3,"Two races excluding Some other race, and three or more races"
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M011,moe_90pct,011,3,"Two races excluding Some other race, and three or more races"
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E012,estimate,012,1,Hispanic or Latino:
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M012,moe_90pct,012,1,Hispanic or Latino:
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E013,estimate,013,2,White alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M013,moe_90pct,013,2,White alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E014,estimate,014,2,Black or African American alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M014,moe_90pct,014,2,Black or African American alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E015,estimate,015,2,American Indian and Alaska Native alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M015,moe_90pct,015,2,American Indian and Alaska Native alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E016,estimate,016,2,Asian alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M016,moe_90pct,016,2,Asian alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E017,estimate,017,2,Native Hawaiian and Other Pacific Islander alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M017,moe_90pct,017,2,Native Hawaiian and Other Pacific Islander alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E018,estimate,018,2,Some other race alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M018,moe_90pct,018,2,Some other race alone
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E019,estimate,019,2,Two or more races:
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M019,moe_90pct,019,2,Two or more races:
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E020,estimate,020,3,Two races including Some other race
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M020,moe_90pct,020,3,Two races including Some other race
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_E021,estimate,021,3,"Two races excluding Some other race, and three or more races"
+B03002,Hispanic or Latino Origin by Race,Total population,B03002_M021,moe_90pct,021,3,"Two races excluding Some other race, and three or more races"
+B08201,Household Size by Vehicles Available,Households,B08201_E001,estimate,001,0,Total:
+B08201,Household Size by Vehicles Available,Households,B08201_M001,moe_90pct,001,0,Total:
+B08201,Household Size by Vehicles Available,Households,B08201_E002,estimate,002,1,No vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_M002,moe_90pct,002,1,No vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_E003,estimate,003,1,1 vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_M003,moe_90pct,003,1,1 vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_E004,estimate,004,1,2 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M004,moe_90pct,004,1,2 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E005,estimate,005,1,3 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M005,moe_90pct,005,1,3 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E006,estimate,006,1,4 or more vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M006,moe_90pct,006,1,4 or more vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E007,estimate,007,1,1-person household:
+B08201,Household Size by Vehicles Available,Households,B08201_M007,moe_90pct,007,1,1-person household:
+B08201,Household Size by Vehicles Available,Households,B08201_E008,estimate,008,2,No vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_M008,moe_90pct,008,2,No vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_E009,estimate,009,2,1 vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_M009,moe_90pct,009,2,1 vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_E010,estimate,010,2,2 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M010,moe_90pct,010,2,2 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E011,estimate,011,2,3 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M011,moe_90pct,011,2,3 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E012,estimate,012,2,4 or more vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M012,moe_90pct,012,2,4 or more vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E013,estimate,013,1,2-person household:
+B08201,Household Size by Vehicles Available,Households,B08201_M013,moe_90pct,013,1,2-person household:
+B08201,Household Size by Vehicles Available,Households,B08201_E014,estimate,014,2,No vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_M014,moe_90pct,014,2,No vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_E015,estimate,015,2,1 vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_M015,moe_90pct,015,2,1 vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_E016,estimate,016,2,2 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M016,moe_90pct,016,2,2 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E017,estimate,017,2,3 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M017,moe_90pct,017,2,3 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E018,estimate,018,2,4 or more vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M018,moe_90pct,018,2,4 or more vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E019,estimate,019,1,3-person household:
+B08201,Household Size by Vehicles Available,Households,B08201_M019,moe_90pct,019,1,3-person household:
+B08201,Household Size by Vehicles Available,Households,B08201_E020,estimate,020,2,No vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_M020,moe_90pct,020,2,No vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_E021,estimate,021,2,1 vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_M021,moe_90pct,021,2,1 vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_E022,estimate,022,2,2 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M022,moe_90pct,022,2,2 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E023,estimate,023,2,3 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M023,moe_90pct,023,2,3 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E024,estimate,024,2,4 or more vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M024,moe_90pct,024,2,4 or more vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E025,estimate,025,1,4-or-more-person household:
+B08201,Household Size by Vehicles Available,Households,B08201_M025,moe_90pct,025,1,4-or-more-person household:
+B08201,Household Size by Vehicles Available,Households,B08201_E026,estimate,026,2,No vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_M026,moe_90pct,026,2,No vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_E027,estimate,027,2,1 vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_M027,moe_90pct,027,2,1 vehicle available
+B08201,Household Size by Vehicles Available,Households,B08201_E028,estimate,028,2,2 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M028,moe_90pct,028,2,2 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E029,estimate,029,2,3 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M029,moe_90pct,029,2,3 vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_E030,estimate,030,2,4 or more vehicles available
+B08201,Household Size by Vehicles Available,Households,B08201_M030,moe_90pct,030,2,4 or more vehicles available
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E001,estimate,001,0,Total:
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M001,moe_90pct,001,0,Total:
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E002,estimate,002,1,12:00 a.m. to 4:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M002,moe_90pct,002,1,12:00 a.m. to 4:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E003,estimate,003,1,5:00 a.m. to 5:29 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M003,moe_90pct,003,1,5:00 a.m. to 5:29 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E004,estimate,004,1,5:30 a.m. to 5:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M004,moe_90pct,004,1,5:30 a.m. to 5:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E005,estimate,005,1,6:00 a.m. to 6:29 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M005,moe_90pct,005,1,6:00 a.m. to 6:29 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E006,estimate,006,1,6:30 a.m. to 6:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M006,moe_90pct,006,1,6:30 a.m. to 6:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E007,estimate,007,1,7:00 a.m. to 7:29 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M007,moe_90pct,007,1,7:00 a.m. to 7:29 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E008,estimate,008,1,7:30 a.m. to 7:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M008,moe_90pct,008,1,7:30 a.m. to 7:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E009,estimate,009,1,8:00 a.m. to 8:29 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M009,moe_90pct,009,1,8:00 a.m. to 8:29 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E010,estimate,010,1,8:30 a.m. to 8:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M010,moe_90pct,010,1,8:30 a.m. to 8:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E011,estimate,011,1,9:00 a.m. to 9:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M011,moe_90pct,011,1,9:00 a.m. to 9:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E012,estimate,012,1,10:00 a.m. to 10:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M012,moe_90pct,012,1,10:00 a.m. to 10:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E013,estimate,013,1,11:00 a.m. to 11:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M013,moe_90pct,013,1,11:00 a.m. to 11:59 a.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E014,estimate,014,1,12:00 p.m. to 3:59 p.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M014,moe_90pct,014,1,12:00 p.m. to 3:59 p.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_E015,estimate,015,1,4:00 p.m. to 11:59 p.m.
+B08302,Time of Departure to Go to Work,Workers 16 years and over who did not work from home,B08302_M015,moe_90pct,015,1,4:00 p.m. to 11:59 p.m.
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_E001,estimate,001,0,Total:
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_M001,moe_90pct,001,0,Total:
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_E002,estimate,002,1,Less than 5 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_M002,moe_90pct,002,1,Less than 5 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_E003,estimate,003,1,5 to 9 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_M003,moe_90pct,003,1,5 to 9 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_E004,estimate,004,1,10 to 14 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_M004,moe_90pct,004,1,10 to 14 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_E005,estimate,005,1,15 to 19 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_M005,moe_90pct,005,1,15 to 19 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_E006,estimate,006,1,20 to 24 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_M006,moe_90pct,006,1,20 to 24 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_E007,estimate,007,1,25 to 29 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_M007,moe_90pct,007,1,25 to 29 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_E008,estimate,008,1,30 to 34 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_M008,moe_90pct,008,1,30 to 34 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_E009,estimate,009,1,35 to 39 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_M009,moe_90pct,009,1,35 to 39 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_E010,estimate,010,1,40 to 44 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_M010,moe_90pct,010,1,40 to 44 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_E011,estimate,011,1,45 to 59 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_M011,moe_90pct,011,1,45 to 59 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_E012,estimate,012,1,60 to 89 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_M012,moe_90pct,012,1,60 to 89 minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_E013,estimate,013,1,90 or more minutes
+B08303,Travel Time to Work,Workers 16 years and over who did not work from home,B08303_M013,moe_90pct,013,1,90 or more minutes
+B09005,"Household Type for Children Under 18 Years in Households (Excluding Householders, Spouses, and Unmarried Partners)","Population under 18 years in households (excluding householders, spouses, and unmarried partners)",B09005_E001,estimate,001,0,Total:
+B09005,"Household Type for Children Under 18 Years in Households (Excluding Householders, Spouses, and Unmarried Partners)","Population under 18 years in households (excluding householders, spouses, and unmarried partners)",B09005_M001,moe_90pct,001,0,Total:
+B09005,"Household Type for Children Under 18 Years in Households (Excluding Householders, Spouses, and Unmarried Partners)","Population under 18 years in households (excluding householders, spouses, and unmarried partners)",B09005_E002,estimate,002,1,Married-couple household
+B09005,"Household Type for Children Under 18 Years in Households (Excluding Householders, Spouses, and Unmarried Partners)","Population under 18 years in households (excluding householders, spouses, and unmarried partners)",B09005_M002,moe_90pct,002,1,Married-couple household
+B09005,"Household Type for Children Under 18 Years in Households (Excluding Householders, Spouses, and Unmarried Partners)","Population under 18 years in households (excluding householders, spouses, and unmarried partners)",B09005_E003,estimate,003,1,Cohabiting couple household
+B09005,"Household Type for Children Under 18 Years in Households (Excluding Householders, Spouses, and Unmarried Partners)","Population under 18 years in households (excluding householders, spouses, and unmarried partners)",B09005_M003,moe_90pct,003,1,Cohabiting couple household
+B09005,"Household Type for Children Under 18 Years in Households (Excluding Householders, Spouses, and Unmarried Partners)","Population under 18 years in households (excluding householders, spouses, and unmarried partners)",B09005_E004,estimate,004,1,"In male householder, no spouse/partner present household"
+B09005,"Household Type for Children Under 18 Years in Households (Excluding Householders, Spouses, and Unmarried Partners)","Population under 18 years in households (excluding householders, spouses, and unmarried partners)",B09005_M004,moe_90pct,004,1,"In male householder, no spouse/partner present household"
+B09005,"Household Type for Children Under 18 Years in Households (Excluding Householders, Spouses, and Unmarried Partners)","Population under 18 years in households (excluding householders, spouses, and unmarried partners)",B09005_E005,estimate,005,1,"In female householder, no spouse/partner present household"
+B09005,"Household Type for Children Under 18 Years in Households (Excluding Householders, Spouses, and Unmarried Partners)","Population under 18 years in households (excluding householders, spouses, and unmarried partners)",B09005_M005,moe_90pct,005,1,"In female householder, no spouse/partner present household"
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E001,estimate,001,0,Total:
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M001,moe_90pct,001,0,Total:
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E002,estimate,002,1,Married-couple family:
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M002,moe_90pct,002,1,Married-couple family:
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E003,estimate,003,2,With own children of the householder under 18 years:
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M003,moe_90pct,003,2,With own children of the householder under 18 years:
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E004,estimate,004,3,Under 6 years only
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M004,moe_90pct,004,3,Under 6 years only
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E005,estimate,005,3,Under 6 years and 6 to 17 years
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M005,moe_90pct,005,3,Under 6 years and 6 to 17 years
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E006,estimate,006,3,6 to 17 years only
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M006,moe_90pct,006,3,6 to 17 years only
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E007,estimate,007,2,No own children of the householder under 18 years
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M007,moe_90pct,007,2,No own children of the householder under 18 years
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E008,estimate,008,1,Other family:
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M008,moe_90pct,008,1,Other family:
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E009,estimate,009,2,"Male householder, no spouse present:"
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M009,moe_90pct,009,2,"Male householder, no spouse present:"
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E010,estimate,010,3,With own children of the householder under 18 years:
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M010,moe_90pct,010,3,With own children of the householder under 18 years:
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E011,estimate,011,4,Under 6 years only
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M011,moe_90pct,011,4,Under 6 years only
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E012,estimate,012,4,Under 6 years and 6 to 17 years
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M012,moe_90pct,012,4,Under 6 years and 6 to 17 years
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E013,estimate,013,4,6 to 17 years only
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M013,moe_90pct,013,4,6 to 17 years only
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E014,estimate,014,3,No own children of the householder under 18 years
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M014,moe_90pct,014,3,No own children of the householder under 18 years
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E015,estimate,015,2,"Female householder, no spouse present:"
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M015,moe_90pct,015,2,"Female householder, no spouse present:"
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E016,estimate,016,3,With own children of the householder under 18 years:
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M016,moe_90pct,016,3,With own children of the householder under 18 years:
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E017,estimate,017,4,Under 6 years only
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M017,moe_90pct,017,4,Under 6 years only
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E018,estimate,018,4,Under 6 years and 6 to 17 years
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M018,moe_90pct,018,4,Under 6 years and 6 to 17 years
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E019,estimate,019,4,6 to 17 years only
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M019,moe_90pct,019,4,6 to 17 years only
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_E020,estimate,020,3,No own children of the householder under 18 years
+B11003,Family Type by Presence and Age of Own Children Under 18 Years,Families,B11003_M020,moe_90pct,020,3,No own children of the householder under 18 years
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_E001,estimate,001,0,Total:
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_M001,moe_90pct,001,0,Total:
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_E002,estimate,002,1,Households with one or more people 65 years and over:
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_M002,moe_90pct,002,1,Households with one or more people 65 years and over:
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_E003,estimate,003,2,1-person household
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_M003,moe_90pct,003,2,1-person household
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_E004,estimate,004,2,2-or-more-person household:
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_M004,moe_90pct,004,2,2-or-more-person household:
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_E005,estimate,005,3,Family households
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_M005,moe_90pct,005,3,Family households
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_E006,estimate,006,3,Nonfamily households
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_M006,moe_90pct,006,3,Nonfamily households
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_E007,estimate,007,1,Households with no people 65 years and over:
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_M007,moe_90pct,007,1,Households with no people 65 years and over:
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_E008,estimate,008,2,1-person households
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_M008,moe_90pct,008,2,1-person households
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_E009,estimate,009,2,2-or-more-person household:
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_M009,moe_90pct,009,2,2-or-more-person household:
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_E010,estimate,010,3,Family households
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_M010,moe_90pct,010,3,Family households
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_E011,estimate,011,3,Nonfamily households
+B11007,"Households by Presence of People 65 Years and Over, Household Size and Household Type",Households,B11007_M011,moe_90pct,011,3,Nonfamily households
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E001,estimate,001,0,Total:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M001,moe_90pct,001,0,Total:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E002,estimate,002,1,5 to 17 years:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M002,moe_90pct,002,1,5 to 17 years:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E003,estimate,003,2,Speak only English
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M003,moe_90pct,003,2,Speak only English
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E004,estimate,004,2,Speak Spanish:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M004,moe_90pct,004,2,Speak Spanish:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E005,estimate,005,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M005,moe_90pct,005,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E006,estimate,006,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M006,moe_90pct,006,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E007,estimate,007,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M007,moe_90pct,007,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E008,estimate,008,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M008,moe_90pct,008,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E009,estimate,009,2,Speak other Indo-European languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M009,moe_90pct,009,2,Speak other Indo-European languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E010,estimate,010,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M010,moe_90pct,010,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E011,estimate,011,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M011,moe_90pct,011,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E012,estimate,012,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M012,moe_90pct,012,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E013,estimate,013,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M013,moe_90pct,013,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E014,estimate,014,2,Speak Asian and Pacific Island languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M014,moe_90pct,014,2,Speak Asian and Pacific Island languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E015,estimate,015,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M015,moe_90pct,015,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E016,estimate,016,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M016,moe_90pct,016,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E017,estimate,017,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M017,moe_90pct,017,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E018,estimate,018,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M018,moe_90pct,018,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E019,estimate,019,2,Speak other languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M019,moe_90pct,019,2,Speak other languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E020,estimate,020,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M020,moe_90pct,020,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E021,estimate,021,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M021,moe_90pct,021,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E022,estimate,022,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M022,moe_90pct,022,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E023,estimate,023,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M023,moe_90pct,023,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E024,estimate,024,1,18 to 64 years:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M024,moe_90pct,024,1,18 to 64 years:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E025,estimate,025,2,Speak only English
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M025,moe_90pct,025,2,Speak only English
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E026,estimate,026,2,Speak Spanish:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M026,moe_90pct,026,2,Speak Spanish:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E027,estimate,027,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M027,moe_90pct,027,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E028,estimate,028,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M028,moe_90pct,028,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E029,estimate,029,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M029,moe_90pct,029,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E030,estimate,030,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M030,moe_90pct,030,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E031,estimate,031,2,Speak other Indo-European languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M031,moe_90pct,031,2,Speak other Indo-European languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E032,estimate,032,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M032,moe_90pct,032,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E033,estimate,033,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M033,moe_90pct,033,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E034,estimate,034,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M034,moe_90pct,034,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E035,estimate,035,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M035,moe_90pct,035,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E036,estimate,036,2,Speak Asian and Pacific Island languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M036,moe_90pct,036,2,Speak Asian and Pacific Island languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E037,estimate,037,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M037,moe_90pct,037,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E038,estimate,038,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M038,moe_90pct,038,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E039,estimate,039,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M039,moe_90pct,039,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E040,estimate,040,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M040,moe_90pct,040,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E041,estimate,041,2,Speak other languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M041,moe_90pct,041,2,Speak other languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E042,estimate,042,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M042,moe_90pct,042,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E043,estimate,043,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M043,moe_90pct,043,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E044,estimate,044,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M044,moe_90pct,044,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E045,estimate,045,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M045,moe_90pct,045,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E046,estimate,046,1,65 years and over:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M046,moe_90pct,046,1,65 years and over:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E047,estimate,047,2,Speak only English
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M047,moe_90pct,047,2,Speak only English
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E048,estimate,048,2,Speak Spanish:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M048,moe_90pct,048,2,Speak Spanish:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E049,estimate,049,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M049,moe_90pct,049,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E050,estimate,050,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M050,moe_90pct,050,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E051,estimate,051,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M051,moe_90pct,051,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E052,estimate,052,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M052,moe_90pct,052,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E053,estimate,053,2,Speak other Indo-European languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M053,moe_90pct,053,2,Speak other Indo-European languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E054,estimate,054,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M054,moe_90pct,054,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E055,estimate,055,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M055,moe_90pct,055,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E056,estimate,056,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M056,moe_90pct,056,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E057,estimate,057,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M057,moe_90pct,057,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E058,estimate,058,2,Speak Asian and Pacific Island languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M058,moe_90pct,058,2,Speak Asian and Pacific Island languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E059,estimate,059,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M059,moe_90pct,059,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E060,estimate,060,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M060,moe_90pct,060,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E061,estimate,061,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M061,moe_90pct,061,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E062,estimate,062,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M062,moe_90pct,062,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E063,estimate,063,2,Speak other languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M063,moe_90pct,063,2,Speak other languages:
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E064,estimate,064,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M064,moe_90pct,064,3,"Speak English ""very well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E065,estimate,065,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M065,moe_90pct,065,3,"Speak English ""well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E066,estimate,066,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M066,moe_90pct,066,3,"Speak English ""not well"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_E067,estimate,067,3,"Speak English ""not at all"""
+B16004,Age by Language Spoken at Home by Ability to Speak English for the Population 5 Years and Over,Population 5 years and over,B16004_M067,moe_90pct,067,3,"Speak English ""not at all"""
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E001,estimate,001,0,Total:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M001,moe_90pct,001,0,Total:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E002,estimate,002,1,Income in the past 12 months below poverty level:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M002,moe_90pct,002,1,Income in the past 12 months below poverty level:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E003,estimate,003,2,Male:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M003,moe_90pct,003,2,Male:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E004,estimate,004,3,Under 5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M004,moe_90pct,004,3,Under 5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E005,estimate,005,3,5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M005,moe_90pct,005,3,5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E006,estimate,006,3,6 to 11 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M006,moe_90pct,006,3,6 to 11 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E007,estimate,007,3,12 to 14 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M007,moe_90pct,007,3,12 to 14 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E008,estimate,008,3,15 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M008,moe_90pct,008,3,15 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E009,estimate,009,3,16 and 17 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M009,moe_90pct,009,3,16 and 17 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E010,estimate,010,3,18 to 24 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M010,moe_90pct,010,3,18 to 24 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E011,estimate,011,3,25 to 34 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M011,moe_90pct,011,3,25 to 34 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E012,estimate,012,3,35 to 44 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M012,moe_90pct,012,3,35 to 44 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E013,estimate,013,3,45 to 54 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M013,moe_90pct,013,3,45 to 54 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E014,estimate,014,3,55 to 64 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M014,moe_90pct,014,3,55 to 64 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E015,estimate,015,3,65 to 74 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M015,moe_90pct,015,3,65 to 74 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E016,estimate,016,3,75 years and over
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M016,moe_90pct,016,3,75 years and over
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E017,estimate,017,2,Female:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M017,moe_90pct,017,2,Female:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E018,estimate,018,3,Under 5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M018,moe_90pct,018,3,Under 5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E019,estimate,019,3,5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M019,moe_90pct,019,3,5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E020,estimate,020,3,6 to 11 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M020,moe_90pct,020,3,6 to 11 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E021,estimate,021,3,12 to 14 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M021,moe_90pct,021,3,12 to 14 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E022,estimate,022,3,15 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M022,moe_90pct,022,3,15 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E023,estimate,023,3,16 and 17 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M023,moe_90pct,023,3,16 and 17 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E024,estimate,024,3,18 to 24 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M024,moe_90pct,024,3,18 to 24 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E025,estimate,025,3,25 to 34 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M025,moe_90pct,025,3,25 to 34 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E026,estimate,026,3,35 to 44 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M026,moe_90pct,026,3,35 to 44 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E027,estimate,027,3,45 to 54 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M027,moe_90pct,027,3,45 to 54 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E028,estimate,028,3,55 to 64 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M028,moe_90pct,028,3,55 to 64 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E029,estimate,029,3,65 to 74 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M029,moe_90pct,029,3,65 to 74 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E030,estimate,030,3,75 years and over
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M030,moe_90pct,030,3,75 years and over
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E031,estimate,031,1,Income in the past 12 months at or above poverty level:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M031,moe_90pct,031,1,Income in the past 12 months at or above poverty level:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E032,estimate,032,2,Male:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M032,moe_90pct,032,2,Male:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E033,estimate,033,3,Under 5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M033,moe_90pct,033,3,Under 5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E034,estimate,034,3,5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M034,moe_90pct,034,3,5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E035,estimate,035,3,6 to 11 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M035,moe_90pct,035,3,6 to 11 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E036,estimate,036,3,12 to 14 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M036,moe_90pct,036,3,12 to 14 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E037,estimate,037,3,15 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M037,moe_90pct,037,3,15 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E038,estimate,038,3,16 and 17 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M038,moe_90pct,038,3,16 and 17 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E039,estimate,039,3,18 to 24 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M039,moe_90pct,039,3,18 to 24 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E040,estimate,040,3,25 to 34 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M040,moe_90pct,040,3,25 to 34 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E041,estimate,041,3,35 to 44 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M041,moe_90pct,041,3,35 to 44 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E042,estimate,042,3,45 to 54 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M042,moe_90pct,042,3,45 to 54 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E043,estimate,043,3,55 to 64 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M043,moe_90pct,043,3,55 to 64 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E044,estimate,044,3,65 to 74 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M044,moe_90pct,044,3,65 to 74 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E045,estimate,045,3,75 years and over
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M045,moe_90pct,045,3,75 years and over
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E046,estimate,046,2,Female:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M046,moe_90pct,046,2,Female:
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E047,estimate,047,3,Under 5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M047,moe_90pct,047,3,Under 5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E048,estimate,048,3,5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M048,moe_90pct,048,3,5 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E049,estimate,049,3,6 to 11 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M049,moe_90pct,049,3,6 to 11 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E050,estimate,050,3,12 to 14 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M050,moe_90pct,050,3,12 to 14 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E051,estimate,051,3,15 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M051,moe_90pct,051,3,15 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E052,estimate,052,3,16 and 17 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M052,moe_90pct,052,3,16 and 17 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E053,estimate,053,3,18 to 24 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M053,moe_90pct,053,3,18 to 24 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E054,estimate,054,3,25 to 34 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M054,moe_90pct,054,3,25 to 34 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E055,estimate,055,3,35 to 44 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M055,moe_90pct,055,3,35 to 44 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E056,estimate,056,3,45 to 54 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M056,moe_90pct,056,3,45 to 54 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E057,estimate,057,3,55 to 64 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M057,moe_90pct,057,3,55 to 64 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E058,estimate,058,3,65 to 74 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M058,moe_90pct,058,3,65 to 74 years
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_E059,estimate,059,3,75 years and over
+B17001,Poverty Status in the Past 12 Months by Sex by Age,Population for whom poverty status is determined,B17001_M059,moe_90pct,059,3,75 years and over
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E001,estimate,001,0,Total:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M001,moe_90pct,001,0,Total:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E002,estimate,002,1,Male:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M002,moe_90pct,002,1,Male:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E003,estimate,003,2,Under 5 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M003,moe_90pct,003,2,Under 5 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E004,estimate,004,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M004,moe_90pct,004,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E005,estimate,005,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M005,moe_90pct,005,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E006,estimate,006,2,5 to 17 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M006,moe_90pct,006,2,5 to 17 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E007,estimate,007,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M007,moe_90pct,007,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E008,estimate,008,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M008,moe_90pct,008,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E009,estimate,009,2,18 to 34 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M009,moe_90pct,009,2,18 to 34 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E010,estimate,010,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M010,moe_90pct,010,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E011,estimate,011,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M011,moe_90pct,011,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E012,estimate,012,2,35 to 64 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M012,moe_90pct,012,2,35 to 64 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E013,estimate,013,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M013,moe_90pct,013,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E014,estimate,014,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M014,moe_90pct,014,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E015,estimate,015,2,65 to 74 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M015,moe_90pct,015,2,65 to 74 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E016,estimate,016,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M016,moe_90pct,016,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E017,estimate,017,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M017,moe_90pct,017,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E018,estimate,018,2,75 years and over:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M018,moe_90pct,018,2,75 years and over:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E019,estimate,019,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M019,moe_90pct,019,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E020,estimate,020,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M020,moe_90pct,020,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E021,estimate,021,1,Female:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M021,moe_90pct,021,1,Female:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E022,estimate,022,2,Under 5 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M022,moe_90pct,022,2,Under 5 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E023,estimate,023,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M023,moe_90pct,023,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E024,estimate,024,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M024,moe_90pct,024,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E025,estimate,025,2,5 to 17 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M025,moe_90pct,025,2,5 to 17 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E026,estimate,026,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M026,moe_90pct,026,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E027,estimate,027,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M027,moe_90pct,027,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E028,estimate,028,2,18 to 34 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M028,moe_90pct,028,2,18 to 34 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E029,estimate,029,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M029,moe_90pct,029,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E030,estimate,030,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M030,moe_90pct,030,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E031,estimate,031,2,35 to 64 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M031,moe_90pct,031,2,35 to 64 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E032,estimate,032,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M032,moe_90pct,032,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E033,estimate,033,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M033,moe_90pct,033,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E034,estimate,034,2,65 to 74 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M034,moe_90pct,034,2,65 to 74 years:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E035,estimate,035,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M035,moe_90pct,035,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E036,estimate,036,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M036,moe_90pct,036,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E037,estimate,037,2,75 years and over:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M037,moe_90pct,037,2,75 years and over:
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E038,estimate,038,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M038,moe_90pct,038,3,With a disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_E039,estimate,039,3,No disability
+B18101,Sex by Age by Disability Status,Civilian noninstitutionalized population,B18101_M039,moe_90pct,039,3,No disability
+B19058,Public Assistance Income or Food Stamps/SNAP in the Past 12 Months for Households,Households,B19058_E001,estimate,001,0,Total:
+B19058,Public Assistance Income or Food Stamps/SNAP in the Past 12 Months for Households,Households,B19058_M001,moe_90pct,001,0,Total:
+B19058,Public Assistance Income or Food Stamps/SNAP in the Past 12 Months for Households,Households,B19058_E002,estimate,002,1,With cash public assistance or Food Stamps/SNAP
+B19058,Public Assistance Income or Food Stamps/SNAP in the Past 12 Months for Households,Households,B19058_M002,moe_90pct,002,1,With cash public assistance or Food Stamps/SNAP
+B19058,Public Assistance Income or Food Stamps/SNAP in the Past 12 Months for Households,Households,B19058_E003,estimate,003,1,No cash public assistance or Food Stamps/SNAP
+B19058,Public Assistance Income or Food Stamps/SNAP in the Past 12 Months for Households,Households,B19058_M003,moe_90pct,003,1,No cash public assistance or Food Stamps/SNAP
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_E001,estimate,001,0,Total:
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_M001,moe_90pct,001,0,Total:
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_E002,estimate,002,1,Household received Food Stamps/SNAP in the past 12 months:
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_M002,moe_90pct,002,1,Household received Food Stamps/SNAP in the past 12 months:
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_E003,estimate,003,2,Households with 1 or more persons with a disability
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_M003,moe_90pct,003,2,Households with 1 or more persons with a disability
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_E004,estimate,004,2,Households with no persons with a disability
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_M004,moe_90pct,004,2,Households with no persons with a disability
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_E005,estimate,005,1,Household did not receive Food Stamps/SNAP in the past 12 months:
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_M005,moe_90pct,005,1,Household did not receive Food Stamps/SNAP in the past 12 months:
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_E006,estimate,006,2,Households with 1 or more persons with a disability
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_M006,moe_90pct,006,2,Households with 1 or more persons with a disability
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_E007,estimate,007,2,Households with no persons with a disability
+B22010,Receipt of Food Stamps/SNAP in the Past 12 Months by Disability Status for Households,Households,B22010_M007,moe_90pct,007,2,Households with no persons with a disability
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E001,estimate,001,0,Total:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M001,moe_90pct,001,0,Total:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E002,estimate,002,1,Under 6 years:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M002,moe_90pct,002,1,Under 6 years:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E003,estimate,003,2,Living with two parents:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M003,moe_90pct,003,2,Living with two parents:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E004,estimate,004,3,Both parents in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M004,moe_90pct,004,3,Both parents in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E005,estimate,005,3,Father only in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M005,moe_90pct,005,3,Father only in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E006,estimate,006,3,Mother only in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M006,moe_90pct,006,3,Mother only in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E007,estimate,007,3,Neither parent in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M007,moe_90pct,007,3,Neither parent in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E008,estimate,008,2,Living with one parent:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M008,moe_90pct,008,2,Living with one parent:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E009,estimate,009,3,Living with father:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M009,moe_90pct,009,3,Living with father:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E010,estimate,010,4,In labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M010,moe_90pct,010,4,In labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E011,estimate,011,4,Not in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M011,moe_90pct,011,4,Not in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E012,estimate,012,3,Living with mother:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M012,moe_90pct,012,3,Living with mother:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E013,estimate,013,4,In labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M013,moe_90pct,013,4,In labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E014,estimate,014,4,Not in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M014,moe_90pct,014,4,Not in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E015,estimate,015,1,6 to 17 years:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M015,moe_90pct,015,1,6 to 17 years:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E016,estimate,016,2,Living with two parents:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M016,moe_90pct,016,2,Living with two parents:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E017,estimate,017,3,Both parents in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M017,moe_90pct,017,3,Both parents in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E018,estimate,018,3,Father only in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M018,moe_90pct,018,3,Father only in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E019,estimate,019,3,Mother only in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M019,moe_90pct,019,3,Mother only in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E020,estimate,020,3,Neither parent in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M020,moe_90pct,020,3,Neither parent in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E021,estimate,021,2,Living with one parent:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M021,moe_90pct,021,2,Living with one parent:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E022,estimate,022,3,Living with father:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M022,moe_90pct,022,3,Living with father:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E023,estimate,023,4,In labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M023,moe_90pct,023,4,In labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E024,estimate,024,4,Not in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M024,moe_90pct,024,4,Not in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E025,estimate,025,3,Living with mother:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M025,moe_90pct,025,3,Living with mother:
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E026,estimate,026,4,In labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M026,moe_90pct,026,4,In labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_E027,estimate,027,4,Not in labor force
+B23008,Age of Own Children Under 18 Years in Families and Subfamilies by Living Arrangements by Employment Status of Parents,Own children under 18 years in families and subfamilies,B23008_M027,moe_90pct,027,4,Not in labor force
+B25003,Tenure,Occupied housing units,B25003_E001,estimate,001,0,Total:
+B25003,Tenure,Occupied housing units,B25003_M001,moe_90pct,001,0,Total:
+B25003,Tenure,Occupied housing units,B25003_E002,estimate,002,1,Owner occupied
+B25003,Tenure,Occupied housing units,B25003_M002,moe_90pct,002,1,Owner occupied
+B25003,Tenure,Occupied housing units,B25003_E003,estimate,003,1,Renter occupied
+B25003,Tenure,Occupied housing units,B25003_M003,moe_90pct,003,1,Renter occupied
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E001,estimate,001,0,Total:
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M001,moe_90pct,001,0,Total:
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E002,estimate,002,1,Owner occupied:
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M002,moe_90pct,002,1,Owner occupied:
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E003,estimate,003,2,No vehicle available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M003,moe_90pct,003,2,No vehicle available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E004,estimate,004,2,1 vehicle available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M004,moe_90pct,004,2,1 vehicle available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E005,estimate,005,2,2 vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M005,moe_90pct,005,2,2 vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E006,estimate,006,2,3 vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M006,moe_90pct,006,2,3 vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E007,estimate,007,2,4 vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M007,moe_90pct,007,2,4 vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E008,estimate,008,2,5 or more vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M008,moe_90pct,008,2,5 or more vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E009,estimate,009,1,Renter occupied:
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M009,moe_90pct,009,1,Renter occupied:
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E010,estimate,010,2,No vehicle available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M010,moe_90pct,010,2,No vehicle available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E011,estimate,011,2,1 vehicle available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M011,moe_90pct,011,2,1 vehicle available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E012,estimate,012,2,2 vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M012,moe_90pct,012,2,2 vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E013,estimate,013,2,3 vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M013,moe_90pct,013,2,3 vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E014,estimate,014,2,4 vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M014,moe_90pct,014,2,4 vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_E015,estimate,015,2,5 or more vehicles available
+B25044,Tenure by Vehicles Available,Occupied housing units,B25044_M015,moe_90pct,015,2,5 or more vehicles available
+B26001,Group Quarters Population,Population in group quarters,B26001_E001,estimate,001,0,Total:
+B26001,Group Quarters Population,Population in group quarters,B26001_M001,moe_90pct,001,0,Total:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E001,estimate,001,0,Total:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M001,moe_90pct,001,0,Total:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E002,estimate,002,1,Under 19 years:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M002,moe_90pct,002,1,Under 19 years:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E003,estimate,003,2,With one type of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M003,moe_90pct,003,2,With one type of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E004,estimate,004,3,With employer-based health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M004,moe_90pct,004,3,With employer-based health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E005,estimate,005,3,With direct-purchase health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M005,moe_90pct,005,3,With direct-purchase health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E006,estimate,006,3,With Medicare coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M006,moe_90pct,006,3,With Medicare coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E007,estimate,007,3,With Medicaid/means-tested public coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M007,moe_90pct,007,3,With Medicaid/means-tested public coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E008,estimate,008,3,With TRICARE/military health coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M008,moe_90pct,008,3,With TRICARE/military health coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E009,estimate,009,3,With VA Health Care only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M009,moe_90pct,009,3,With VA Health Care only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E010,estimate,010,2,With two or more types of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M010,moe_90pct,010,2,With two or more types of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E011,estimate,011,3,With employer-based and direct-purchase coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M011,moe_90pct,011,3,With employer-based and direct-purchase coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E012,estimate,012,3,With employer-based and Medicare coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M012,moe_90pct,012,3,With employer-based and Medicare coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E013,estimate,013,3,With Medicare and Medicaid/means-tested public coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M013,moe_90pct,013,3,With Medicare and Medicaid/means-tested public coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E014,estimate,014,3,Other private only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M014,moe_90pct,014,3,Other private only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E015,estimate,015,3,Other public only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M015,moe_90pct,015,3,Other public only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E016,estimate,016,3,Other coverage combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M016,moe_90pct,016,3,Other coverage combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E017,estimate,017,2,No health insurance coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M017,moe_90pct,017,2,No health insurance coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E018,estimate,018,1,19 to 34 years:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M018,moe_90pct,018,1,19 to 34 years:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E019,estimate,019,2,With one type of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M019,moe_90pct,019,2,With one type of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E020,estimate,020,3,With employer-based health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M020,moe_90pct,020,3,With employer-based health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E021,estimate,021,3,With direct-purchase health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M021,moe_90pct,021,3,With direct-purchase health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E022,estimate,022,3,With Medicare coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M022,moe_90pct,022,3,With Medicare coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E023,estimate,023,3,With Medicaid/means-tested public coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M023,moe_90pct,023,3,With Medicaid/means-tested public coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E024,estimate,024,3,With TRICARE/military health coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M024,moe_90pct,024,3,With TRICARE/military health coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E025,estimate,025,3,With VA Health Care only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M025,moe_90pct,025,3,With VA Health Care only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E026,estimate,026,2,With two or more types of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M026,moe_90pct,026,2,With two or more types of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E027,estimate,027,3,With employer-based and direct-purchase coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M027,moe_90pct,027,3,With employer-based and direct-purchase coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E028,estimate,028,3,With employer-based and Medicare coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M028,moe_90pct,028,3,With employer-based and Medicare coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E029,estimate,029,3,With Medicare and Medicaid/means-tested public coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M029,moe_90pct,029,3,With Medicare and Medicaid/means-tested public coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E030,estimate,030,3,Other private only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M030,moe_90pct,030,3,Other private only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E031,estimate,031,3,Other public only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M031,moe_90pct,031,3,Other public only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E032,estimate,032,3,Other coverage combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M032,moe_90pct,032,3,Other coverage combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E033,estimate,033,2,No health insurance coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M033,moe_90pct,033,2,No health insurance coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E034,estimate,034,1,35 to 64 years:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M034,moe_90pct,034,1,35 to 64 years:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E035,estimate,035,2,With one type of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M035,moe_90pct,035,2,With one type of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E036,estimate,036,3,With employer-based health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M036,moe_90pct,036,3,With employer-based health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E037,estimate,037,3,With direct-purchase health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M037,moe_90pct,037,3,With direct-purchase health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E038,estimate,038,3,With Medicare coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M038,moe_90pct,038,3,With Medicare coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E039,estimate,039,3,With Medicaid/means-tested public coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M039,moe_90pct,039,3,With Medicaid/means-tested public coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E040,estimate,040,3,With TRICARE/military health coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M040,moe_90pct,040,3,With TRICARE/military health coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E041,estimate,041,3,With VA Health Care only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M041,moe_90pct,041,3,With VA Health Care only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E042,estimate,042,2,With two or more types of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M042,moe_90pct,042,2,With two or more types of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E043,estimate,043,3,With employer-based and direct-purchase coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M043,moe_90pct,043,3,With employer-based and direct-purchase coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E044,estimate,044,3,With employer-based and Medicare coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M044,moe_90pct,044,3,With employer-based and Medicare coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E045,estimate,045,3,With direct-purchase and Medicare coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M045,moe_90pct,045,3,With direct-purchase and Medicare coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E046,estimate,046,3,With Medicare and Medicaid/means-tested public coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M046,moe_90pct,046,3,With Medicare and Medicaid/means-tested public coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E047,estimate,047,3,Other private only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M047,moe_90pct,047,3,Other private only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E048,estimate,048,3,Other public only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M048,moe_90pct,048,3,Other public only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E049,estimate,049,3,Other coverage combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M049,moe_90pct,049,3,Other coverage combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E050,estimate,050,2,No health insurance coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M050,moe_90pct,050,2,No health insurance coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E051,estimate,051,1,65 years and over:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M051,moe_90pct,051,1,65 years and over:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E052,estimate,052,2,With one type of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M052,moe_90pct,052,2,With one type of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E053,estimate,053,3,With employer-based health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M053,moe_90pct,053,3,With employer-based health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E054,estimate,054,3,With direct-purchase health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M054,moe_90pct,054,3,With direct-purchase health insurance only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E055,estimate,055,3,With Medicare coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M055,moe_90pct,055,3,With Medicare coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E056,estimate,056,3,With TRICARE/military health coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M056,moe_90pct,056,3,With TRICARE/military health coverage only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E057,estimate,057,3,With VA Health Care only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M057,moe_90pct,057,3,With VA Health Care only
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E058,estimate,058,2,With two or more types of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M058,moe_90pct,058,2,With two or more types of health insurance coverage:
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E059,estimate,059,3,With employer-based and direct-purchase coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M059,moe_90pct,059,3,With employer-based and direct-purchase coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E060,estimate,060,3,With employer-based and Medicare coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M060,moe_90pct,060,3,With employer-based and Medicare coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E061,estimate,061,3,With direct-purchase and Medicare coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M061,moe_90pct,061,3,With direct-purchase and Medicare coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E062,estimate,062,3,With Medicare and Medicaid/means-tested public coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M062,moe_90pct,062,3,With Medicare and Medicaid/means-tested public coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E063,estimate,063,3,Other private only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M063,moe_90pct,063,3,Other private only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E064,estimate,064,3,Other public only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M064,moe_90pct,064,3,Other public only combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E065,estimate,065,3,Other coverage combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M065,moe_90pct,065,3,Other coverage combinations
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_E066,estimate,066,2,No health insurance coverage
+B27010,Types of Health Insurance Coverage by Age,Civilian noninstitutionalized population,B27010_M066,moe_90pct,066,2,No health insurance coverage
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_E001,estimate,001,0,Total:
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_M001,moe_90pct,001,0,Total:
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_E002,estimate,002,1,With an Internet subscription
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_M002,moe_90pct,002,1,With an Internet subscription
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_E003,estimate,003,2,Dial-up with no other type of Internet subscription
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_M003,moe_90pct,003,2,Dial-up with no other type of Internet subscription
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_E004,estimate,004,2,Broadband of any type
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_M004,moe_90pct,004,2,Broadband of any type
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_E005,estimate,005,2,Cellular data plan
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_M005,moe_90pct,005,2,Cellular data plan
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_E006,estimate,006,3,Cellular data plan with no other type of Internet subscription
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_M006,moe_90pct,006,3,Cellular data plan with no other type of Internet subscription
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_E007,estimate,007,2,"Broadband such as cable, fiber optic or DSL"
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_M007,moe_90pct,007,2,"Broadband such as cable, fiber optic or DSL"
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_E008,estimate,008,3,"Broadband such as cable, fiber optic or DSL with no other type of Internet subscription"
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_M008,moe_90pct,008,3,"Broadband such as cable, fiber optic or DSL with no other type of Internet subscription"
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_E009,estimate,009,2,Satellite Internet service
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_M009,moe_90pct,009,2,Satellite Internet service
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_E010,estimate,010,3,Satellite Internet service with no other type of Internet subscription
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_M010,moe_90pct,010,3,Satellite Internet service with no other type of Internet subscription
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_E011,estimate,011,2,Other service with no other type of Internet subscription
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_M011,moe_90pct,011,2,Other service with no other type of Internet subscription
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_E012,estimate,012,1,Internet access without a subscription
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_M012,moe_90pct,012,1,Internet access without a subscription
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_E013,estimate,013,1,No Internet access
+B28002,Presence and Types of Internet Subscriptions in Household,Households,B28002_M013,moe_90pct,013,1,No Internet access
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E001,estimate,001,0,Total:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M001,moe_90pct,001,0,Total:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E002,estimate,002,1,Speak only English
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M002,moe_90pct,002,1,Speak only English
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E003,estimate,003,1,Spanish:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M003,moe_90pct,003,1,Spanish:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E004,estimate,004,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M004,moe_90pct,004,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E005,estimate,005,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M005,moe_90pct,005,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E006,estimate,006,1,"French, Haitian, or Cajun:"
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M006,moe_90pct,006,1,"French, Haitian, or Cajun:"
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E007,estimate,007,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M007,moe_90pct,007,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E008,estimate,008,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M008,moe_90pct,008,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E009,estimate,009,1,German or other West Germanic languages:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M009,moe_90pct,009,1,German or other West Germanic languages:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E010,estimate,010,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M010,moe_90pct,010,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E011,estimate,011,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M011,moe_90pct,011,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E012,estimate,012,1,"Russian, Polish, or other Slavic languages:"
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M012,moe_90pct,012,1,"Russian, Polish, or other Slavic languages:"
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E013,estimate,013,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M013,moe_90pct,013,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E014,estimate,014,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M014,moe_90pct,014,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E015,estimate,015,1,Other Indo-European languages:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M015,moe_90pct,015,1,Other Indo-European languages:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E016,estimate,016,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M016,moe_90pct,016,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E017,estimate,017,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M017,moe_90pct,017,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E018,estimate,018,1,Korean:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M018,moe_90pct,018,1,Korean:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E019,estimate,019,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M019,moe_90pct,019,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E020,estimate,020,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M020,moe_90pct,020,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E021,estimate,021,1,"Chinese (incl. Mandarin, Cantonese):"
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M021,moe_90pct,021,1,"Chinese (incl. Mandarin, Cantonese):"
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E022,estimate,022,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M022,moe_90pct,022,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E023,estimate,023,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M023,moe_90pct,023,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E024,estimate,024,1,Vietnamese:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M024,moe_90pct,024,1,Vietnamese:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E025,estimate,025,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M025,moe_90pct,025,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E026,estimate,026,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M026,moe_90pct,026,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E027,estimate,027,1,Tagalog (incl. Filipino):
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M027,moe_90pct,027,1,Tagalog (incl. Filipino):
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E028,estimate,028,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M028,moe_90pct,028,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E029,estimate,029,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M029,moe_90pct,029,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E030,estimate,030,1,Other Asian and Pacific Island languages:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M030,moe_90pct,030,1,Other Asian and Pacific Island languages:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E031,estimate,031,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M031,moe_90pct,031,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E032,estimate,032,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M032,moe_90pct,032,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E033,estimate,033,1,Arabic:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M033,moe_90pct,033,1,Arabic:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E034,estimate,034,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M034,moe_90pct,034,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E035,estimate,035,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M035,moe_90pct,035,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E036,estimate,036,1,Other and unspecified languages:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M036,moe_90pct,036,1,Other and unspecified languages:
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E037,estimate,037,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M037,moe_90pct,037,2,"Speak English ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_E038,estimate,038,2,"Speak English less than ""very well"""
+C16001,Language Spoken at Home for the Population 5 Years and Over,Population 5 years and over,C16001_M038,moe_90pct,038,2,"Speak English less than ""very well"""
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E001,estimate,001,0,Total:
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M001,moe_90pct,001,0,Total:
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E002,estimate,002,1,English only
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M002,moe_90pct,002,1,English only
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E003,estimate,003,1,Spanish:
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M003,moe_90pct,003,1,Spanish:
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E004,estimate,004,2,Limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M004,moe_90pct,004,2,Limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E005,estimate,005,2,Not a limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M005,moe_90pct,005,2,Not a limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E006,estimate,006,1,Other Indo-European languages:
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M006,moe_90pct,006,1,Other Indo-European languages:
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E007,estimate,007,2,Limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M007,moe_90pct,007,2,Limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E008,estimate,008,2,Not a limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M008,moe_90pct,008,2,Not a limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E009,estimate,009,1,Asian and Pacific Island languages:
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M009,moe_90pct,009,1,Asian and Pacific Island languages:
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E010,estimate,010,2,Limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M010,moe_90pct,010,2,Limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E011,estimate,011,2,Not a limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M011,moe_90pct,011,2,Not a limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E012,estimate,012,1,Other languages:
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M012,moe_90pct,012,1,Other languages:
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E013,estimate,013,2,Limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M013,moe_90pct,013,2,Limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_E014,estimate,014,2,Not a limited English speaking household
+C16002,Household Language by Household Limited English Speaking Status,Households,C16002_M014,moe_90pct,014,2,Not a limited English speaking household
