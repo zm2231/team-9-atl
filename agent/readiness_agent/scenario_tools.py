@@ -269,7 +269,7 @@ def run_scenario(
         if not analogs:
             return _status(
                 "no_matching_past_storms",
-                "No storm since 1950 passed within 300 km of this point with a similar heading "
+                "No storm since 1950 passed within 300 km (186 mi) of this point with a similar heading "
                 "and time of year.",
                 lat=lat,
                 lon=lon,
@@ -287,6 +287,7 @@ def run_scenario(
             "share_reaching_georgia_100km": round(
                 sum(a.reached_ga_100km for a in analogs) / len(analogs), 2
             ),
+            "reaching_georgia_means": "came within 100 km (62 mi) of Georgia",
         }
 
     n_runs = (
@@ -528,7 +529,7 @@ def _auto_note(cond: dict[str, Any]) -> str:
     )
     note = (
         f"{cond['plan']['reason']} {model}; {noaa_text}. "
-        f"Blended: {b['storms_per_year']['value']:.2f} storms per year within 250 km of Georgia "
+        f"Blended: {b['storms_per_year']['value']:.2f} storms per year within 250 km (155 mi) of Georgia "
         f"(10-90: {b['storms_per_year']['p10']:.2f}-{b['storms_per_year']['p90']:.2f}), "
         f"{b['hurricane_share']['value']:.0%} hurricanes, {b['major_share']['value']:.0%} major."
     )

@@ -80,7 +80,9 @@ def with_miles(value: Any) -> Any:
     for key, v in value.items():
         out[key] = with_miles(v)
         if isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v):
-            if key.endswith("_km"):
+            if key == "km":
+                out.setdefault("mi", round(v * KM_TO_MI, 1))
+            elif key.endswith("_km"):
                 out.setdefault(key[:-3] + "_mi", round(v * KM_TO_MI, 1))
             elif key.endswith("_kmh"):
                 out.setdefault(key[:-4] + "_mph", round(v * KM_TO_MI, 1))

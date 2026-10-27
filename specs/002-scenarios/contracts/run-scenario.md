@@ -41,7 +41,7 @@ These reuse the names of the scenario object the frontend already sends, so the 
 | Field | Meaning |
 |---|---|
 | `source` | `drawn_track` or `matched_past_storms` |
-| `match` | For matched storms: how many matched, and the share that came within 100 km of Georgia |
+| `match` | For matched storms: how many matched, the share that came within 100 km (62 mi) of Georgia, and `reaching_georgia_means` stating that threshold in both units |
 | `origin`, `category` | As used |
 | `past_storms_used` | Names and years of the past tracks behind the range, e.g. `Michael 2018` |
 | `likelihood` | How often this kind of storm has happened since 1950: `matching_storms`, `years`, `per_year`, `return_period_years`, `p_at_least_one_per_season`, an 80% range on the yearly rate, and up to five example storms. Historical frequency only: not a forecast, no climate-trend adjustment |
