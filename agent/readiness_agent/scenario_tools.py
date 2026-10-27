@@ -41,6 +41,10 @@ SOURCES["conditions"] = (
     "hurricane outlook) with a conditions model back-tested on 1950-2025 storms near Georgia"
 )
 AUTO = "auto"
+NO_STORMS_LEFT = {
+    "status": "no_storms_remaining",
+    "message": "No storm since 1950 reached Georgia after this date, so nothing remains to simulate.",
+}
 SOURCES["siting"] = (
     "Simulated · season model rerun with each candidate site added (scenario_siting); "
     "shelters from shelters_clean, counties from Census population centres"
@@ -537,7 +541,13 @@ def _outlook_args(
     }
     run_as_of = cond["plan"]["run_as_of_date"]
     extra = {"custom": cond["custom"], **({"as_of_date": run_as_of} if run_as_of else {})}
-    rest_extra = rest and {"custom": rest["custom"], "as_of_date": rest["as_of_date"]}
+    rest_extra = (
+        {"custom": rest["custom"], "as_of_date": rest["as_of_date"]}
+        if rest and rest["share_of_season_remaining"] > 0
+        else None
+    )
+    if rest and rest_extra is None:
+        auto["rest_of_current_season"]["result"] = NO_STORMS_LEFT
     return "custom", extra, auto, rest_extra
 
 
@@ -563,7 +573,7 @@ def season_county_risk(
 ) -> dict[str, Any]:
     """Season-long hurricane risk per Georgia county from 2,000 simulated storms built on every storm since 1950 near Georgia: chance per year of losing power to at least 25% of customers, power-dependent residents affected, people lacking shelter (no powered seat, no dialysis chair) and people needing transport (no vehicle), each in a typical and a 1-in-10 season.
 
-    outlook picks the storm rate: auto (default) works it out from current conditions (season_conditions) and keeps only the rest of the season after as_of_date (default today); long_run (1950-2025), recent (2000-2025), la_nina, neutral, el_nino (seasons with that ENSO state), or noaa_aug_2026 (scaled to NOAA's August 2026 outlook, an outside forecast input). sites_off and assume_generator rerun the season with shelters or dialysis centres switched off, or generators assumed. seats_override, stations_override and add_sites [{lat, lon, seats, generator}] are further what-ifs. Planner-reported site updates are always applied. Each result carries probability: the share of simulated seasons with anyone lacking shelter, with 50 or more, and with anyone lacking a dialysis chair. Without county_fips, returns the counties with the most people lacking shelter.
+    outlook picks the storm rate: auto (default) works it out from current conditions (season_conditions): the rest of the current season after as_of_date (default today) when more than half of it remains, otherwise the next full season with the rest of the current season in auto.rest_of_current_season; long_run (1950-2025), recent (2000-2025), la_nina, neutral, el_nino (seasons with that ENSO state), or noaa_aug_2026 (scaled to NOAA's August 2026 outlook, an outside forecast input). sites_off and assume_generator rerun the season with shelters or dialysis centres switched off, or generators assumed. seats_override, stations_override and add_sites [{lat, lon, seats, generator}] are further what-ifs. Planner-reported site updates are always applied. Each result carries probability: the share of simulated seasons with anyone lacking shelter, with 50 or more, and with anyone lacking a dialysis chair. Without county_fips, returns the counties with the most people lacking shelter.
     """
     from .scenario import data, season, site_updates
 
@@ -696,7 +706,7 @@ def county_plan(
 ) -> dict[str, Any]:
     """One call that assembles a county's season readiness plan: the readiness brief (who cannot leave, where they would go, what to fix, what we could not tell), how often the power goes out under the chosen outlook and the long run, people lacking shelter and needing transport in a typical and a 1-in-10 season, what confirming every unrecorded medical-shelter generator would change, and an audit of the brief's ranked tracts against the state. Sections that cannot be filled are marked not_determined. Write the plan from these sections only, and verify the top shelters live with Google Maps.
 
-    outlook: auto (default: worked out from current conditions for the rest of the season after as_of_date, default today), long_run, recent, la_nina, neutral, el_nino or noaa_aug_2026.
+    outlook: auto (default: worked out from current conditions; the rest of the current season after as_of_date, default today, when more than half of it remains, otherwise the next full season with the rest of the current season reported separately), long_run, recent, la_nina, neutral, el_nino or noaa_aug_2026.
     """
     from google.cloud import bigquery
 
@@ -753,6 +763,9 @@ def county_plan(
                 **pick(run),
             }
         out: dict[str, Any] = {"by_outlook": rows}
+        if auto_args and auto_args[2]["rest_of_current_season"] and not auto_args[3]:
+            out["rest_of_current_season"] = {
+                "season": auto_args[2]["rest_of_current_season"]["season"], **NO_STORMS_LEFT}
         if auto_args and auto_args[3]:
             rest = season.run_season(
                 "custom", sites_off=planner["sites_off"], **planner_kwargs, **auto_args[3]

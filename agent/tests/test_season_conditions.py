@@ -223,3 +223,17 @@ def test_fold_standardization_uses_training_rows_only():
     z, stats = standardize(raw, np.array([0, 1, 2]))
     assert stats["oni"] == (1.0, pytest.approx(np.std([0.0, 1.0, 2.0])))
     assert z["oni"][1] == 0.0
+
+
+def test_last_day_of_year_plans_next_season_with_nothing_left():
+    out = conditions.season_conditions("2026-12-31")
+    assert out["plan"]["season"] == 2027
+    assert out["rest_of_current_season"]["share_of_season_remaining"] == 0
+    assert out["rest_of_current_season"]["expected_storms"]["value"] == 0
+    r = scenario_tools.season_county_risk("13051", as_of_date="2026-12-31")
+    assert r["auto"]["plan"]["season"] == 2027 and r["counties"]
+    assert r["auto"]["rest_of_current_season"]["result"]["status"] == "no_storms_remaining"
+    plan = scenario_tools.county_plan("13051", as_of_date="2026-12-31")
+    section = plan["power_outage_frequency"]
+    assert "by_outlook" in section
+    assert section["rest_of_current_season"]["status"] == "no_storms_remaining"
