@@ -4,6 +4,7 @@ from datetime import date as Date
 from pathlib import Path
 from typing import Any
 
+from . import report
 from .evacuation_tools import _dataset_name, _project_id, _run_query
 
 CONTEXT_PREFIX = "CONTEXT v1 "
@@ -32,6 +33,7 @@ SOURCES = {
 NOT_DETERMINED = "not_determined"
 TOP_COUNTIES = 20
 N_DRAWS = 400
+MAX_DRAWS = 2000
 SEED = 20261027
 CASES = ("low", "base", "high")
 AFFECTED_SHARE = 0.10
@@ -137,6 +139,8 @@ def run_scenario(
     case: str = "base",
     sites_off: list[str] | None = None,
     assume_generator: list[str] | None = None,
+    draws: int | None = None,
+    run_index: int | None = None,
     tool_context: Any = None,
 ) -> dict[str, Any]:
     """Model a hurricane scenario for Georgia counties: outage share ranges, power-dependent residents, oxygen, home-health and dialysis patients at risk, and, for a selected county, reachable medical shelters and dialysis centres with live drive times and evacuation delay.
@@ -144,6 +148,8 @@ def run_scenario(
     Uses the track drawn on the map (sent in CONTEXT v1) when there is one; otherwise matches past storms that passed near (lat, lon) with a similar heading, time of year and intensity. Call it whenever the user asks what a storm would do, who is at risk, or where people could go. All numbers come from this tool; report them with the range_label the tool returns.
 
     sites_off (shelter_id or ccn) and assume_generator (shelter_id) are operator what-ifs (assume_generator on a shelter recorded NO means adding a generator there; on UNRECORDED it means confirming one; each site's generator_assumption says which), merged with CONTEXT v1 scenario.site_overrides; the result then carries baseline, with_switches and delta for people lacking shelter and needing transport.
+
+    draws sets how many simulated runs to make (1-2000, default 400); ranges are taken across them. run_index picks one of those runs (0-based) and reports it alone, as the storm the simulation plays. The result's report holds the same sections as county_plan for that run or set of runs.
     """
     case = case if case in CASES else "base"
     ctx = _context(tool_context)
@@ -211,7 +217,11 @@ def run_scenario(
             ),
         }
 
-    result = engine.run(tracks, n_draws=N_DRAWS, seed=SEED)
+    n_runs = draws if isinstance(draws, int) and not isinstance(draws, bool) and 1 <= draws <= MAX_DRAWS else N_DRAWS
+    result = engine.run(tracks, n_draws=n_runs, seed=SEED)
+    one = isinstance(run_index, int) and not isinstance(run_index, bool) and 0 <= run_index < n_runs
+    if one:
+        result = engine.one_draw(result, run_index)
     counties = data.counties()
     risk = engine.people_at_risk(result, counties)
     outage = result.outage
@@ -322,7 +332,7 @@ def run_scenario(
     receiving_shelters = [
         r["shelter_id"] for r in (receiving or {}).get("sites", []) if r.get("shelter_id")
     ]
-    return {
+    out = {
         "affected_county_fips": affected,
         "affected_shelter_ids": affected_shelters,
         "receiving_top": receiving_shelters,
@@ -337,6 +347,7 @@ def run_scenario(
             "support": "outside_labeled_support" if support_outside
             else "within_labeled_support",
             "range_label": RANGE_LABEL,
+            "runs": {"n": n_runs, "seed": SEED, "run_index": run_index if one else None},
             "assumptions": {
                 "affected_threshold_share": AFFECTED_SHARE,
                 "affected_county_rule": "at least 10% outage in at least half of the draws",
@@ -354,7 +365,10 @@ def run_scenario(
         "source": SOURCES["scenario"],
         "counties": rows,
         "receiving": receiving,
+        "selected_county_fips": county_fips if county_fips in index else None,
     }
+    out["report"] = report.run_report(out)
+    return out
 
 
 def _season_query(sql: str, params: list[Any], key: str, source: str) -> dict[str, Any]:
@@ -577,7 +591,36 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
 
     plan["audit"] = _section(SOURCES["audit"], audit)
     plan["source"] = "Assembled from the readiness brief and the season model; each section names its source"
+    storm_profile = county_storm_profile(county_fips, outlook)
+    plan["scope"] = "county"
+    plan["report"] = report.county_report(plan, storm_profile)
     return plan
+
+
+def state_plan(outlook: str = "long_run") -> dict[str, Any]:
+    """Georgia's season readiness plan in the same report shape as county_plan: the counties with the most people lacking shelter, the chance any county has a 25% outage, people lacking shelter and needing transport statewide in typical, 1-in-10 and 1-in-100 seasons, the ranked unknowns worth fixing, and the worst simulated storms. Write the plan from its report sections only.
+
+    outlook: long_run (default), recent, la_nina, neutral, el_nino or noaa_aug_2026.
+    """
+    from google.api_core.exceptions import GoogleAPIError
+    from google.auth.exceptions import GoogleAuthError
+
+    from .scenario import season
+
+    if outlook not in season.OUTLOOKS:
+        outlook = "long_run"
+    run = season.run_season(outlook)
+    run["source"] = SOURCES["season"]
+    run["outlook_note"] = season_outlook_note(outlook)
+    try:
+        worst = _run_query(
+            f"""SELECT * FROM `{_project_id()}.{_dataset_name()}.scenario_worst_events`
+                ORDER BY power_dependent_affected DESC LIMIT 10""", [])
+    except (GoogleAPIError, GoogleAuthError, RuntimeError):
+        worst = None
+    gaps = gap_sensitivity()
+    return {"scope": "state", "outlook": outlook,
+            "report": report.state_report(run, worst, gaps), "source": SOURCES["season"]}
 
 
 def county_storm_profile(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:

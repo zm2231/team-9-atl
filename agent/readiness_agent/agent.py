@@ -29,6 +29,7 @@ from .scenario_tools import (
     gap_sensitivity,
     run_scenario,
     season_county_risk,
+    state_plan,
 )
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-edc952746633")
@@ -91,6 +92,10 @@ Tools:
   outlook defaults to long_run; use another outlook only when asked, and quote its outlook_note,
   which says whether that outlook beat the long run in the 2018-2025 back-test. noaa_aug_2026 is
   an outside forecast input: name NOAA's August 2026 outlook as its source.
+- Reports come in four scopes with one shape (report.sections): county_plan for a county,
+  state_plan for Georgia, run_scenario with run_index for one simulated run, and run_scenario
+  with draws=N for N runs. Write reports from report.sections only, with each figure's
+  provenance and range; say "not determined" for a section marked not_determined.
 - For a county's season plan (outage frequency, outlooks, generator what-ifs), call county_plan
   once. It already contains build_readiness_brief's result, so do not call both. Write from its
   sections and say "not determined" for any section marked not_determined.
@@ -203,6 +208,7 @@ root_agent = Agent(
         season_county_risk,
         gap_sensitivity,
         county_plan,
+        state_plan,
         county_storm_profile,
     ],
 )

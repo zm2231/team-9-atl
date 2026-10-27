@@ -218,3 +218,56 @@ def test_assumed_generator_reports_what_it_overrides():
     run = season.run_season("long_run", assume_generator=[no, unrec])
     assert run["generator_assumptions"][no].startswith("adds a generator")
     assert run["generator_assumptions"][unrec].startswith("confirms a generator")
+
+
+def test_one_run_and_n_runs_share_the_report_shape():
+    from readiness_agent.report import SECTIONS
+
+    track = {"type": "LineString", "coordinates": [[-86.5, 27.0], [-85.2, 30.5], [-84.3, 31.6], [-82.0, 34.0]]}
+    c = ctx({"county_fips": "13095", "scenario": {"track": track, "category": 3}})
+    many = run_scenario(county_fips="13095", draws=20, tool_context=c)
+    one = run_scenario(county_fips="13095", draws=20, run_index=7, tool_context=c)
+    assert many["report"]["scope"] == "runs" and one["report"]["scope"] == "run"
+    for r in (many, one):
+        assert tuple(r["report"]["sections"]) == SECTIONS
+    f_many = many["report"]["sections"]["people_at_risk"]["figures"][0]
+    f_one = one["report"]["sections"]["people_at_risk"]["figures"][0]
+    assert f_many["range_kind"] == "runs" and f_many["value"] is None
+    assert f_one["range"] is None and f_one["value"] is not None
+    assert one["scenario"]["runs"] == {"n": 20, "seed": 20261027, "run_index": 7}
+    bad = run_scenario(county_fips="13095", draws=0, run_index=999, tool_context=c)
+    assert bad["scenario"]["runs"]["n"] == 400 and bad["scenario"]["runs"]["run_index"] is None
+
+
+def test_report_marks_unfilled_sections(monkeypatch):
+    from google.api_core.exceptions import Forbidden
+
+    from readiness_agent import scenario_tools
+
+    def fail(*_a, **_k):
+        raise Forbidden("denied")
+
+    monkeypatch.setattr(scenario_tools, "_readiness_brief", fail)
+    monkeypatch.setattr(scenario_tools, "_run_query", fail)
+    rep = scenario_tools.county_plan("13127")["report"]
+    assert rep["scope"] == "county"
+    assert rep["sections"]["who_cannot_leave"]["status"] == "not_determined"
+    assert rep["sections"]["people_at_risk"]["status"] == "ok"
+    fig = rep["sections"]["people_at_risk"]["figures"][0]
+    assert fig["range_kind"] == "season" and set(fig["range"]) == {"typical", "one_in_10", "one_in_100"}
+
+
+def test_state_plan_report(monkeypatch):
+    from google.api_core.exceptions import Forbidden
+
+    from readiness_agent import scenario_tools
+
+    def fail(*_a, **_k):
+        raise Forbidden("denied")
+
+    monkeypatch.setattr(scenario_tools, "_run_query", fail)
+    rep = scenario_tools.state_plan()["report"]
+    assert rep["scope"] == "state" and rep["subject"]["county_name"] == "Georgia"
+    assert rep["sections"]["audit"]["status"] == "not_applicable"
+    assert rep["sections"]["storm_history"]["status"] == "not_determined"
+    assert rep["sections"]["who_cannot_leave"]["items"]
