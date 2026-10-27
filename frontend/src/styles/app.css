@@ -837,6 +837,11 @@ table.receiving .flag {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+.report__list {
+  margin: 2px 0 0;
+  padding-left: 18px;
+  font-size: 12px;
+}
 
 .tour {
   position: fixed;

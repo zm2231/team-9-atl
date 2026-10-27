@@ -11,6 +11,10 @@ def test_nested_km_keys_gain_miles_twins():
     assert out["name"] == "x"
 
 
+def test_bare_km_key_gains_mi():
+    assert with_miles({"minutes": 30.0, "km": 50.0})["mi"] == 31.1
+
+
 def test_non_numeric_and_missing_values_are_left_alone():
     out = with_miles({"nearest_km": None, "share_reaching_georgia_100km": 0.4, "flag_km": True})
     assert "nearest_mi" not in out
