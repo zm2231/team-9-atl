@@ -50,10 +50,6 @@ SOURCES["conditions"] = (
     "hurricane outlook) with a conditions model back-tested on 1950-2025 storms near Georgia"
 )
 AUTO = "auto"
-NO_STORMS_LEFT = {
-    "status": "no_storms_remaining",
-    "message": "No storm since 1950 reached Georgia after this date, so nothing remains to simulate.",
-}
 SOURCES["siting"] = (
     "Simulated · season model rerun with each candidate site added (scenario_siting); "
     "shelters from shelters_clean, counties from Census population centres"
@@ -550,13 +546,7 @@ def _outlook_args(
     }
     run_as_of = cond["plan"]["run_as_of_date"]
     extra = {"custom": cond["custom"], **({"as_of_date": run_as_of} if run_as_of else {})}
-    rest_extra = (
-        {"custom": rest["custom"], "as_of_date": rest["as_of_date"]}
-        if rest and rest["share_of_season_remaining"] > 0
-        else None
-    )
-    if rest and rest_extra is None:
-        auto["rest_of_current_season"]["result"] = NO_STORMS_LEFT
+    rest_extra = rest and {"custom": rest["custom"], "as_of_date": rest["as_of_date"]}
     return "custom", extra, auto, rest_extra
 
 
@@ -772,9 +762,6 @@ def county_plan(
                 **pick(run),
             }
         out: dict[str, Any] = {"by_outlook": rows}
-        if auto_args and auto_args[2]["rest_of_current_season"] and not auto_args[3]:
-            out["rest_of_current_season"] = {
-                "season": auto_args[2]["rest_of_current_season"]["season"], **NO_STORMS_LEFT}
         if auto_args and auto_args[3]:
             rest = season.run_season(
                 "custom", sites_off=planner["sites_off"], **planner_kwargs, **auto_args[3]

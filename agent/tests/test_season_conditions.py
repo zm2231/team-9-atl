@@ -232,8 +232,10 @@ def test_last_day_of_year_plans_next_season_with_nothing_left():
     assert out["rest_of_current_season"]["expected_storms"]["value"] == 0
     r = scenario_tools.season_county_risk("13051", as_of_date="2026-12-31")
     assert r["auto"]["plan"]["season"] == 2027 and r["counties"]
-    assert r["auto"]["rest_of_current_season"]["result"]["status"] == "no_storms_remaining"
+    rest = r["auto"]["rest_of_current_season"]["result"]
+    assert rest["as_of"]["share_of_season_remaining"] == 0
+    assert set(rest["counties"][0]["lacking_shelter"]["total"].values()) == {0}
     plan = scenario_tools.county_plan("13051", as_of_date="2026-12-31")
     section = plan["power_outage_frequency"]
     assert "by_outlook" in section
-    assert section["rest_of_current_season"]["status"] == "no_storms_remaining"
+    assert section["rest_of_current_season"]["storms_per_year"] == 0

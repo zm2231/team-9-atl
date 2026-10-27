@@ -151,16 +151,18 @@ def county_coverage(rows: list[dict], mult_window: np.ndarray) -> float:
 def main() -> None:
     ev = season.events()
     seasons = ev["storm_season"]
-    peak = np.full(len(seasons), -1)
-    np.maximum.at(peak, ev["storm_of_event"], ev["category"])
+    soe, cat = ev["storm_of_event"], ev["category"]
+    per_storm = np.bincount(soe, minlength=len(seasons))
+    hurr_share = np.bincount(soe, cat >= 1, len(seasons)) / per_storm
+    major_share = np.bincount(soe, cat >= 3, len(seasons)) / per_storm
     idx = {y: i for i, y in enumerate(YEARS)}
     storms = np.zeros(len(YEARS))
     hurr = np.zeros(len(YEARS))
     major = np.zeros(len(YEARS))
-    for s, c in zip(seasons, peak, strict=True):
+    for s, h, m in zip(seasons, hurr_share, major_share, strict=True):
         storms[idx[int(s)]] += 1
-        hurr[idx[int(s)]] += c >= 1
-        major[idx[int(s)]] += c >= 3
+        hurr[idx[int(s)]] += h
+        major[idx[int(s)]] += m
 
     oni = season.aso_oni()
     monthly = {k: psl_monthly(url) for k, (url, _) in PSL.items()}
