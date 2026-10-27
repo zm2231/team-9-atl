@@ -35,7 +35,7 @@ export default function SidePanel() {
   };
 
   return (
-    <aside className="side-panel" aria-label="Chat and details">
+    <aside id="side-panel" className="side-panel" aria-label="Chat and details">
       <div className="side-panel__tabs" role="tablist" aria-label="Side panel" onKeyDown={onKeyDown}>
         {TABS.map((t) => {
           const selected = state.sideTab === t.id;

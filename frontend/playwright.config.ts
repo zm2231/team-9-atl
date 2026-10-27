@@ -5,7 +5,13 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests/e2e",
   timeout: 60_000,
-  use: { baseURL: "http://localhost:5173" },
+  use: {
+    baseURL: "http://localhost:5173",
+    storageState: {
+      cookies: [],
+      origins: [{ origin: "http://localhost:5173", localStorage: [{ name: "gsr.onboarding.v1", value: "done" }] }],
+    },
+  },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
     command: "VITE_MOCK_AGENT=1 npm run dev -- --port 5173 --strictPort",

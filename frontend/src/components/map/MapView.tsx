@@ -33,6 +33,29 @@ export function useMapGeometry(): MapGeometry {
   return v;
 }
 
+export const CLICK_DISTANCE = 5;
+export const PAN_MARGIN = 0.5;
+
+/**
+ * Wheel and trackpad pinch (ctrl+wheel) always zoom. Drag and touch gestures pan or zoom only when
+ * not drawing, so a drawing stroke is never taken as a pan; the +/− buttons still zoom while drawing.
+ * Double-click never zooms.
+ */
+export function createMapZoom(isDrawing: () => boolean, onZoom: (t: ZoomTransform) => void) {
+  return zoom<SVGSVGElement, unknown>()
+    .scaleExtent([MIN_ZOOM, MAX_ZOOM])
+    .clickDistance(CLICK_DISTANCE)
+    .filter((e: Event) => e.type === "wheel" || (!isDrawing() && !(e as MouseEvent).button))
+    .on("zoom", (e: { transform: ZoomTransform }) => onZoom(e.transform));
+}
+
+export function panExtent(width: number, height: number): [[number, number], [number, number]] {
+  return [
+    [-width * PAN_MARGIN, -height * PAN_MARGIN],
+    [width * (1 + PAN_MARGIN), height * (1 + PAN_MARGIN)],
+  ];
+}
+
 /** Safari reports a trackpad pinch as gesture events rather than ctrl+wheel (research R8). */
 type GestureEvent = UIEvent & { scale: number; clientX: number; clientY: number };
 
@@ -48,13 +71,7 @@ export default function MapView() {
   const drawingRef = useRef(state.drawing);
   drawingRef.current = state.drawing;
 
-  // Wheel and pinch always zoom; a drag pans only when not drawing; double-click never zooms.
-  const [behavior] = useState(() =>
-    zoom<SVGSVGElement, unknown>()
-      .scaleExtent([MIN_ZOOM, MAX_ZOOM])
-      .filter((e: Event) => e.type === "wheel" || (!drawingRef.current && !(e as MouseEvent).button))
-      .on("zoom", (e: { transform: ZoomTransform }) => setTransform(e.transform)),
-  );
+  const [behavior] = useState(() => createMapZoom(() => drawingRef.current, setTransform));
 
   useEffect(() => {
     const el = ref.current;
@@ -104,7 +121,7 @@ export default function MapView() {
     const { width, height } = size;
     const prev = lastSize.current;
     lastSize.current = size;
-    behavior.extent([[0, 0], [width, height]]).translateExtent([[0, 0], [width, height]]);
+    behavior.extent([[0, 0], [width, height]]).translateExtent(panExtent(width, height));
     const t = zoomTransform(svg);
     const next = zoomIdentity.translate((t.x * width) / prev.width, (t.y * height) / prev.height).scale(t.k);
     select(svg).call(behavior.transform, next);

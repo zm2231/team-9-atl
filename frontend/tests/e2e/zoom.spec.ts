@@ -26,7 +26,10 @@ async function drag(page: Page, from: { x: number; y: number }, to: { x: number;
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
-  await page.evaluate(() => localStorage.clear());
+  await page.evaluate(() => {
+    localStorage.clear();
+    localStorage.setItem("gsr.onboarding.v1", "done");
+  });
   await page.reload();
   await expect(page.locator(MAP_DOT).first()).toBeVisible({ timeout: 20_000 });
   await expect(page.getByRole("status")).toHaveCount(0);
