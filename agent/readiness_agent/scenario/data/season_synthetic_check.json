@@ -28,14 +28,14 @@
  "season_historical_only": {
   "statewide": {
    "pd_affected": {
-    "p50": 6292,
-    "p90": 16618,
-    "p99": 31927
+    "p50": 6255,
+    "p90": 16599,
+    "p99": 31924
    },
    "lacking_shelter": {
-    "p50": 1174,
-    "p90": 3325,
-    "p99": 7393
+    "p50": 1169,
+    "p90": 3319,
+    "p99": 7404
    }
   },
   "top_counties": [
@@ -43,14 +43,14 @@
     "county_fips": "13089",
     "county_name": "Dekalb",
     "lacking_shelter": {
-     "p50": 77,
+     "p50": 78,
      "p90": 443,
      "p99": 971
     },
     "power_dependent_affected": {
-     "p50": 387,
+     "p50": 391,
      "p90": 2215,
-     "p99": 4110
+     "p99": 4109
     }
    },
    {
@@ -58,27 +58,27 @@
     "county_name": "Fulton",
     "lacking_shelter": {
      "p50": 52,
-     "p90": 412,
-     "p99": 1127
+     "p90": 415,
+     "p99": 1128
     },
     "power_dependent_affected": {
-     "p50": 258,
-     "p90": 2060,
-     "p99": 4863
+     "p50": 259,
+     "p90": 2075,
+     "p99": 4866
     }
    },
    {
     "county_fips": "13135",
     "county_name": "Gwinnett",
     "lacking_shelter": {
-     "p50": 43,
+     "p50": 42,
      "p90": 344,
-     "p99": 649
+     "p99": 648
     },
     "power_dependent_affected": {
-     "p50": 214,
-     "p90": 1720,
-     "p99": 3243
+     "p50": 212,
+     "p90": 1721,
+     "p99": 3239
     }
    },
    {
@@ -92,7 +92,7 @@
     "power_dependent_affected": {
      "p50": 142,
      "p90": 1300,
-     "p99": 2174
+     "p99": 2177
     }
    },
    {
@@ -105,7 +105,7 @@
     },
     "power_dependent_affected": {
      "p50": 53,
-     "p90": 460,
+     "p90": 458,
      "p99": 843
     }
    },
@@ -119,22 +119,22 @@
     },
     "power_dependent_affected": {
      "p50": 99,
-     "p90": 669,
-     "p99": 1643
+     "p90": 670,
+     "p99": 1640
     }
    },
    {
     "county_fips": "13139",
     "county_name": "Hall",
     "lacking_shelter": {
-     "p50": 14,
-     "p90": 118,
+     "p50": 13,
+     "p90": 119,
      "p99": 386
     },
     "power_dependent_affected": {
-     "p50": 68,
-     "p90": 592,
-     "p99": 1397
+     "p50": 67,
+     "p90": 593,
+     "p99": 1400
     }
    },
    {
@@ -142,13 +142,13 @@
     "county_name": "Bibb",
     "lacking_shelter": {
      "p50": 8,
-     "p90": 99,
+     "p90": 98,
      "p99": 507
     },
     "power_dependent_affected": {
      "p50": 41,
-     "p90": 496,
-     "p99": 1728
+     "p90": 492,
+     "p99": 1729
     }
    },
    {
@@ -157,12 +157,12 @@
     "lacking_shelter": {
      "p50": 12,
      "p90": 96,
-     "p99": 322
+     "p99": 320
     },
     "power_dependent_affected": {
-     "p50": 62,
-     "p90": 479,
-     "p99": 1612
+     "p50": 61,
+     "p90": 482,
+     "p99": 1602
     }
    },
    {
@@ -175,7 +175,7 @@
     },
     "power_dependent_affected": {
      "p50": 27,
-     "p90": 257,
+     "p90": 260,
      "p99": 546
     }
    }
@@ -184,14 +184,14 @@
  "season_with_synthetic": {
   "statewide": {
    "pd_affected": {
-    "p50": 6491,
-    "p90": 17101,
-    "p99": 32313
+    "p50": 6478,
+    "p90": 17091,
+    "p99": 32456
    },
    "lacking_shelter": {
-    "p50": 1205,
-    "p90": 3391,
-    "p99": 7996
+    "p50": 1202,
+    "p90": 3395,
+    "p99": 8098
    }
   },
   "top_counties": [
@@ -200,13 +200,13 @@
     "county_name": "Dekalb",
     "lacking_shelter": {
      "p50": 78,
-     "p90": 482,
-     "p99": 1085
+     "p90": 478,
+     "p99": 1086
     },
     "power_dependent_affected": {
      "p50": 388,
-     "p90": 2412,
-     "p99": 4352
+     "p90": 2390,
+     "p99": 4348
     }
    },
    {
@@ -215,12 +215,12 @@
     "lacking_shelter": {
      "p50": 56,
      "p90": 441,
-     "p99": 1148
+     "p99": 1147
     },
     "power_dependent_affected": {
-     "p50": 279,
+     "p50": 278,
      "p90": 2203,
-     "p99": 4920
+     "p99": 4918
     }
    },
    {
@@ -228,13 +228,13 @@
     "county_name": "Gwinnett",
     "lacking_shelter": {
      "p50": 46,
-     "p90": 339,
-     "p99": 916
+     "p90": 338,
+     "p99": 914
     },
     "power_dependent_affected": {
-     "p50": 231,
-     "p90": 1694,
-     "p99": 4220
+     "p50": 230,
+     "p90": 1689,
+     "p99": 4216
     }
    },
    {
@@ -261,8 +261,8 @@
     },
     "power_dependent_affected": {
      "p50": 55,
-     "p90": 460,
-     "p99": 907
+     "p90": 462,
+     "p99": 908
     }
    },
    {
@@ -275,8 +275,8 @@
     },
     "power_dependent_affected": {
      "p50": 86,
-     "p90": 643,
-     "p99": 1680
+     "p90": 645,
+     "p99": 1686
     }
    },
    {
@@ -284,13 +284,13 @@
     "county_name": "Cobb",
     "lacking_shelter": {
      "p50": 13,
-     "p90": 116,
-     "p99": 466
+     "p90": 115,
+     "p99": 464
     },
     "power_dependent_affected": {
      "p50": 63,
-     "p90": 579,
-     "p99": 2330
+     "p90": 577,
+     "p99": 2321
     }
    },
    {
@@ -304,7 +304,7 @@
     "power_dependent_affected": {
      "p50": 66,
      "p90": 560,
-     "p99": 1840
+     "p99": 1838
     }
    },
    {
@@ -317,8 +317,8 @@
     },
     "power_dependent_affected": {
      "p50": 33,
-     "p90": 317,
-     "p99": 587
+     "p90": 316,
+     "p99": 588
     }
    },
    {
@@ -326,19 +326,19 @@
     "county_name": "Bibb",
     "lacking_shelter": {
      "p50": 9,
-     "p90": 93,
-     "p99": 415
+     "p90": 92,
+     "p99": 449
     },
     "power_dependent_affected": {
      "p50": 44,
-     "p90": 463,
-     "p99": 1670
+     "p90": 462,
+     "p99": 1668
     }
    }
   ]
  },
  "backtest_share_inside": {
   "historical_only": 0.805,
-  "with_synthetic": 0.805
+  "with_synthetic": 0.811
  }
 }

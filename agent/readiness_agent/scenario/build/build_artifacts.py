@@ -210,7 +210,7 @@ def label_query(bq: bigquery.Client) -> list:
     return query(bq, f"""
       SELECT fips_code, sid, peak_share_total AS peak_share, total_customers AS customers
       FROM {table(LABEL_TABLE)}
-      WHERE peak_share_status != 'suspect' AND peak_share_total IS NOT NULL
+      WHERE peak_share_status = 'recorded' AND peak_share_total IS NOT NULL
         AND total_customers > 0 AND (coverage IS NULL OR coverage >= @min_coverage)
       ORDER BY sid, fips_code""",
       bigquery.ScalarQueryParameter("min_coverage", "FLOAT64", MIN_COVERAGE))
