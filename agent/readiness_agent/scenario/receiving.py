@@ -1,3 +1,5 @@
+import math
+
 from .movement import corridor_for, delay_multiplier, drive_times, haversine_km
 
 CASES = ("low", "base", "high")
@@ -29,6 +31,8 @@ def receiving_sites(county: dict, sites: dict, down_counties: set[str],
                     surge_category: int | None, origin_class: str, case: str,
                     ts_arrival_h: float | None, *, relocation_share: float,
                     power_dependent_at_risk: float) -> dict:
+    if ts_arrival_h is not None and math.isnan(ts_arrival_h):
+        ts_arrival_h = None
     origin = (county["lat"], county["lon"])
     picked = [("medical_shelter", km, s) for km, s in
               _nearest(origin, sites.get("medical_shelters", []), down_counties, surge_category)]

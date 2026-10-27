@@ -204,3 +204,15 @@ def test_late_arrival_drops_seats_from_shortfall(session):
     assert out["shortfall"] == {"seeking_powered_seat": 300,
                                 "generator_recorded_seats_in_time": 0, "uncovered": 300}
     assert out["drive_time_source"] == "live"
+
+
+def test_nan_ts_arrival_is_unknown_not_late(session):
+    session(OSError("offline"))
+    county = {"county_fips": "13051", "lat": SAVANNAH[0], "lon": SAVANNAH[1]}
+    sites = {"medical_shelters": [
+        {"shelter_id": "S1", "name": "Macon", "county_fips": "13021", "lat": MACON[0],
+         "lon": MACON[1], "seats": 400, "generator": "YES", "in_surge": []}]}
+    out = receiving.receiving_sites(county, sites, set(), None, "gulf", "base", float("nan"),
+                                    relocation_share=0.2, power_dependent_at_risk=1000)
+    assert out["sites"][0]["arrives_before_ts_winds"] is None
+    assert out["shortfall"]["generator_recorded_seats_in_time"] == 400
