@@ -342,3 +342,25 @@ def test_unknown_county_fips_is_rejected_and_never_applied():
     rows = [row("a", centre["ccn"], "county_fips", "13999", "2026-10-27T10:00:00", kind="dialysis")]
     planner = site_updates.planner_inputs(rows, data.sites())
     assert planner["changes"] == [] and planner["dialysis_county_override"] == {}
+
+
+def test_added_dialysis_county_is_consistent_across_consumers():
+    near_a, county_b = {"lat": 31.75, "lon": -82.35}, "13051"
+    rows = [
+        row("a", "new-dc", "lat", str(near_a["lat"]), "2026-10-27T10:00:00", kind="dialysis"),
+        row("b", "new-dc", "lon", str(near_a["lon"]), "2026-10-27T10:00:00", kind="dialysis"),
+        row("c", "new-dc", "stations", "12", "2026-10-27T10:00:00", kind="dialysis"),
+        row("d", "new-dc", "county_fips", county_b, "2026-10-27T10:00:00", kind="dialysis"),
+    ]
+    planner = site_updates.planner_inputs(rows, data.sites())
+    sites = site_updates.effective_sites(data.sites(), planner)
+    added = next(d for d in sites["dialysis_centers"] if d["ccn"] == "new-dc")
+    assert added["county_fips"] == county_b
+    ev, _, _ = season.site_inputs(season.events(), add_sites=planner["add_sites"])
+    fips = [str(f) for f in ev["county_fips"]]
+    j = [str(x) for x in ev["dialysis_ccn"]].index("new-dc")
+    assert ev["dialysis_county"][j] == fips.index(county_b)
+    unknown = season.new_site(
+        {"site_kind": "dialysis", **near_a, "stations": 5, "county_fips": "13999"}, 1
+    )
+    assert unknown is not None and unknown["county_fips"] is None

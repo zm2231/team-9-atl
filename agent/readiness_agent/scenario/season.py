@@ -389,6 +389,11 @@ def _count(value: Any) -> int | None:
     return int(n)
 
 
+@cache
+def known_fips() -> frozenset[str]:
+    return frozenset(c["county_fips"] for c in data.counties())
+
+
 def new_site(raw: Any, index: int) -> dict | None:
     if not isinstance(raw, dict):
         return None
@@ -423,6 +428,7 @@ def new_site(raw: Any, index: int) -> dict | None:
             "lat": lat,
             "lon": lon,
             "stations": stations,
+            "county_fips": fips if (fips := str(raw.get("county_fips"))) in known_fips() else None,
         }
     return None
 
@@ -528,7 +534,7 @@ def site_inputs(
         [
             dialysis_county,
             np.array(
-                [int(_distance_km(clat, clon, a["lat"], a["lon"]).argmin()) for a in new_d],
+                [_county_index(a, clat, clon, fips_index) for a in new_d],
                 np.int16,
             ),
         ]
@@ -538,6 +544,13 @@ def site_inputs(
         a["surge"] = ADDED_SURGE_NOTE
         a["counties_in_reach"] = int(reach_of(a["lat"], a["lon"]).sum())
     return out, ignored, added
+
+
+def _county_index(site: dict, clat: np.ndarray, clon: np.ndarray, fips_index: dict) -> int:
+    fips = site.get("county_fips")
+    if fips in fips_index:
+        return fips_index[fips]
+    return int(_distance_km(clat, clon, site["lat"], site["lon"]).argmin())
 
 
 def _prepare(

@@ -720,7 +720,7 @@ def record_site_update(
     source_date: str | None = None,
     tool_context: Any = None,
 ) -> dict[str, Any]:
-    """Record one fact a planner knows about a medical shelter or dialysis centre; every later scenario, season and county plan uses it next to the registry value, which is never overwritten. site_kind: medical_shelter or dialysis. site_id: shelter_id or ccn, or a new id for a site not in the registry (a new medical shelter needs lat, lon, seats and generator, one call each). field: generator (YES, NO, UNRECORDED), seats, stations, open (true or false), lat, lon, name (the facility's name) or county_fips. source: county_ema, gema, site_visit, facility_call, state_registry or planner_review; source_date: YYYY-MM-DD. No free text is stored."""
+    """Record one fact a planner knows about a medical shelter (shelter_id) or dialysis centre (ccn); later scenario, season and plan results show it next to the registry value. field: generator (YES, NO, UNRECORDED), seats, stations, open (true or false), lat, lon, name or county_fips. A new site id needs lat, lon and seats with generator (shelter) or stations (dialysis), one call each. source and source_date say where the fact came from; no free text is stored."""
     from .scenario import site_updates
 
     clean, reason = site_updates.validate(site_kind, site_id, field, value)
