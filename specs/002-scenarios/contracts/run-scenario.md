@@ -21,7 +21,7 @@ The drawn track and category come from the `CONTEXT v1` part of the user's messa
 
 A one-off scenario is conditional: it uses only the past storms that were at a similar place, heading, time of year and strength, and reports what share of them went on to reach Georgia. The season view for a county (`season_county_risk`) is unconditional: it uses every storm since 1950 that came within 250 km of Georgia, weighted by how often each kind occurs.
 
-The model is fixed (27 storms, 2018-2025) and the random seed is fixed, so the same inputs always give the same numbers.
+The model is fixed (35 storms, 2016-2025, from `ext_eaglei_county_storm_2014_2025`) and the random seed is fixed, so the same inputs always give the same numbers.
 
 ## Output
 
@@ -46,7 +46,7 @@ These reuse the names of the scenario object the frontend already sends, so the 
 | `past_storms_used` | Names and years of the past tracks behind the range, e.g. `Michael 2018` |
 | `likelihood` | How often this kind of storm has happened since 1950: `matching_storms`, `years`, `per_year`, `return_period_years`, `p_at_least_one_per_season`, an 80% range on the yearly rate, and up to five example storms. Historical frequency only: not a forecast, no climate-trend adjustment |
 | `support` | `within_labeled_support`, or `outside_labeled_support` when no past storm from this origin reached this intensity with trustworthy outage data (every Atlantic-coast hurricane today) |
-| `range_label` | Always "scenario range from 27 past storms"; the range held 77% of counties when tested on storms left out |
+| `range_label` | "scenario range from N past storms", N read from `outage_model_metrics.json` (35); the range held 79% of counties when tested on storms left out |
 | `assumptions` | Each stated value used: share of power-dependent residents who seek a powered seat, the outage level at which a dialysis centre counts as down, the "affected" threshold, traffic case |
 
 ### `statewide` (one object; each count as p10 / p50 / p90)
@@ -128,5 +128,5 @@ Individuals or addresses; restoration time; rain flooding and tornadoes; any sto
 
 | Tool | Returns |
 |---|---|
-| `season_county_risk(county_fips, limit, outlook, sites_off, assume_generator, case)` | Season risk under an outlook: `long_run` (default), `recent`, `la_nina`, `neutral`, `el_nino`, `noaa_aug_2026` (an outside forecast input that cites NOAA). Each result carries `outlook_note` with that outlook's 2018-2025 back-test. With switches or a non-base case it reruns the saved 2,000-event season live (`run: "live"`, about 0.2 s); otherwise it reads `scenario_season_county` |
+| `season_county_risk(county_fips, limit, outlook, sites_off, assume_generator, case)` | Season risk under an outlook: `long_run` (default), `recent`, `la_nina`, `neutral`, `el_nino`, `noaa_aug_2026` (an outside forecast input that cites NOAA). Each result carries `outlook_note` with that outlook's 2018-2025 back-test. With switches or a non-base case it reruns the saved 3,200-event season live (`run: "live"`, about 0.2 s); otherwise it reads `scenario_season_county` |
 | `county_plan(county_fips, outlook)` | One call: `readiness_brief` (from `build_readiness_brief`), `power_outage_frequency` under the outlook and the long run, `generator_switch_effect` (every unrecorded medical-shelter generator assumed), and `audit` (the brief's ranked tracts against the rest of the state, from ACS B03002, audit only). Any section that fails is `{status: "not_determined"}` |
