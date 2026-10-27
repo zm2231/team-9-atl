@@ -1,0 +1,668 @@
+{
+ "schema": "map-data/v1",
+ "state": "GA",
+ "generated_at": "2026-10-27T00:00:00+00:00",
+ "shelters": [
+  {
+   "shelter_id": "J1",
+   "name": "Commerce High School",
+   "address": "1 Main St, Jackson, 30000",
+   "county_fips": "13157",
+   "county_name": "Jackson",
+   "lat": 34.204,
+   "lon": -83.457,
+   "evacuation_capacity": 270135,
+   "post_impact_capacity": null,
+   "usage": "EVAC",
+   "wheelchair_accessible": "UNRECORDED",
+   "generator_onsite": "UNRECORDED",
+   "is_medical": "NO",
+   "in_surge_slosh_area": "UNRECORDED",
+   "quality_flags": [
+    "suspect_capacity"
+   ]
+  },
+  {
+   "shelter_id": "J2",
+   "name": "Commerce Primary School",
+   "address": "1 Main St, Jackson, 30000",
+   "county_fips": "13157",
+   "county_name": "Jackson",
+   "lat": 34.199,
+   "lon": -83.462,
+   "evacuation_capacity": 225112,
+   "post_impact_capacity": null,
+   "usage": "EVAC",
+   "wheelchair_accessible": "UNRECORDED",
+   "generator_onsite": "UNRECORDED",
+   "is_medical": "NO",
+   "in_surge_slosh_area": "UNRECORDED",
+   "quality_flags": [
+    "suspect_capacity"
+   ]
+  },
+  {
+   "shelter_id": "J3",
+   "name": "Jackson County Comprehensive High School",
+   "address": "1 Main St, Jackson, 30000",
+   "county_fips": "13157",
+   "county_name": "Jackson",
+   "lat": 34.117,
+   "lon": -83.574,
+   "evacuation_capacity": 600,
+   "post_impact_capacity": null,
+   "usage": "EVAC",
+   "wheelchair_accessible": "YES",
+   "generator_onsite": "YES",
+   "is_medical": "NO",
+   "in_surge_slosh_area": "UNRECORDED",
+   "quality_flags": []
+  },
+  {
+   "shelter_id": "G1",
+   "name": "Glynn Academy",
+   "address": "1 Main St, Glynn, 30000",
+   "county_fips": "13127",
+   "county_name": "Glynn",
+   "lat": 31.155,
+   "lon": -81.489,
+   "evacuation_capacity": 400,
+   "post_impact_capacity": null,
+   "usage": "EVAC",
+   "wheelchair_accessible": "NO",
+   "generator_onsite": "UNRECORDED",
+   "is_medical": "NO",
+   "in_surge_slosh_area": "YES",
+   "quality_flags": []
+  },
+  {
+   "shelter_id": "G2",
+   "name": "Brunswick High School",
+   "address": "1 Main St, Glynn, 30000",
+   "county_fips": "13127",
+   "county_name": "Glynn",
+   "lat": 31.2,
+   "lon": -81.48,
+   "evacuation_capacity": 500,
+   "post_impact_capacity": null,
+   "usage": "POST",
+   "wheelchair_accessible": "UNRECORDED",
+   "generator_onsite": "UNRECORDED",
+   "is_medical": "NO",
+   "in_surge_slosh_area": "UNRECORDED",
+   "quality_flags": []
+  },
+  {
+   "shelter_id": "C1",
+   "name": "Savannah Civic Center",
+   "address": "1 Main St, Chatham, 30000",
+   "county_fips": "13051",
+   "county_name": "Chatham",
+   "lat": 32.081,
+   "lon": -81.094,
+   "evacuation_capacity": 1200,
+   "post_impact_capacity": null,
+   "usage": "EVAC",
+   "wheelchair_accessible": "YES",
+   "generator_onsite": "YES",
+   "is_medical": "NO",
+   "in_surge_slosh_area": "YES",
+   "quality_flags": []
+  },
+  {
+   "shelter_id": "C2",
+   "name": "Groves High School",
+   "address": "1 Main St, Chatham, 30000",
+   "county_fips": "13051",
+   "county_name": "Chatham",
+   "lat": 32.103,
+   "lon": -81.163,
+   "evacuation_capacity": 300,
+   "post_impact_capacity": null,
+   "usage": "EVAC",
+   "wheelchair_accessible": "UNRECORDED",
+   "generator_onsite": "UNRECORDED",
+   "is_medical": "NO",
+   "in_surge_slosh_area": "NO",
+   "quality_flags": []
+  },
+  {
+   "shelter_id": "B1",
+   "name": "Cobb Civic Center",
+   "address": "1 Main St, Cobb, 30000",
+   "county_fips": "13067",
+   "county_name": "Cobb",
+   "lat": 33.952,
+   "lon": -84.548,
+   "evacuation_capacity": 800,
+   "post_impact_capacity": null,
+   "usage": "EVAC",
+   "wheelchair_accessible": "UNRECORDED",
+   "generator_onsite": "UNRECORDED",
+   "is_medical": "NO",
+   "in_surge_slosh_area": "UNRECORDED",
+   "quality_flags": []
+  },
+  {
+   "shelter_id": "M1",
+   "name": "Macon Centreplex",
+   "address": "1 Main St, Bibb, 30000",
+   "county_fips": "13021",
+   "county_name": "Bibb",
+   "lat": 32.838,
+   "lon": -83.628,
+   "evacuation_capacity": 1500,
+   "post_impact_capacity": null,
+   "usage": "EVAC",
+   "wheelchair_accessible": "YES",
+   "generator_onsite": "UNRECORDED",
+   "is_medical": "YES",
+   "in_surge_slosh_area": "UNRECORDED",
+   "quality_flags": []
+  },
+  {
+   "shelter_id": "W1",
+   "name": "Waycross Middle School",
+   "address": "1 Main St, Ware, 30000",
+   "county_fips": "13299",
+   "county_name": "Ware",
+   "lat": 31.213,
+   "lon": -82.354,
+   "evacuation_capacity": 700,
+   "post_impact_capacity": null,
+   "usage": "EVAC",
+   "wheelchair_accessible": "UNRECORDED",
+   "generator_onsite": "NO",
+   "is_medical": "NO",
+   "in_surge_slosh_area": "UNRECORDED",
+   "quality_flags": []
+  },
+  {
+   "shelter_id": "Y1",
+   "name": "Wayne County High School",
+   "address": "1 Main St, Wayne, 30000",
+   "county_fips": "13305",
+   "county_name": "Wayne",
+   "lat": 31.607,
+   "lon": -81.885,
+   "evacuation_capacity": 350,
+   "post_impact_capacity": null,
+   "usage": "EVAC",
+   "wheelchair_accessible": "UNRECORDED",
+   "generator_onsite": "UNRECORDED",
+   "is_medical": "NO",
+   "in_surge_slosh_area": "UNRECORDED",
+   "quality_flags": []
+  },
+  {
+   "shelter_id": "X1",
+   "name": "Misplaced Shelter",
+   "address": "1 Main St, Fulton, 30000",
+   "county_fips": null,
+   "county_name": "Fulton",
+   "lat": 38.3,
+   "lon": -122.5,
+   "evacuation_capacity": 250,
+   "post_impact_capacity": null,
+   "usage": "EVAC",
+   "wheelchair_accessible": "UNRECORDED",
+   "generator_onsite": "UNRECORDED",
+   "is_medical": "UNRECORDED",
+   "in_surge_slosh_area": "UNRECORDED",
+   "quality_flags": [
+    "location_disagrees"
+   ]
+  }
+ ],
+ "counties": [
+  {
+   "county_fips": "13001",
+   "name": "Appling",
+   "shelter_count": 0,
+   "capacity_total": {
+    "value": 0.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_total_incl_suspect": {
+    "value": 0.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_excluded": [],
+   "wheelchair": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 0
+   },
+   "generator": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 0
+   },
+   "medical": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 0
+   },
+   "in_surge": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 0
+   },
+   "households_no_vehicle": {
+    "value": 120.0,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_65_plus": {
+    "value": 0.15,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_disability": {
+    "value": 0.142,
+    "source": "ACS survey estimate via CDC SVI \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   }
+  },
+  {
+   "county_fips": "13021",
+   "name": "Bibb",
+   "shelter_count": 1,
+   "capacity_total": {
+    "value": 1500.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_total_incl_suspect": {
+    "value": 1500.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_excluded": [],
+   "wheelchair": {
+    "yes": 1,
+    "no": 0,
+    "unrecorded": 0
+   },
+   "generator": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 1
+   },
+   "medical": {
+    "yes": 1,
+    "no": 0,
+    "unrecorded": 0
+   },
+   "in_surge": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 1
+   },
+   "households_no_vehicle": {
+    "value": 120.0,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_65_plus": {
+    "value": 0.15,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_disability": {
+    "value": 0.142,
+    "source": "ACS survey estimate via CDC SVI \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   }
+  },
+  {
+   "county_fips": "13051",
+   "name": "Chatham",
+   "shelter_count": 2,
+   "capacity_total": {
+    "value": 1500.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_total_incl_suspect": {
+    "value": 1500.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_excluded": [],
+   "wheelchair": {
+    "yes": 1,
+    "no": 0,
+    "unrecorded": 1
+   },
+   "generator": {
+    "yes": 1,
+    "no": 0,
+    "unrecorded": 1
+   },
+   "medical": {
+    "yes": 0,
+    "no": 2,
+    "unrecorded": 0
+   },
+   "in_surge": {
+    "yes": 1,
+    "no": 1,
+    "unrecorded": 0
+   },
+   "households_no_vehicle": {
+    "value": 120.0,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_65_plus": {
+    "value": 0.15,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_disability": {
+    "value": 0.142,
+    "source": "ACS survey estimate via CDC SVI \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   }
+  },
+  {
+   "county_fips": "13067",
+   "name": "Cobb",
+   "shelter_count": 1,
+   "capacity_total": {
+    "value": 800.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_total_incl_suspect": {
+    "value": 800.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_excluded": [],
+   "wheelchair": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 1
+   },
+   "generator": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 1
+   },
+   "medical": {
+    "yes": 0,
+    "no": 1,
+    "unrecorded": 0
+   },
+   "in_surge": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 1
+   },
+   "households_no_vehicle": {
+    "value": 120.0,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_65_plus": {
+    "value": 0.15,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_disability": {
+    "value": 0.142,
+    "source": "ACS survey estimate via CDC SVI \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   }
+  },
+  {
+   "county_fips": "13127",
+   "name": "Glynn",
+   "shelter_count": 2,
+   "capacity_total": {
+    "value": 900.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_total_incl_suspect": {
+    "value": 900.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_excluded": [],
+   "wheelchair": {
+    "yes": 0,
+    "no": 1,
+    "unrecorded": 1
+   },
+   "generator": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 2
+   },
+   "medical": {
+    "yes": 0,
+    "no": 2,
+    "unrecorded": 0
+   },
+   "in_surge": {
+    "yes": 1,
+    "no": 0,
+    "unrecorded": 1
+   },
+   "households_no_vehicle": {
+    "value": 200.0,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "2 of 2 tracts"
+   },
+   "share_65_plus": {
+    "value": 0.18333333333333332,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "2 of 2 tracts"
+   },
+   "share_disability": {
+    "value": 0.142,
+    "source": "ACS survey estimate via CDC SVI \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 2 tracts"
+   }
+  },
+  {
+   "county_fips": "13157",
+   "name": "Jackson",
+   "shelter_count": 3,
+   "capacity_total": {
+    "value": 600.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_total_incl_suspect": {
+    "value": 495847.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_excluded": [
+    {
+     "shelter_id": "J1",
+     "name": "Commerce High School"
+    },
+    {
+     "shelter_id": "J2",
+     "name": "Commerce Primary School"
+    }
+   ],
+   "wheelchair": {
+    "yes": 1,
+    "no": 0,
+    "unrecorded": 2
+   },
+   "generator": {
+    "yes": 1,
+    "no": 0,
+    "unrecorded": 2
+   },
+   "medical": {
+    "yes": 0,
+    "no": 3,
+    "unrecorded": 0
+   },
+   "in_surge": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 3
+   },
+   "households_no_vehicle": {
+    "value": 120.0,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_65_plus": {
+    "value": 0.15,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_disability": {
+    "value": 0.142,
+    "source": "ACS survey estimate via CDC SVI \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   }
+  },
+  {
+   "county_fips": "13299",
+   "name": "Ware",
+   "shelter_count": 1,
+   "capacity_total": {
+    "value": 700.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_total_incl_suspect": {
+    "value": 700.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_excluded": [],
+   "wheelchair": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 1
+   },
+   "generator": {
+    "yes": 0,
+    "no": 1,
+    "unrecorded": 0
+   },
+   "medical": {
+    "yes": 0,
+    "no": 1,
+    "unrecorded": 0
+   },
+   "in_surge": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 1
+   },
+   "households_no_vehicle": {
+    "value": 120.0,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_65_plus": {
+    "value": 0.15,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_disability": {
+    "value": 0.142,
+    "source": "ACS survey estimate via CDC SVI \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   }
+  },
+  {
+   "county_fips": "13305",
+   "name": "Wayne",
+   "shelter_count": 1,
+   "capacity_total": {
+    "value": 350.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_total_incl_suspect": {
+    "value": 350.0,
+    "source": "FEMA NSS registry \u00b7 shelters",
+    "kind": "registry"
+   },
+   "capacity_excluded": [],
+   "wheelchair": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 1
+   },
+   "generator": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 1
+   },
+   "medical": {
+    "yes": 0,
+    "no": 1,
+    "unrecorded": 0
+   },
+   "in_surge": {
+    "yes": 0,
+    "no": 0,
+    "unrecorded": 1
+   },
+   "households_no_vehicle": {
+    "value": 120.0,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_65_plus": {
+    "value": 0.15,
+    "source": "ACS 5-yr \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   },
+   "share_disability": {
+    "value": 0.142,
+    "source": "ACS survey estimate via CDC SVI \u00b7 vulnerability_tracts",
+    "kind": "survey",
+    "coverage": "1 of 1 tracts"
+   }
+  }
+ ],
+ "notes": [
+  "8 of 12 shelters have no wheelchair-access record.",
+  "9 of 12 shelters have no generator record.",
+  "2 shelter(s) have a suspect capacity and are excluded from totals: Commerce High School, Commerce Primary School.",
+  "1 shelter(s) have coordinates that disagree with their recorded state.",
+  "Distances are straight-line; drive times are not included.",
+  "Whether a shelter is open during a real storm is not known from this data."
+ ]
+}

@@ -17,9 +17,11 @@ These decisions are the decision log that Constitution §Development Workflow re
   - Agent Runtime (Vertex AI Agent Engine) query API. Rejected: it is not designed to be called from
     a browser and is awkward to put behind a user-facing IAP gate.
   - A custom chat endpoint that wraps the runner. Rejected: it duplicates what ADK already provides.
-- **Verify at implementation**: field casing in serialized events (`functionResponse` and
-  `groundingMetadata` are camelCase in current ADK). Pin the ADK version in `requirements.txt` and
-  record it here.
+- **Verified 2026-10-27**: `google-adk==2.13.0` (pinned in `agent/requirements.txt`). Routes
+  `POST /apps/{app}/users/{user}/sessions`, `POST /run` and `POST /run_sse` exist as assumed.
+  Events serialize in camelCase (`invocationId`, `groundingMetadata`, `errorCode`,
+  `functionResponse`). `before_agent_callback` receives a `Context` exposing `user_content`;
+  returning `types.Content` ends the turn with no model call (proved by `agent/tests/test_server.py`).
 
 ## R2. Map data "through the agent" without an LLM round-trip (Clarification Q1 → C)
 

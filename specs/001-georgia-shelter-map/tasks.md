@@ -30,23 +30,23 @@ them:
 
 **Purpose**: Project skeletons for both halves.
 
-- [ ] T001 Scaffold the Vite + React 18.3 + TypeScript 5 app in `frontend/`. Create `frontend/package.json` with:
+- [X] T001 Scaffold the Vite + React 18.3 + TypeScript 5 app in `frontend/`. Create `frontend/package.json` with:
   - dependencies `react`, `react-dom`, `d3-geo`, `topojson-client`, `@turf/turf`, `react-markdown`, `remark-gfm`
   - devDependencies `vite`, `@vitejs/plugin-react`, `typescript`, `vitest`, `jsdom`, `@testing-library/react`, `@testing-library/jest-dom`, `msw`, `@playwright/test`, `us-atlas@3`, `@types/d3-geo`, `@types/topojson-client`
   - scripts `dev`, `build`, `test` (vitest run), `build:counties` (node scripts/build-ga-counties.mjs)
   - also `frontend/index.html`, `frontend/tsconfig.json`, `frontend/src/main.tsx`
-- [ ] T002 [P] Configure `frontend/vite.config.ts`:
+- [X] T002 [P] Configure `frontend/vite.config.ts`:
   - React plugin
   - dev-server proxy for `/apps`, `/run`, `/run_sse` to `http://localhost:8000`
   - Vitest block with `environment: 'jsdom'` and setup file `frontend/tests/setup.ts`, which imports `@testing-library/jest-dom`
-- [ ] T003 [P] Create `agent/requirements.txt`:
+- [X] T003 [P] Create `agent/requirements.txt`:
   - `google-adk` pinned to an exact version; record it in `specs/001-georgia-shelter-map/research.md` R1
   - `google-cloud-bigquery`, `fastapi`, `uvicorn[standard]`, `pytest`, `jsonschema`
   - also create an empty `agent/readiness_agent/__init__.py` that does `from . import agent`, as the ADK app convention requires
-- [ ] T004 [P] Add lint config:
+- [X] T004 [P] Add lint config:
   - `frontend/eslint.config.js` (typescript-eslint recommended)
   - `agent/pyproject.toml` with a `[tool.ruff]` section (line-length 100) and a `[tool.pytest.ini_options]` section (testpaths = ["tests"])
-- [ ] T005 [P] Configure Playwright in `frontend/playwright.config.ts`: webServer `npm run dev`, baseURL `http://localhost:5173`, chromium only. Create an MSW handler skeleton in `frontend/tests/mocks/handlers.ts` for `POST /apps/readiness_agent/users/:u/sessions`, `POST /run` and `POST /run_sse`.
+- [X] T005 [P] Configure Playwright in `frontend/playwright.config.ts`: webServer `npm run dev`, baseURL `http://localhost:5173`, chromium only. Create an MSW handler skeleton in `frontend/tests/mocks/handlers.ts` for `POST /apps/readiness_agent/users/:u/sessions`, `POST /run` and `POST /run_sse`.
 
 ---
 
@@ -60,75 +60,84 @@ them:
   1. Set `STATE = "GA"` in `notebooks/c4_01_load_explore.ipynb`, or run `scripts/load.sh`.
   2. Run the validation section and confirm there is no FAIL.
   3. Copy every WARN, with its row count and example rows, into a new section "## Validation run (GA)" at the end of `specs/001-georgia-shelter-map/research.md`. Expect the Commerce High School and Commerce Primary School capacities above 100,000.
-- [ ] T007 [P] Write `frontend/scripts/build-ga-counties.mjs`:
+- [X] T007 [P] Write `frontend/scripts/build-ga-counties.mjs`:
   1. Read `node_modules/us-atlas/counties-10m.json`.
   2. Keep geometries in `objects.counties` whose `id` starts with `"13"`, and drop the `states` and `nation` objects.
   3. Throw unless exactly 159 remain.
   4. Write `frontend/src/assets/ga-counties.topo.json`.
   5. Record the us-atlas version and its ISC / Census public-domain license in research.md R3.
   Run it and commit the asset.
-- [ ] T008 [P] Create `frontend/src/lib/types.ts` mirroring [data-model.md](data-model.md) exactly: `Flag`, `FlagCounts`, `SourcedValue`, `Shelter`, `County`, `MapData`, `HurricaneScenario`, `ReceivingEntry`, `ChatExchange`, `AnswerSegment`. Flags are string unions and never booleans.
-- [ ] T009 [P] Create `frontend/src/lib/flags.ts`:
+- [X] T008 [P] Create `frontend/src/lib/types.ts` mirroring [data-model.md](data-model.md) exactly: `Flag`, `FlagCounts`, `SourcedValue`, `Shelter`, `County`, `MapData`, `HurricaneScenario`, `ReceivingEntry`, `ChatExchange`, `AnswerSegment`. Flags are string unions and never booleans.
+- [X] T009 [P] Create `frontend/src/lib/flags.ts`:
   - `flagLabel(f)`: YES → "Yes", NO → "No", UNRECORDED → "Not recorded"
   - `flagClass(f)`: CSS class. UNRECORDED gets a distinct hatched neutral style, never the NO color
   - `countFlags(shelters, key): FlagCounts`
-  - `sourceLabel(v: SourcedValue)`: e.g. "FEMA NSS registry", "ACS survey estimate via CDC SVI · 412 of 415 tracts"
+  - `sourceLabel(v: SourcedValue)`: always renders the dataset **and the table**, e.g. "FEMA NSS registry · shelters", "ACS survey estimate via CDC SVI · vulnerability_tracts · 412 of 415 tracts" (Constitution III)
+  - `flagCountsLine(c: FlagCounts)`: always returns "{yes} yes · {no} no · {unrecorded} not recorded". There is no variant that shows only Yes (Constitution I)
+  - `exclusionNote(excluded: {name}[])`: returns "" if empty, otherwise "Excludes {n} shelter(s) with suspect capacity: {names}" (Constitution VI)
   - add the matching styles to `frontend/src/styles/flags.css`
-- [ ] T010 [P] Write `frontend/tests/unit/flags.test.ts`, covering SC-003 at unit level:
+- [X] T010 [P] Write `frontend/tests/unit/flags.test.ts`, covering SC-003 at unit level:
   - UNRECORDED is labeled "Not recorded" and its class differs from NO
   - `countFlags` keeps unrecorded separate and never adds it to `no`
   - no helper returns a boolean for a Flag
-- [ ] T011 Implement `agent/readiness_agent/map_data.py` with `get_georgia_map_data(project: str, dataset: str = "evacuation_readiness") -> dict`, returning a dict that validates against `specs/001-georgia-shelter-map/contracts/map-data.schema.json`.
+  - `flagCountsLine` always includes all three counts, even when `no` and `unrecorded` are 0
+  - `exclusionNote` names every excluded shelter and its count, and is empty only for an empty list
+  - `sourceLabel` output contains the table name
+- [X] T011 Implement `agent/readiness_agent/map_data.py` with `get_georgia_map_data(project: str, dataset: str = "evacuation_readiness") -> dict`, returning a dict that validates against `specs/001-georgia-shelter-map/contracts/map-data.schema.json`.
   - **Shelters query**: read `shelters` where `state = 'GA'`. Map BigQuery TRUE/FALSE/NULL to `"YES"`/`"NO"`/`"UNRECORDED"` in one helper `to_flag(v)`.
     - `is_medical`: `"UNRECORDED"` when `population_code` is NULL, otherwise YES or NO from `is_medical`.
     - `quality_flags`: `suspect_capacity` if `evacuation_capacity < 0 OR > 100000`; `location_disagrees` if `county_fips` is NULL or does not start with `"13"`.
     - `county_name`: `county_name`, falling back to `county_parish`.
   - **Tracts query**: read `vulnerability_tracts` where `geo_id LIKE '13%'`. Treat `-999` and negative values as NULL, then aggregate by `LEFT(geo_id,5)`:
-    - `households_no_vehicle`: SUM, source "ACS 5-yr", kind "survey"
-    - `share_65_plus`: `SUM(pop_65_plus)/SUM(total_pop)`, kind "survey"
-    - `share_disability`: population-weighted mean of `pct_disability` over tracts with values, source "ACS survey estimate via CDC SVI", coverage "N of M tracts"
-  - **County records**: build one per county for all 159 FIPS, including counties with zero shelters. `capacity_total` excludes suspect shelters; `capacity_total_incl_suspect` includes them.
+    - `households_no_vehicle`: SUM, source "ACS 5-yr · vulnerability_tracts", kind "survey"
+    - `share_65_plus`: `SUM(pop_65_plus)/SUM(total_pop)`, source "ACS 5-yr · vulnerability_tracts", kind "survey"
+    - `share_disability`: population-weighted mean of `pct_disability` over tracts with values, source "ACS survey estimate via CDC SVI · vulnerability_tracts", coverage "N of M tracts"
+  - **County records**: build one per county for all 159 FIPS, including counties with zero shelters.
+    - `capacity_total` excludes suspect shelters, and `capacity_total_incl_suspect` includes them. Both have source "FEMA NSS registry · shelters", kind "registry".
+    - `capacity_excluded` lists `{shelter_id, name}` for every suspect shelter in the county.
+    - `wheelchair`, `generator`, `medical` and `in_surge` are all full `{yes, no, unrecorded}` counts.
   - **`notes`**: counted statewide statements, e.g. "{n} of {N} shelters have no wheelchair-access record", "{k} shelters have a suspect capacity and are excluded from totals", "Drive times are not included; distances are straight-line".
   - **Return**: `schema`, `state`, `generated_at` (UTC ISO). Cache the result in-process for 10 minutes.
-- [ ] T012 [P] Write `agent/tests/test_map_data.py` using injected fake row lists. Refactor T011 so the row-to-payload transform is a pure function `build_payload(shelter_rows, tract_rows, county_fips_list)`. Assert:
+- [X] T012 [P] Write `agent/tests/test_map_data.py` using injected fake row lists. Refactor T011 so the row-to-payload transform is a pure function `build_payload(shelter_rows, tract_rows, county_fips_list)`. Assert:
   - NULL becomes `UNRECORDED`, never `NO`
-  - a 270,135 capacity is flagged `suspect_capacity` and excluded from `capacity_total` but included in `capacity_total_incl_suspect`
+  - a 270,135 capacity is flagged `suspect_capacity`, excluded from `capacity_total`, included in `capacity_total_incl_suspect`, and listed by name in `capacity_excluded`
+  - every `SourcedValue.source` contains its table name (`shelters` or `vulnerability_tracts`)
   - `-999` tracts are excluded and coverage is reported
   - a zero-shelter county is present with `shelter_count = 0`
   - the payload validates with `jsonschema` against `specs/001-georgia-shelter-map/contracts/map-data.schema.json`
-- [ ] T013 Implement `agent/readiness_agent/callbacks.py`:
+- [X] T013 Implement `agent/readiness_agent/callbacks.py`:
   - `load_map_data_callback(callback_context) -> types.Content | None`
   - When the latest user message text is exactly `LOAD_MAP_DATA v1`, call `get_georgia_map_data(os.environ["GOOGLE_CLOUD_PROJECT"])` and return `types.Content(role="model", parts=[types.Part(text=json.dumps(payload))])`. This skips the LLM.
   - Otherwise return None.
   - On a BigQuery error, return Content with a JSON `{"schema":"map-data/v1","error":"<message>"}` so the frontend shows its failed state.
-- [ ] T014 Implement `agent/readiness_agent/agent.py`:
+- [X] T014 Implement `agent/readiness_agent/agent.py`:
   - `root_agent = Agent(name="readiness_agent", model="gemini-3.6-flash", instruction=..., before_agent_callback=load_map_data_callback, tools=[])`
   - The instruction must say: treat any message part beginning `CONTEXT v1` as context (selected county, shelter, scenario), not a question; always distinguish recorded yes, recorded no and not recorded; include `shelter_id` / `county_fips` in tool results.
   - Add a header comment saying the readiness-agent feature owns the tools, the Maps grounding and the full instruction (plan dependencies D1, D2).
-- [ ] T015 [P] Write `agent/tests/test_callbacks.py`:
+- [X] T015 [P] Write `agent/tests/test_callbacks.py`:
   - the exact command returns Content whose text parses as JSON with `schema == "map-data/v1"`, with `get_georgia_map_data` monkeypatched
   - `"load map data"` and any other text return None
   - a BigQuery exception returns the error JSON
-- [ ] T016 Implement `agent/server.py`:
+- [X] T016 Implement `agent/server.py`:
   - `app = get_fast_api_app(agents_dir=<dir of agent/>, web=False, session_service_uri=None)` (in-memory sessions)
   - mount `StaticFiles(directory="../frontend/dist" or env FRONTEND_DIST, html=True)` at `/` **after** the ADK routes, so `/apps`, `/run` and `/run_sse` still resolve
   - expose `uvicorn` startup on `PORT` (default 8080)
-- [ ] T017 Implement `frontend/src/lib/agentClient.ts`:
+- [X] T017 Implement `frontend/src/lib/agentClient.ts`:
   - `const APP = "readiness_agent"`; a per-tab `userId = crypto.randomUUID()`
   - `createSession(): Promise<string>`
   - `loadMapData(signal): Promise<MapData>`:
     - create a dedicated session and POST `/run` with `LOAD_MAP_DATA v1`
     - take the last event whose author is `readiness_agent`, then `JSON.parse(content.parts[0].text)`
     - reject on: status other than 200, JSON parse failure, `schema !== "map-data/v1"`, an `error` field, or a 20 s timeout (AbortController)
-- [ ] T018 Implement the store in `frontend/src/state/store.tsx`: `useReducer` plus React context.
+- [X] T018 Implement the store in `frontend/src/state/store.tsx`: `useReducer` plus React context.
   - **State**: `mapData: {status: "loading" | "ready" | "failed", data?, error?}`, `hoverFips`, `selectedFips`, `selectedShelterId`, `highlight: {shelterIds: Set<string>, countyFips: Set<string>}`, `scenario: HurricaneScenario | null`, `chat: ChatExchange[]`
   - **Selectors**: `countyByFips` and `shelterById` maps, built once when the data loads
-- [ ] T019 Build the app shell in `frontend/src/App.tsx` and `frontend/src/styles/app.css`:
+- [X] T019 Build the app shell in `frontend/src/App.tsx` and `frontend/src/styles/app.css`:
   - three-column desktop layout: map (flex 1), side panel (360 px), chat (400 px)
   - on mount, call `loadMapData` and dispatch the result
   - a banner for the loading state, and for the failed state with a Retry button (FR-008b)
   - county outlines render regardless of data status
-- [ ] T020 [P] Create the test fixture `frontend/tests/mocks/mapData.fixture.json`, valid per the schema, with 4 counties and 8 shelters, including:
+- [X] T020 [P] Create the test fixture `frontend/tests/mocks/mapData.fixture.json`, valid per the schema, with 4 counties and 8 shelters, including:
   - Jackson (13157) with "Commerce High School", capacity 270,135, `suspect_capacity`
   - a county with zero shelters
   - shelters with UNRECORDED, NO and YES wheelchair flags
@@ -150,14 +159,14 @@ Yes / No / Not recorded counts and people figures, and shelter details.
 **Independent Test**: Open the app with the chat and simulation unused. Hover over Cobb and
 Chatham, and check the figures against BigQuery. Jackson shows the Commerce flag and two totals.
 
-- [ ] T021 [P] [US1] Implement `frontend/src/components/map/CountyLayer.tsx`:
+- [X] T021 [P] [US1] Implement `frontend/src/components/map/CountyLayer.tsx`:
   - SVG with `geoMercator().fitSize([w,h], gaFeatureCollection)` from `ga-counties.topo.json` via `topojson-client.feature`
   - one `<path>` per county
   - `onPointerEnter` / `onPointerLeave` dispatch hover, and only the hovered county gets the `.county--hover` class
   - `tabIndex=0` with `onFocus` / `onBlur` mirroring hover
   - classes for `highlight.countyFips` and `selectedFips`
   - export the `projection` through context for the other layers
-- [ ] T022 [P] [US1] Implement `frontend/src/components/map/ShelterLayer.tsx`:
+- [X] T022 [P] [US1] Implement `frontend/src/components/map/ShelterLayer.tsx`:
   - one `<circle>` per shelter at `projection([lon, lat])`
   - fill by usage (EVAC / POST / not recorded)
   - a ring stroke when `in_surge_slosh_area === "YES"`
@@ -165,29 +174,29 @@ Chatham, and check the figures against BigQuery. Jackson shows the Commerce flag
   - `.shelter--highlight` from the store
   - click dispatches `selectedShelterId`
   - render nothing until `mapData.status === "ready"`
-- [ ] T023 [US1] Implement `frontend/src/components/summary/CountySummary.tsx` for the hovered county, falling back to the selected one (FR-003, FR-003a, FR-007):
+- [X] T023 [US1] Implement `frontend/src/components/summary/CountySummary.tsx` for the hovered county, falling back to the selected one (FR-003, FR-003a, FR-007):
   - name and shelter count; "No shelters on file" when 0
-  - `capacity_total`, plus "incl. suspect: X" with an explanation when it differs
-  - Yes / No / Not recorded rows for wheelchair, generator and medical, and the surge-zone counts
+  - `capacity_total`, with `exclusionNote(capacity_excluded)` directly beside it and the "incl. suspect" total when `capacity_excluded` is non-empty
+  - a `flagCountsLine` row for each of wheelchair, generator, medical and surge zone
   - the three people figures, each with `sourceLabel()`
   - an `aria-live="polite"` wrapper
   - every number shows its registry or survey kind badge
-- [ ] T024 [P] [US1] Implement `frontend/src/components/summary/ShelterDetails.tsx` (FR-004, FR-005, User Story 1 acceptance scenario 4):
+- [X] T024 [P] [US1] Implement `frontend/src/components/summary/ShelterDetails.tsx` (FR-004, FR-005, User Story 1 acceptance scenario 4):
   - name, address, capacity and post-impact capacity, usage, and the four flags via `flagLabel`
   - quality-flag explanations: "Capacity looks implausible; FEMA's value shown unedited" and "Coordinates disagree with recorded state/county"
   - the label "Registry record (FEMA National Shelter System)"
-- [ ] T025 [P] [US1] Implement `frontend/src/components/map/Legend.tsx` (FR-009), explaining:
+- [X] T025 [P] [US1] Implement `frontend/src/components/map/Legend.tsx` (FR-009), explaining:
   - the county hover and highlight colors
   - shelter fill by usage, the surge ring and the warning glyph
   - Yes / No / Not recorded styles
   - the registry / survey / live / simulation badges
-- [ ] T026 [US1] Wire up US1 in `frontend/src/App.tsx`:
+- [X] T026 [US1] Wire up US1 in `frontend/src/App.tsx`:
   - `CountyLayer` and `ShelterLayer` inside one `<svg>`
   - side panel: `ShelterDetails` when a shelter is selected, otherwise `CountySummary`
   - `Legend` under the map
   - clicking a county sets `selectedFips`
   - hover updates do no network work (FR-008a)
-- [ ] T027 [P] [US1] Write `frontend/tests/component/CountySummary.test.tsx` with the fixture:
+- [X] T027 [P] [US1] Write `frontend/tests/component/CountySummary.test.tsx` with the fixture:
   - Jackson shows the total excluding Commerce plus the incl.-suspect line
   - unrecorded wheelchair count shown separately and not added to No (SC-003)
   - the zero-shelter county shows "No shelters on file"
@@ -209,34 +218,34 @@ readiness feature, or the MSW mock). Check that:
 - the sources sit directly under the live segments
 - the referenced items highlight
 
-- [ ] T028 [P] [US2] Implement `frontend/src/lib/grounding.ts`:
+- [X] T028 [P] [US2] Implement `frontend/src/lib/grounding.ts`:
   - `segmentAnswer(text, groundingMetadata?)`: returns `AnswerSegment[]`. Split `text` at each `groundingSupports[].segment` (with `startIndex ?? 0` and `endIndex`) into `kind: "live"` segments carrying `sources = groundingChunkIndices.map(i => chunks[i].maps)` as `{title, uri, placeId}`. The rest is `kind: "registry"`.
   - `collectReferences(obj)`: walks any JSON recursively and collects the string values of keys `shelter_id` and `county_fips`.
-- [ ] T029 [P] [US2] Write `frontend/tests/unit/grounding.test.ts`:
+- [X] T029 [P] [US2] Write `frontend/tests/unit/grounding.test.ts`:
   - a null `startIndex` is treated as 0
   - two supports produce live / registry / live ordering
   - sources map to the right segment
   - `collectReferences` finds nested IDs in arrays
-- [ ] T030 [US2] Add `streamChat({question, context, onEvent, signal})` to `frontend/src/lib/agentClient.ts`:
+- [X] T030 [US2] Add `streamChat({question, context, onEvent, signal})` to `frontend/src/lib/agentClient.ts`:
   - create the chat session lazily, once per tab
   - POST `/run_sse` with `streaming: true` and two parts: the question text, and `"CONTEXT v1 " + JSON.stringify(context)` (contracts §3)
   - read `response.body` with `getReader()` and `TextDecoder`, split on blank lines, and parse each `data:` line as an Event
   - raise on `errorCode`, HTTP errors, or a 90 s timeout
-- [ ] T031 [US2] Implement `frontend/src/components/chat/ChatPanel.tsx`:
+- [X] T031 [US2] Implement `frontend/src/components/chat/ChatPanel.tsx`:
   - text input with Send (Enter submits)
   - history list of `ChatExchange`
   - status chips for pending, streaming and failed, with Retry re-sending the same question and context
   - builds context from the store: `county_fips = selectedFips ?? hoverFips`, `shelter_id`, `scenario` (null until US3)
   - on each event: append partial text, collect `functionResponse` references into the exchange, keep the final `groundingMetadata`
   - the map stays interactive during streaming
-- [ ] T032 [US2] Implement `frontend/src/components/chat/AnswerView.tsx` and `frontend/src/components/chat/SourceList.tsx`:
+- [X] T032 [US2] Implement `frontend/src/components/chat/AnswerView.tsx` and `frontend/src/components/chat/SourceList.tsx`:
   - render `segmentAnswer()` output
   - live segments get a "Live check · just now" badge and a distinct style
   - registry segments get no badge
   - `SourceList` sits **immediately after** each live segment: a `<span translate="no">Google Maps</span>` label, then each source title as a link to `uri` (`target=_blank rel=noopener`)
   - referenced shelters and counties render as chips under the answer, and clicking one selects it on the map
-- [ ] T033 [US2] On exchange completion in `frontend/src/state/store.tsx`, dispatch `highlight` with the exchange's `referenced_shelter_ids` and `referenced_county_fips`, and clear it on the next question. Keep `placeId`s only in memory: a `liveChecks: Map<shelter_id, {placeIds, checked_at}>` holds no titles, URIs or text beyond the render (FR-022).
-- [ ] T034 [P] [US2] Write `frontend/tests/component/AnswerView.test.tsx`:
+- [X] T033 [US2] On exchange completion in `frontend/src/state/store.tsx`, dispatch `highlight` with the exchange's `referenced_shelter_ids` and `referenced_county_fips`, and clear it on the next question. Keep `placeId`s only in memory: a `liveChecks: Map<shelter_id, {placeIds, checked_at}>` holds no titles, URIs or text beyond the render (FR-022).
+- [X] T034 [P] [US2] Write `frontend/tests/component/AnswerView.test.tsx`:
   - sources render as the next sibling after the live segment
   - the element containing "Google Maps" has `translate="no"`
   - registry text has no live badge
@@ -256,7 +265,7 @@ with an adjustable cutoff. The scenario is sent to the agent with each chat mess
 summary and receiving list update when the category, cutoff or track changes, and that no receiving
 shelter lies inside the band.
 
-- [ ] T035 [P] [US3] Implement `frontend/src/lib/simulation.ts` with pure functions (research R5, R6):
+- [X] T035 [P] [US3] Implement `frontend/src/lib/simulation.ts` with pure functions (research R5, R6):
   - `HALF_WIDTH_KM = {1:30, 2:45, 3:60, 4:80, 5:100}`
   - `thinTrack(lonlats, minKm=5)` returns a `LineString`, or a `Point` if there is one point or the track is under 1 km
   - `computeBand(track, category)` returns `turf.buffer(track, km, {units:"kilometers"})`
@@ -268,8 +277,9 @@ shelter lies inside the band.
     3. keep `d <= cutoffKm`
     4. sort by capacity desc (suspect capacity treated as 0), then by `d` asc
     5. attach a `reason`, e.g. "Largest recorded capacity within 80 km; wheelchair access not recorded"
-  - `unrecordedWheelchairCount(list)`
-- [ ] T036 [P] [US3] Write `frontend/tests/unit/simulation.test.ts`:
+  - `listFlagCounts(shelters, key): FlagCounts`, used for the affected set and the receiving list
+  - `capacitySummary(shelters)`: returns `{total, totalInclSuspect, excluded: {shelter_id, name}[]}` for any set of shelters
+- [X] T036 [P] [US3] Write `frontend/tests/unit/simulation.test.ts`:
   - SC-005b: no affected shelter is ever in `receivingList`, across categories 1–5 and several tracks
   - sort order is capacity desc, ties by distance
   - the suspect Commerce shelter never ranks first
@@ -278,33 +288,36 @@ shelter lies inside the band.
   - an empty-result case returns `[]`
   - a band crossing into Florida counts only GA
   - Cat 5 band width is greater than Cat 1
-- [ ] T037 [US3] Implement `frontend/src/components/map/TrackDrawer.tsx`:
+- [X] T037 [US3] Implement `frontend/src/components/map/TrackDrawer.tsx`:
   - a "Draw hurricane track" toggle
   - while on, pointer down / move / up on the SVG collects `projection.invert` points and shows a live polyline
   - on pointer-up, dispatch `scenario.track = thinTrack(points)` and recompute
   - render the band polygon (semi-transparent) and the track with a storm glyph at the end
   - the track can be redrawn by toggling again
   - a "Reset" button clears the scenario (FR-020)
-- [ ] T038 [P] [US3] Implement `frontend/src/components/scenario/CategoryPicker.tsx` (segmented control 1–5, default 3) and `frontend/src/components/scenario/ReachSlider.tsx` (range 25–200, step 5, default 80, value shown as "Within reach: 80 km (straight-line)"). Both dispatch recompute.
-- [ ] T039 [US3] Add a scenario reducer case in `frontend/src/state/store.tsx`. On track, category or cutoff change, compute `band`, `affected_*`, `receiving` with `simulation.ts`, synchronously after the drag ends, not on pointer move.
-- [ ] T040 [US3] Implement `frontend/src/components/scenario/AffectedSummary.tsx` (FR-018, FR-019):
+- [X] T038 [P] [US3] Implement `frontend/src/components/scenario/CategoryPicker.tsx` (segmented control 1–5, default 3) and `frontend/src/components/scenario/ReachSlider.tsx` (range 25–200, step 5, default 80, value shown as "Within reach: 80 km (straight-line)"). Both dispatch recompute.
+- [X] T039 [US3] Add a scenario reducer case in `frontend/src/state/store.tsx`. On track, category or cutoff change, compute `band`, `affected_*`, `receiving` with `simulation.ts`, synchronously after the drag ends, not on pointer move.
+- [X] T040 [US3] Implement `frontend/src/components/scenario/AffectedSummary.tsx` (FR-018, FR-019):
   - a header badge: "Illustrative scenario — not a forecast"
   - affected county names
-  - shelter count, recorded capacity excluding suspect, Yes / No / Not recorded for wheelchair and generator
-  - the number recorded in a surge zone, with those shelters listed by name
-- [ ] T041 [US3] Implement `frontend/src/components/scenario/ReceivingList.tsx` (FR-018a–d):
+  - shelter count, and recorded capacity from `capacitySummary` with `exclusionNote` beside it
+  - `flagCountsLine` for wheelchair, generator and surge zone
+  - the shelters recorded as YES for surge zone listed by name
+- [X] T041 [US3] Implement `frontend/src/components/scenario/ReceivingList.tsx` (FR-018a–d):
   - table with columns: rank, name and county, capacity, distance "(straight-line)", wheelchair, generator, surge flag, reason
-  - a header line: "{n} shelters within {cutoff} km outside the affected area · {u} have no wheelchair-access record"
+  - a header line: "{n} shelters within {cutoff} km outside the affected area · wheelchair access: " + `flagCountsLine(listFlagCounts(list, "wheelchair_accessible"))`
+  - if the list shows any capacity total, it uses `capacitySummary` and `exclusionNote`. Suspect rows keep their warning glyph and the reason "Capacity looks implausible; ranked as 0"
   - empty state: "No shelters within {cutoff} km outside the affected area — try raising the reach cutoff"
   - clicking a row selects the shelter
-- [ ] T042 [US3] Style affected vs receiving in `frontend/src/components/map/ShelterLayer.tsx` and `CountyLayer.tsx`:
+- [X] T042 [US3] Style affected vs receiving in `frontend/src/components/map/ShelterLayer.tsx` and `CountyLayer.tsx`:
   - affected shelters red-outlined; surge plus affected gets a strong marker
   - receiving shelters green-outlined
   - affected counties tinted
   - side panel shows `AffectedSummary` and `ReceivingList` when a scenario is active (wire in `frontend/src/App.tsx`)
-- [ ] T043 [US3] In `frontend/src/components/chat/ChatPanel.tsx`, include `scenario` in the `CONTEXT v1` payload (contracts §3) as `{track, category, cutoff_km, affected_county_fips, affected_shelter_ids, receiving_top: first 20 shelter_ids}`.
-- [ ] T044 [P] [US3] Write `frontend/tests/component/ReceivingList.test.tsx` with the fixture plus a synthetic scenario:
-  - the header shows the cutoff and the unrecorded count
+- [X] T043 [US3] In `frontend/src/components/chat/ChatPanel.tsx`, include `scenario` in the `CONTEXT v1` payload (contracts §3) as `{track, category, cutoff_km, affected_county_fips, affected_shelter_ids, receiving_top: first 20 shelter_ids}`.
+- [X] T044 [P] [US3] Write `frontend/tests/component/ReceivingList.test.tsx` with the fixture plus a synthetic scenario:
+  - the header shows the cutoff and all three wheelchair counts (yes · no · not recorded)
+  - a suspect shelter row shows its glyph and reason
   - "Not recorded" is shown, not "No"
   - the empty state text appears for an empty list
 
@@ -321,12 +334,12 @@ shelter lies inside the band.
 get a ranked list with reasons, that the shelters highlight, and that the counted "could not tell
 you" section is visible.
 
-- [ ] T045 [US4] In `frontend/src/components/chat/AnswerView.tsx`, render each segment's text with `react-markdown` and `remark-gfm`, so ranked lists and tables display. Document in a code comment that the live/registry split is applied per segment, so a markdown table split across segments renders as separate blocks. This is an accepted limitation.
-- [ ] T046 [US4] Implement `frontend/src/components/summary/CouldNotTell.tsx`, a "What we could not tell you" panel, always visible at the bottom of the side panel, showing:
+- [X] T045 [US4] In `frontend/src/components/chat/AnswerView.tsx`, render each segment's text with `react-markdown` and `remark-gfm`, so ranked lists and tables display. Document in a code comment that the live/registry split is applied per segment, so a markdown table split across segments renders as separate blocks. This is an accepted limitation.
+- [X] T046 [US4] Implement `frontend/src/components/summary/CouldNotTell.tsx`, a "What we could not tell you" panel, always visible at the bottom of the side panel, showing:
   - `mapData.notes` (statewide, counted)
   - for the hovered or selected county: "{u} of {n} shelters never assessed for wheelchair access", "{g} generator status not recorded"
   - when a scenario is active: the receiving list's unrecorded count and "Distances are straight-line; drive times not included"
-- [ ] T047 [US4] Add suggested-question chips to `frontend/src/components/chat/ChatPanel.tsx`, built from the selection:
+- [X] T047 [US4] Add suggested-question chips to `frontend/src/components/chat/ChatPanel.tsx`, built from the selection:
   - "How many shelters are in {county} and what is their capacity?"
   - "Which shelters in {county} are in the surge zone?"
   - "What should I verify before September in {county}?"
@@ -338,7 +351,7 @@ you" section is visible.
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T048 Write `agent/Dockerfile` (repo-root build context):
+- [X] T048 Write the repo-root `Dockerfile` (moved from `agent/` so `gcloud run deploy --source .` finds it):
   - stage 1 `node:20` runs `npm ci && npm run build` in `frontend/`
   - stage 2 `python:3.12-slim` installs `agent/requirements.txt`, copies `agent/` and `frontend/dist`
   - sets `FRONTEND_DIST`, `CMD uvicorn server:app --host 0.0.0.0 --port $PORT`
@@ -347,7 +360,7 @@ you" section is visible.
   - an account that isn't allow-listed gets the IAP denial page, and Cloud Run logs show no request (FR-023)
   - adding an account works without a redeploy (FR-024)
   Record the service URL and checks in `specs/001-georgia-shelter-map/research.md`.
-- [ ] T050 [P] Write the Playwright smoke test `frontend/tests/e2e/smoke.spec.ts` with MSW, following SC-007:
+- [X] T050 [P] Write the Playwright smoke test `frontend/tests/e2e/smoke.spec.ts` with MSW, following SC-007:
   1. load the page and see county outlines, then shelters
   2. hover a fixture county and see the summary
   3. draw a track across Glynn and set Category 3
@@ -370,7 +383,7 @@ you" section is visible.
   - screenshot a compliant source rendering, with "Google Maps" unmodified, `translate="no"`, and sources immediately after the content
   Record the results in `specs/001-georgia-shelter-map/research.md`.
 - [ ] T054 Re-run the Constitution Check in `specs/001-georgia-shelter-map/plan.md` against the built system. Update each gate's status with evidence (test names, research.md sections). Run the full quickstart §5 walk-through.
-- [ ] T055 [P] Update the Commands section of `CLAUDE.md` if any script names changed, and add `frontend/` and `agent/` run instructions to `agent/README.md` (keep the existing requirements text).
+- [X] T055 [P] Update the Commands section of `CLAUDE.md` if any script names changed, and add `frontend/` and `agent/` run instructions to `agent/README.md` (keep the existing requirements text).
 
 ---
 

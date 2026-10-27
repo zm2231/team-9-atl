@@ -71,8 +71,8 @@ counties.
 2. **Given** a county whose shelters mostly have no wheelchair record, **When** its summary shows,
    **Then** the "Not recorded" count is displayed alongside Yes and No and is never added to No.
 3. **Given** a county containing a shelter with an implausible capacity (e.g. Commerce, Jackson
-   County), **When** its summary shows, **Then** the total is shown with that shelter flagged as
-   suspect and the total excluding it is also shown.
+   County), **When** its summary shows, **Then** the total excludes that shelter and names it with a count beside the total
+   (e.g. "Excludes 2 shelters with suspect capacity: …"), and the total including it is also shown.
 4. **Given** the user selects a shelter on the map, **When** its details open, **Then** they show
    name, address, capacity, use (before landfall / after impact), each flag as Yes / No / Not
    recorded, and a label stating this is the registry record and when it was registered, if known.
@@ -149,7 +149,7 @@ shelters inside the band are distinguished, and that no receiving shelter lies i
    to the plain county view.
 6. **Given** a drawn track, **When** the receiving list is shown, **Then** it ranks shelters
    outside the band and within reach by capacity (largest first), labels distances as straight-line, shows wheelchair
-   access as Yes / No / Not recorded, and states how many have no accessibility record.
+   access as Yes / No / Not recorded, and states the yes · no · not recorded wheelchair counts in its header.
 
 ---
 
@@ -219,7 +219,8 @@ get a ranked list with reasons and a separate counted "could not tell you" secti
   the pointer leaves it.
 - **FR-003**: On hover or selection, the system MUST show a county summary: name, shelter count,
   total recorded evacuation capacity, and Yes / No / Not recorded counts for wheelchair access,
-  generator on site and medical-needs designation, plus the count recorded in a surge zone.
+  generator on site, medical-needs designation and surge-zone location. All three counts are always
+  shown for every flag, never only the Yes count.
 - **FR-003a**: The county summary MUST also show three people figures, each labeled with its source:
   **households with no vehicle** (count), **share of residents aged 65+**, and **share of residents
   with a disability**. Disability MUST be labeled with its source and estimate type (ACS survey estimate via CDC SVI). Figures MUST be aggregated
@@ -231,8 +232,11 @@ get a ranked list with reasons and a separate counted "could not tell you" secti
   recorded" for blank values, including values that are only whitespace.
 - **FR-006**: The system MUST visually distinguish shelters recorded as in a surge zone, and
   shelters designated for use before landfall versus after impact.
-- **FR-007**: The system MUST flag shelters with implausible capacities and MUST show any total that
-  includes them both with and without them.
+- **FR-007**: The system MUST flag shelters with implausible capacities (below 0 or above 100,000).
+  Every capacity total that leaves any shelter out MUST state, right next to the total, **how many**
+  shelters were left out and **which ones** by name (e.g. "Excludes 2 shelters with suspect
+  capacity: Commerce High School, Commerce Primary School"). Wherever such a total appears, the
+  total including them MUST also be available.
 - **FR-008**: The system MUST NOT edit, drop or hide registry records. Data problems are shown as
   flags.
 - **FR-008a**: The map's shelter and county data MUST be obtained from the backend agent, the same
@@ -269,8 +273,8 @@ get a ranked list with reasons and a separate counted "could not tell you" secti
 - **FR-017**: The user MUST be able to set the simulated hurricane's intensity to Category 1, 2, 3,
   4 or 5. The impact area MUST grow with category, using fixed, documented values per category.
 - **FR-018**: The system MUST highlight the counties and shelters inside the simulated impact area
-  and summarize them: count, recorded capacity, Yes / No / Not recorded for wheelchair access and
-  generator, and how many are recorded in a surge zone.
+  and summarize them: count, recorded capacity (per FR-007), and Yes / No / Not recorded counts for
+  wheelchair access, generator and surge-zone location.
 - **FR-018a**: For an active scenario, the system MUST also list **receiving shelters**: Georgia
   shelters outside the impact band whose straight-line distance from the center of the nearest
   affected county is within the "within reach" cutoff, sorted by recorded evacuation capacity,
@@ -284,10 +288,12 @@ get a ranked list with reasons and a separate counted "could not tell you" secti
   from **25 km to 200 km**. Changing it MUST update the receiving list, and the list MUST show the
   cutoff in effect.
 - **FR-018c**: Ranking MUST NOT treat Not recorded wheelchair access as No. Shelters recorded Yes,
-  recorded No and Not recorded MUST stay distinguishable in the list, and the list MUST state how
-  many receiving shelters have no accessibility record.
-- **FR-018d**: The receiving list MUST exclude suspect-capacity shelters from capacity totals, or
-  flag them, consistent with FR-007.
+  recorded No and Not recorded MUST stay distinguishable in the list. The list header MUST state
+  the wheelchair-access counts for the receiving shelters as Yes / No / Not recorded (e.g. "4 yes
+  · 1 no · 17 not recorded").
+- **FR-018d**: Suspect-capacity shelters in the receiving list MUST stay visible and flagged, MUST
+  NOT outrank other shelters on their recorded capacity, and MUST be left out of any capacity total,
+  with the exclusion stated per FR-007.
 - **FR-019**: The system MUST label all simulation output as an illustrative planning scenario and
   not a forecast.
 - **FR-020**: The user MUST be able to remove or reset the simulated hurricane.

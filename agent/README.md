@@ -1,12 +1,36 @@
 # Your agent goes here
 
-This folder is empty on purpose.
+This folder started empty on purpose.
 
 We built the on-ramp: every registered shelter in your state with capacity and accessibility, the
 census tracts around them with disability, vehicle access and age, the counties where people depend
 on electricity for medical equipment, hurricane and coastal-flood exposure per tract, and a
 validation suite that tells you plainly whether any of it is wrong. We did not build the vehicle.
 The design decisions in your agent are what you are judged on.
+
+## Running it (feature 001-georgia-shelter-map)
+
+This folder now holds the ADK service behind the Georgia shelter map in [`../frontend`](../frontend).
+It serves the ADK API and the built frontend from one origin. The map's data comes through the agent:
+the frontend sends `LOAD_MAP_DATA v1` and a `before_agent_callback` answers it from BigQuery with no
+model call. See [`specs/001-georgia-shelter-map`](../specs/001-georgia-shelter-map/) for the
+contract.
+
+```bash
+# agent service (Python 3.12+)
+cd agent && python -m venv .venv && .venv/bin/pip install -r requirements.txt
+export GOOGLE_CLOUD_PROJECT=<project> GOOGLE_CLOUD_LOCATION=global GOOGLE_GENAI_USE_VERTEXAI=True
+.venv/bin/uvicorn server:app --port 8000
+.venv/bin/python -m pytest            # no credentials needed
+
+# frontend, in another shell
+cd frontend && npm ci && npm run dev  # proxies /apps, /run, /run_sse to :8000
+VITE_MOCK_AGENT=1 npm run dev         # or: run against a mocked agent, no backend needed
+npm test && npx playwright test
+```
+
+`readiness_agent/agent.py` has no tools yet. The readiness-agent work (BigQuery tools, Grounding with
+Google Maps) still has to land for chat answers to be grounded.
 
 ## What has to be true of what you build here
 

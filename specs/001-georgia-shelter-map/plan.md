@@ -103,10 +103,12 @@ agent/
 │   └── callbacks.py            # handles the LOAD_MAP_DATA command and skips the LLM (this feature)
 ├── server.py                   # get_fast_api_app() and a mount of frontend/dist at "/"
 ├── requirements.txt
-├── Dockerfile                  # builds the frontend, then the Python image
 └── tests/
     ├── test_map_data.py        # tri-state, suspect capacity, -999, county aggregation
-    └── test_callbacks.py       # the command bypasses the LLM; other messages pass through
+    ├── test_callbacks.py       # the command bypasses the LLM; other messages pass through
+    └── test_server.py          # LOAD_MAP_DATA over the real ADK /run route
+
+Dockerfile                      # repo root, so `gcloud run deploy --source .` finds it (H3)
 
 frontend/
 ├── index.html

@@ -71,7 +71,7 @@
     "County": {
       "type": "object",
       "required": ["county_fips", "name", "shelter_count", "capacity_total",
-                   "capacity_total_incl_suspect", "wheelchair", "generator", "medical",
+                   "capacity_total_incl_suspect", "capacity_excluded", "wheelchair", "generator", "medical",
                    "in_surge", "households_no_vehicle", "share_65_plus", "share_disability"],
       "additionalProperties": false,
       "properties": {
@@ -80,6 +80,19 @@
         "shelter_count": { "type": "integer", "minimum": 0 },
         "capacity_total": { "$ref": "#/$defs/SourcedValue" },
         "capacity_total_incl_suspect": { "$ref": "#/$defs/SourcedValue" },
+        "capacity_excluded": {
+          "description": "Shelters left out of capacity_total (suspect capacity). Shown by count and name next to the total.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["shelter_id", "name"],
+            "additionalProperties": false,
+            "properties": {
+              "shelter_id": { "type": "string" },
+              "name": { "type": "string" }
+            }
+          }
+        },
         "wheelchair": { "$ref": "#/$defs/FlagCounts" },
         "generator": { "$ref": "#/$defs/FlagCounts" },
         "medical": { "$ref": "#/$defs/FlagCounts" },

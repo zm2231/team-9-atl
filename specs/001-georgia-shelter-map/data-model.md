@@ -21,7 +21,7 @@ Every number shown to the user carries where it came from (Constitution III).
 | Field | Type | Notes |
 |---|---|---|
 | `value` | number \| null | null means there is no data. It is shown as "no data", never as 0 |
-| `source` | string | e.g. `"FEMA NSS registry"`, `"ACS 5-yr"`, `"ACS survey estimate via CDC SVI"` |
+| `source` | string | MUST name the dataset **and the source table** (Constitution III), e.g. `"FEMA NSS registry · shelters"`, `"ACS 5-yr · vulnerability_tracts"`, `"ACS survey estimate via CDC SVI · vulnerability_tracts"`. Simulation values use `"Simulation (straight-line) · shelters"` |
 | `kind` | `"registry"` \| `"survey"` \| `"live"` \| `"simulation"` | Drives the label style (FR-013, FR-019, SC-008) |
 | `coverage` | string? | e.g. `"412 of 415 tracts"` when an aggregate has gaps |
 
@@ -62,9 +62,10 @@ asset.
 | `name` | string | |
 | `shelter_count` | number | Shelters with this `county_fips` |
 | `capacity_total` | SourcedValue | Sum of `evacuation_capacity` **excluding** suspect shelters |
-| `capacity_total_incl_suspect` | SourcedValue | Including them. Shown only when it differs (FR-007) |
+| `capacity_total_incl_suspect` | SourcedValue | Including them (FR-007) |
+| `capacity_excluded` | `{shelter_id, name}[]` | The shelters left out of `capacity_total`. Whenever it is non-empty, the UI MUST show its count and names next to the total (FR-007, Constitution VI) |
 | `wheelchair` / `generator` / `medical` | `{yes, no, unrecorded}` counts | Always all three (FR-003) |
-| `in_surge_count` | `{yes, no, unrecorded}` | |
+| `in_surge` | `{yes, no, unrecorded}` | Always all three (FR-003) |
 | `households_no_vehicle` | SourcedValue | `SUM` over tracts, kind `survey` |
 | `share_65_plus` | SourcedValue | `SUM(pop_65_plus)/SUM(total_pop)`, kind `survey` |
 | `share_disability` | SourcedValue | Population-weighted mean of `pct_disability`, with `-999` → null and the coverage noted |
@@ -75,7 +76,7 @@ A county with `shelter_count = 0` displays "No shelters on file".
 ## MapData (session-start payload)
 
 `{ schema: "map-data/v1", state: "GA", generated_at, shelters: Shelter[], counties: County[],
-totals: {...}, notes: string[] }`. The full JSON Schema is
+notes: string[] }`. The full JSON Schema is
 [contracts/map-data.schema.json](contracts/map-data.schema.json). `notes` holds the agent's
 "could not tell you" items for the state as a whole, e.g. *"1,344 of 1,792 shelters have no
 wheelchair-access record"*.
