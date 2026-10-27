@@ -109,7 +109,7 @@ button {
 .layout {
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(420px, 1fr) 400px;
+  grid-template-columns: minmax(420px, 1fr) clamp(400px, 40vw, 680px);
   min-height: 0;
 }
 /* Narrow windows: the side panel stacks below the map (research R12). */
@@ -728,4 +728,78 @@ table.receiving .flag {
 .report__prov {
   font-size: 10px;
   color: var(--muted);
+}
+.report__expand {
+  float: right;
+  font-size: 11px;
+  padding: 1px 8px;
+}
+.report--expanded {
+  position: fixed;
+  top: 56px;
+  right: 0;
+  bottom: 0;
+  width: min(960px, 55vw);
+  z-index: 1000;
+  margin: 0;
+  overflow: auto;
+  background: var(--bg);
+  font-size: 14px;
+  padding: 16px 24px;
+  border-radius: 0;
+  box-shadow: -12px 0 32px rgba(0, 0, 0, 0.35);
+}
+.report--expanded .report__head {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+.report__range {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.report__range small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 400;
+}
+.report__bar {
+  position: relative;
+  width: 120px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+}
+.report__bar span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 3px;
+  background: var(--accent, #d93025);
+  opacity: 0.55;
+}
+.report__bar i {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--fg);
+}
+.report__counties {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+  font-size: 11px;
+}
+.report__counties td,
+.report__counties th {
+  padding: 2px 4px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.report__counties td:not(:first-child),
+.report__counties th:not(:first-child) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }

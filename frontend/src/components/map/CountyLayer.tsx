@@ -34,7 +34,9 @@ const CountyPath = memo(function CountyPath({
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") onSelect(feature.id);
       }}
-    />
+    >
+      <title>{`${feature.properties.name} County`}</title>
+    </path>
   );
 });
 
@@ -49,8 +51,11 @@ export default function CountyLayer() {
   // Hover does no network work (FR-008a): it only updates local state.
   const onEnter = (fips: string) => dispatch({ type: "hover", fips });
   const onLeave = () => dispatch({ type: "hover", fips: null });
-  const onSelect = (fips: string) =>
-    dispatch({ type: "selectCounty", fips: state.selectedFips === fips ? null : fips });
+  const onSelect = (fips: string) => {
+    const next = state.selectedFips === fips ? null : fips;
+    dispatch({ type: "selectCounty", fips: next });
+    if (next) dispatch({ type: "setSideTab", tab: "details" });
+  };
 
   return (
     <g className="counties">

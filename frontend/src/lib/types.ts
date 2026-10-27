@@ -71,6 +71,11 @@ export interface County {
   households_no_vehicle: SourcedValue;
   share_65_plus: SourcedValue;
   share_disability: SourcedValue;
+  power_dependent?: SourcedValue;
+  oxygen?: SourcedValue;
+  dialysis_patients?: SourcedValue;
+  nursing_home_beds?: SourcedValue;
+  assisted_living_beds?: SourcedValue;
 }
 
 export interface MapData {
