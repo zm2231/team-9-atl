@@ -68,9 +68,7 @@ export const chatEvents = [
 
 export const handlers = [
   http.post(`/apps/${APP}/users/:user/sessions`, () => HttpResponse.json({ id: `s-${Math.random().toString(36).slice(2)}` })),
-  http.post("/run", () =>
-    HttpResponse.json([{ author: APP, content: { role: "model", parts: [{ text: JSON.stringify(mapData) }] } }]),
-  ),
+  http.get("/map-data", () => HttpResponse.json(mapData)),
   http.post("/run_sse", () =>
     new HttpResponse(sse(chatEvents), { headers: { "content-type": "text/event-stream" } }),
   ),

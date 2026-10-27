@@ -10,29 +10,21 @@ already enforced by IAP and the app keeps no user state.
 POST /apps/readiness_agent/users/{user_id}/sessions          → 200 { "id": "<session_id>", ... }
 ```
 
-The frontend creates **two** sessions per tab: `mapSession` (used once for data) and `chatSession`.
+The frontend creates one chat session per tab (`chatSession`); map data needs no session.
 
 ## 2. Session-start map data (FR-008a)
 
 ```
-POST /run
-{
-  "app_name": "readiness_agent",
-  "user_id": "<user_id>",
-  "session_id": "<mapSession>",
-  "new_message": { "role": "user", "parts": [ { "text": "LOAD_MAP_DATA v1" } ] }
-}
-→ 200 [ Event, ... ]
+GET /map-data          → 200 application/json (gzip when the request accepts it)
 ```
 
-- The agent's `before_agent_callback` matches the text exactly, `LOAD_MAP_DATA v1`, and replies
-  with **one** event whose `content.parts[0].text` is a JSON document that validates against
-  [map-data.schema.json](map-data.schema.json).
-- **No LLM call is made** for this request.
-- The frontend takes the last event with author `readiness_agent`, parses the text, and checks that
-  `schema == "map-data/v1"`.
-- **Failure**: a non-200 status, an unparseable payload, a schema mismatch, or a timeout over 20 s
-  (SC-004a). The frontend shows the FR-008b error state with Retry and never shows partial counts.
+- The body validates against [map-data.schema.json](map-data.schema.json). The service builds it
+  from BigQuery at startup, serves it from memory, and refreshes it in the background every 10
+  minutes. **No LLM call and no session.**
+- The frontend checks that `schema == "map-data/v1"`.
+- **Failure**: a non-200 status (503 with `{"schema", "error"}` when BigQuery fails), an unparseable
+  payload, a schema mismatch, or a timeout over 20 s (SC-004a). The frontend shows the FR-008b error
+  state with Retry and never shows partial counts.
 - Hovering never triggers a request. The payload is held for the session.
 
 ## 3. Chat turn (FR-010–FR-015)
@@ -104,6 +96,6 @@ with flags as `YES`/`NO`/`UNRECORDED`.
 
 ## 5. Versioning
 
-- `LOAD_MAP_DATA v1`, `CONTEXT v1` and `map-data/v1` are versioned strings.
+- `CONTEXT v1` and `map-data/v1` are versioned strings.
 - A breaking change to the payload bumps all three together.
 - The frontend refuses any schema version it does not know.

@@ -57,7 +57,7 @@ class RequestGuard:
                 await _respond(send, 405, "method not allowed")
             return
 
-        if method == "GET" and path == "/health":
+        if method == "GET" and path in ("/health", "/map-data"):
             await self._app(scope, receive, send)
             return
         if method != "POST" or not (path in _RUN_PATHS or _SESSION_CREATE.match(path)):
