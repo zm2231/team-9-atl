@@ -1,6 +1,15 @@
 import { createContext, useContext, useMemo, useReducer, type Dispatch, type ReactNode } from "react";
 import type { Category, ChatExchange, County, LiveCheckStatus, MapData, Shelter, WheelchairCheck } from "../lib/types";
 import type { LineString, Point } from "geojson";
+import { countyNames } from "../lib/geo";
+import {
+  MAX_QUESTIONS,
+  capHistory,
+  defaultName,
+  toSavedQuestionText,
+  type SavedScenario,
+} from "../lib/history";
+import { countiesAlongTrack } from "../lib/simulation";
 
 export interface ScenarioInput {
   track: LineString | Point;
@@ -24,6 +33,14 @@ export interface State {
   /** Google Maps wheelchair lookups, shown with attribution and kept only while the page is open. */
   wheelchairChecks: Map<string, WheelchairCheck>;
   chat: ChatExchange[];
+  /** Scenario history (feature 002): user inputs only, mirrored to this browser's storage. */
+  history: SavedScenario[];
+  historyLoaded: boolean;
+  historyAvailable: boolean;
+  currentScenarioId: string | null;
+  /** Set when a scenario is reopened from history; its results were just re-simulated (FR-008). */
+  resimulatedAt: string | null;
+  notice: string | null;
 }
 
 export const DEFAULT_CATEGORY: Category = 3;
@@ -42,6 +59,12 @@ export const initialState: State = {
   liveChecks: new Map(),
   wheelchairChecks: new Map(),
   chat: [],
+  history: [],
+  historyLoaded: false,
+  historyAvailable: true,
+  currentScenarioId: null,
+  resimulatedAt: null,
+  notice: null,
 };
 
 export type Action =
@@ -52,13 +75,20 @@ export type Action =
   | { type: "selectCounty"; fips: string | null }
   | { type: "selectShelter"; id: string | null }
   | { type: "highlight"; shelterIds: string[]; countyFips: string[] }
-  | { type: "setTrack"; track: LineString | Point }
-  | { type: "setCategory"; category: Category }
-  | { type: "setCutoff"; cutoff_km: number }
-  | { type: "resetScenario" }
+  | { type: "setTrack"; track: LineString | Point; id?: string; now?: string }
+  | { type: "setCategory"; category: Category; now?: string }
+  | { type: "setCutoff"; cutoff_km: number; now?: string }
+  | { type: "newSimulation" }
+  | { type: "historyLoaded"; scenarios: SavedScenario[]; available: boolean }
+  | { type: "historyUnavailable" }
+  | { type: "openScenario"; id: string; now?: string }
+  | { type: "renameScenario"; id: string; name: string; now?: string }
+  | { type: "deleteScenario"; id: string }
+  | { type: "dismissNotice" }
   | { type: "setDrawing"; drawing: boolean }
   | { type: "setDetailsOpen"; open: boolean }
-  | { type: "chatStart"; exchange: ChatExchange }
+  | { type: "chatStart"; exchange: ChatExchange; now?: string }
+  | { type: "chatSession"; scenarioId: string; sessionId: string }
   | { type: "chatUpdate"; id: string; patch: Partial<ChatExchange> }
   | { type: "liveCheck"; shelterId: string; status: LiveCheckStatus; placeIds: string[] }
   | { type: "wheelchairChecked"; results: WheelchairCheck[] };
@@ -87,32 +117,124 @@ export function reducer(state: State, action: Action): State {
         highlight: { shelterIds: new Set(action.shelterIds), countyFips: new Set(action.countyFips) },
       };
     // Scenario inputs only; derived results are computed once in ScenarioProvider (research R5).
-    case "setTrack":
+    // Every input change is mirrored into the current history entry (feature 002 FR-001, FR-001c).
+    case "setTrack": {
+      const now = action.now ?? new Date().toISOString();
+      const scenario = {
+        track: action.track,
+        category: state.scenario?.category ?? DEFAULT_CATEGORY,
+        cutoff_km: state.scenario?.cutoff_km ?? DEFAULT_CUTOFF_KM,
+      };
+      const base = { ...state, drawing: false, scenario, resimulatedAt: null };
+      if (state.currentScenarioId && state.history.some((h) => h.id === state.currentScenarioId)) {
+        return {
+          ...base,
+          history: updateCurrent(state, (h) => named({ ...h, track: action.track, updated_at: now })),
+        };
+      }
+      const created: SavedScenario = named({
+        id: action.id ?? crypto.randomUUID(),
+        name: "",
+        nameIsCustom: false,
+        track: action.track,
+        category: scenario.category,
+        cutoff_km: scenario.cutoff_km,
+        questions: [],
+        created_at: now,
+        updated_at: now,
+        last_opened_at: now,
+      });
+      const { list, evicted } = capHistory([created, ...state.history], created.id);
+      return {
+        ...base,
+        history: list,
+        currentScenarioId: created.id,
+        notice: evicted ? `History is full: removed '${evicted.name}' (least recently opened)` : state.notice,
+      };
+    }
+    case "setCategory": {
+      if (!state.scenario) return state;
+      const now = action.now ?? new Date().toISOString();
       return {
         ...state,
-        drawing: false,
-        scenario: {
-          track: action.track,
-          category: state.scenario?.category ?? DEFAULT_CATEGORY,
-          cutoff_km: state.scenario?.cutoff_km ?? DEFAULT_CUTOFF_KM,
-        },
+        scenario: { ...state.scenario, category: action.category },
+        history: updateCurrent(state, (h) => named({ ...h, category: action.category, updated_at: now })),
       };
-    case "setCategory":
-      return state.scenario ? { ...state, scenario: { ...state.scenario, category: action.category } } : state;
-    case "setCutoff":
-      return state.scenario ? { ...state, scenario: { ...state.scenario, cutoff_km: action.cutoff_km } } : state;
-    case "resetScenario":
-      return { ...state, scenario: null, drawing: false };
+    }
+    case "setCutoff": {
+      if (!state.scenario) return state;
+      const now = action.now ?? new Date().toISOString();
+      return {
+        ...state,
+        scenario: { ...state.scenario, cutoff_km: action.cutoff_km },
+        history: updateCurrent(state, (h) => ({ ...h, cutoff_km: action.cutoff_km, updated_at: now })),
+      };
+    }
+    case "newSimulation":
+      return clearScenario(state);
+    case "historyLoaded":
+      return { ...state, history: action.scenarios, historyLoaded: true, historyAvailable: action.available };
+    case "historyUnavailable":
+      return { ...state, historyAvailable: false };
+    case "openScenario": {
+      const entry = state.history.find((h) => h.id === action.id);
+      if (!entry) return state;
+      const now = action.now ?? new Date().toISOString();
+      return {
+        ...clearScenario(state),
+        scenario: { track: entry.track, category: entry.category, cutoff_km: entry.cutoff_km },
+        currentScenarioId: entry.id,
+        resimulatedAt: now,
+        history: state.history.map((h) => (h.id === entry.id ? { ...h, last_opened_at: now } : h)),
+      };
+    }
+    case "renameScenario": {
+      const name = action.name.trim().slice(0, 80);
+      if (!name) return state;
+      const now = action.now ?? new Date().toISOString();
+      return {
+        ...state,
+        history: state.history.map((h) =>
+          h.id === action.id ? { ...h, name, nameIsCustom: true, updated_at: now } : h,
+        ),
+      };
+    }
+    case "deleteScenario": {
+      const rest = state.history.filter((h) => h.id !== action.id);
+      return action.id === state.currentScenarioId
+        ? { ...clearScenario(state), history: rest }
+        : { ...state, history: rest };
+    }
+    case "dismissNotice":
+      return { ...state, notice: null };
     case "setDrawing":
       return { ...state, drawing: action.drawing };
     case "setDetailsOpen":
       return { ...state, detailsOpen: action.open };
-    case "chatStart":
+    case "chatSession":
+      return {
+        ...state,
+        history: state.history.map((h) =>
+          h.id === action.scenarioId && h.session_id !== action.sessionId ? { ...h, session_id: action.sessionId } : h,
+        ),
+      };
+    case "chatStart": {
+      const now = action.now ?? new Date().toISOString();
+      const text = toSavedQuestionText(action.exchange.question);
       return {
         ...state,
         chat: [...state.chat, action.exchange],
         highlight: { shelterIds: new Set(), countyFips: new Set() },
+        // Only the question text is saved, never the answer or the CONTEXT part (FR-016).
+        history: text
+          ? updateCurrent(state, (h) => ({
+              ...h,
+              questions: [...h.questions, { text, asked_at: now }].slice(-MAX_QUESTIONS),
+              updated_at: now,
+            }))
+          : state.history,
       };
+    }
     case "chatUpdate":
       return {
         ...state,
@@ -133,6 +255,33 @@ export function reducer(state: State, action: Action): State {
       return { ...state, wheelchairChecks };
     }
   }
+}
+
+function updateCurrent(state: State, f: (h: SavedScenario) => SavedScenario): SavedScenario[] {
+  return state.currentScenarioId
+    ? state.history.map((h) => (h.id === state.currentScenarioId ? f(h) : h))
+    : state.history;
+}
+
+/** Recomputes the default name from the track and category unless the user renamed it (FR-012). */
+function named(h: SavedScenario): SavedScenario {
+  if (h.nameIsCustom) return h;
+  const names = countiesAlongTrack(h.track).map((f) => countyNames.get(f) ?? f);
+  return { ...h, name: defaultName(h.category, names) };
+}
+
+/** New simulation: the current scenario stays saved; the map, lists and chat clear (FR-001b). */
+function clearScenario(state: State): State {
+  return {
+    ...state,
+    scenario: null,
+    drawing: false,
+    chat: [],
+    highlight: { shelterIds: new Set(), countyFips: new Set() },
+    selectedShelterId: null,
+    currentScenarioId: null,
+    resimulatedAt: null,
+  };
 }
 
 interface StoreValue {
