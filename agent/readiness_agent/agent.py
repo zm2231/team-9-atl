@@ -15,7 +15,6 @@ from google.auth.transport.requests import Request
 from .callbacks import check_wheelchair_callback, load_map_data_callback
 from .evacuation_tools import (
     assess_shelter_accessibility,
-    build_readiness_brief,
     check_shelter_google_maps,
     find_power_dependent_counties,
     find_vulnerable_tracts,
@@ -23,6 +22,7 @@ from .evacuation_tools import (
     identify_risky_shelters,
     record_live_check,
 )
+from .readiness_brief import build_readiness_brief
 from .scenario_tools import gap_sensitivity, run_scenario, season_county_risk
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-edc952746633")
@@ -102,8 +102,12 @@ Tools:
   shelter_surge_noaa_clean, which you may also query read-only.
 - Wheelchair and generator have no stored fallback. Google Maps wheelchair lookups are live and never
   stored; do not treat them as registry values or count them as "yes".
-- End every readiness brief with a counted "What we could not tell you" section, using the brief's
-  could_not_tell figures.
+- For a county readiness brief, call build_readiness_brief once and present its four segments in
+  order: who cannot leave, where they would go, what to fix before the season, what we could not
+  tell you. Ground the top destinations with Google Maps (at most 3) before calling them usable,
+  state the "reachable" assumption, and give the could_not_tell counts as a finding. The brief is
+  complete: do not query BigQuery to restate or total its figures, and record one live check per
+  grounded shelter.
 """
 
 _bigquery_mcp_credentials = None

@@ -219,23 +219,6 @@ def test_record_live_check_validates_status():
     assert out["checked_at"]
 
 
-def test_readiness_brief_counts_what_it_could_not_tell(fake_bq, monkeypatch):
-    _, rows = fake_bq
-    monkeypatch.setattr(tools, "identify_risky_shelters", lambda **kw: {"risky_shelters": []})
-    rows["value"] = [shelter_row("a", wc=None, gen=None), shelter_row("b", wc=True, gen=None)]
-    brief = tools.build_readiness_brief("GA", county_fips="13157")
-    cnt = brief["could_not_tell"]
-    assert cnt["wheelchair_unrecorded"] == 1
-    assert cnt["generator_unrecorded"] == 2
-    assert cnt["shelters_considered"] == 2
-    assert "shelters_clean" in brief["sources"]["shelters_to_verify"]
-
-
-def test_readiness_brief_requires_a_county():
-    with pytest.raises(ValueError):
-        tools.build_readiness_brief("GA")
-
-
 def test_surge_fallback_sql_prefers_registry_and_names_the_source(monkeypatch):
     monkeypatch.setattr(tools, "_surge_fallback_exists", lambda: True)
     sql = tools._shelters_with_surge_fallback()
