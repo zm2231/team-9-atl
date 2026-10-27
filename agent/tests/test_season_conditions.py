@@ -1,5 +1,6 @@
 import datetime as dt
 
+import numpy as np
 import pytest
 
 from readiness_agent import scenario_tools
@@ -151,3 +152,23 @@ def test_county_plan_defaults_to_auto():
     rows = plan["power_outage_frequency"]["by_outlook"]
     assert set(rows) == {"auto", "long_run"}
     assert "of the season remains" in rows["auto"]["note"]
+
+
+def test_county_plan_takes_as_of_date_and_keeps_auto_provenance():
+    assert scenario_tools.county_plan("13127", as_of_date="soon")["status"] == "bad_date"
+    plan = scenario_tools.county_plan("13127", as_of_date="2026-08-10")
+    auto = plan["auto"]
+    assert auto["as_of_date"] == "2026-08-10"
+    assert 0 < auto["share_of_season_remaining"] < 1
+    assert auto["inputs"]["noaa_outlook"]["issued"] == "2026-08-06"
+    assert auto["inputs"]["oni"]["season"]
+    assert auto["backtest"]["models"]
+
+
+def test_fold_standardization_uses_training_rows_only():
+    from readiness_agent.scenario.build.build_conditions import standardize
+
+    raw = {"oni": np.array([0.0, 1.0, 2.0, 1000.0])}
+    z, stats = standardize(raw, np.array([0, 1, 2]))
+    assert stats["oni"] == (1.0, pytest.approx(np.std([0.0, 1.0, 2.0])))
+    assert z["oni"][1] == 0.0

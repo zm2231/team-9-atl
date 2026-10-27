@@ -108,18 +108,20 @@ def design(z: dict[str, np.ndarray], names: tuple[str, ...], rows) -> np.ndarray
     return np.column_stack([np.ones(len(rows))] + [z[n][rows] for n in names])
 
 
-def standardize(raw: dict[str, np.ndarray]) -> tuple[dict, dict]:
-    stats = {n: (float(v.mean()), float(v.std())) for n, v in raw.items()}
+def standardize(raw: dict[str, np.ndarray], rows=None) -> tuple[dict, dict]:
+    pick = slice(None) if rows is None else rows
+    stats = {n: (float(v[pick].mean()), float(v[pick].std())) for n, v in raw.items()}
     return {n: (v - stats[n][0]) / stats[n][1] for n, v in raw.items()}, stats
 
 
-def loso(z, names, storms, hurr, major) -> dict:
+def loso(raw, names, storms, hurr, major) -> dict:
     n = len(storms)
     count_lp = {"poisson": 0.0, "negbin": 0.0}
     share_lp = {"hurricane": 0.0, "major": 0.0}
     mult = np.zeros(n)
     for t in range(n):
         train = np.array([i for i in range(n) if i != t])
+        z, _ = standardize(raw, train)
         xt, x1 = design(z, names, train), design(z, names, [t])[0]
         beta, _ = fit_poisson(xt, storms[train])
         mu = float(math.exp(x1 @ beta))
@@ -173,7 +175,7 @@ def main() -> None:
     models = [()] + [c for r in (1, 2) for c in itertools.combinations(PREDICTORS, r)]
     table = []
     for names in models:
-        res = loso(z, names, storms, hurr, major)
+        res = loso(raw, names, storms, hurr, major)
         cover = county_coverage(backtest["rows"], res["multiplier"][window])
         x = design(z, names, list(range(len(YEARS))))
         beta, cov = fit_poisson(x, storms)

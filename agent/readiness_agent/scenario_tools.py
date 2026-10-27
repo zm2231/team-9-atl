@@ -477,10 +477,7 @@ def _season_query(sql: str, params: list[Any], key: str, source: str) -> dict[st
 
 
 def season_conditions(as_of_date: str | None = None) -> dict[str, Any]:
-    """Current season conditions and the outlook worked out from them, so the planner never enters a forecast: latest ONI, the CPC ENSO forecast, the Atlantic Main Development Region SST anomaly and NOAA's seasonal hurricane outlook, each with its source and date; the conditions model's expected storms near Georgia, hurricane share and major-hurricane share with 10-90 ranges; its back-test against the long-run rate; the blended outlook with stated weights; and the share of the season remaining.
-
-    as_of_date: YYYY-MM-DD, default today.
-    """
+    """Current NOAA conditions and the season outlook worked out from them, with sources, dates, back-test, blend weights and the share of the season remaining. as_of_date: YYYY-MM-DD, default today."""
     from .scenario import conditions
 
     try:
@@ -668,10 +665,12 @@ def _readiness_brief(county_fips: str) -> dict[str, Any]:
     return build_readiness_brief(county_fips)
 
 
-def county_plan(county_fips: str, outlook: str = AUTO) -> dict[str, Any]:
+def county_plan(
+    county_fips: str, outlook: str = AUTO, as_of_date: str | None = None
+) -> dict[str, Any]:
     """One call that assembles a county's season readiness plan: the readiness brief (who cannot leave, where they would go, what to fix, what we could not tell), how often the power goes out under the chosen outlook and the long run, people lacking shelter and needing transport in a typical and a 1-in-10 season, what confirming every unrecorded medical-shelter generator would change, and an audit of the brief's ranked tracts against the state. Sections that cannot be filled are marked not_determined. Write the plan from these sections only, and verify the top shelters live with Google Maps.
 
-    outlook: auto (default: worked out from current conditions for the rest of the season), long_run, recent, la_nina, neutral, el_nino or noaa_aug_2026.
+    outlook: auto (default: worked out from current conditions for the rest of the season after as_of_date, default today), long_run, recent, la_nina, neutral, el_nino or noaa_aug_2026.
     """
     from google.cloud import bigquery
 
@@ -689,7 +688,10 @@ def county_plan(county_fips: str, outlook: str = AUTO) -> dict[str, Any]:
     no_request = site_updates.request_overrides(None, None, None, {})
     planner_kwargs = site_updates.season_kwargs(planner, no_request)
 
-    auto_args = _outlook_args(AUTO, None) if outlook == AUTO else None
+    try:
+        auto_args = _outlook_args(AUTO, as_of_date) if outlook == AUTO else None
+    except ValueError as exc:
+        return _status("bad_date", f"as_of_date must be YYYY-MM-DD ({exc}).")
 
     def run_season(name: str, assume_generator: list[str] | None = None) -> dict[str, Any]:
         run_name, extra = name, {}
@@ -753,6 +755,7 @@ def county_plan(county_fips: str, outlook: str = AUTO) -> dict[str, Any]:
         "county_fips": county_fips,
         "county_name": county["county_name"],
         "outlook": outlook,
+        **({"auto": auto_args[2]} if auto_args else {}),
         "planner_updates": _planner_report(planner),
     }
     plan["readiness_brief"] = _section("readiness brief (see its own sources)", brief)
