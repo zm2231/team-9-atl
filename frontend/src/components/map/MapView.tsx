@@ -36,7 +36,11 @@ export function useMapGeometry(): MapGeometry {
 export const CLICK_DISTANCE = 5;
 export const PAN_MARGIN = 0.5;
 
-/** Wheel and pinch always zoom; a drag pans only when not drawing; double-click never zooms. */
+/**
+ * Wheel and trackpad pinch (ctrl+wheel) always zoom. Drag and touch gestures pan or zoom only when
+ * not drawing, so a drawing stroke is never taken as a pan; the +/− buttons still zoom while drawing.
+ * Double-click never zooms.
+ */
 export function createMapZoom(isDrawing: () => boolean, onZoom: (t: ZoomTransform) => void) {
   return zoom<SVGSVGElement, unknown>()
     .scaleExtent([MIN_ZOOM, MAX_ZOOM])
