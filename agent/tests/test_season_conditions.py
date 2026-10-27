@@ -247,3 +247,14 @@ def test_every_tool_is_registered_once():
     names = [t.__name__ for t in agent.root_agent.tools if callable(t)]
     assert len(names) == len(set(names))
     assert "season_conditions" in names
+
+
+def test_state_plan_defaults_to_auto(late_october):
+    plan = scenario_tools.state_plan()
+    assert plan["outlook"] == "auto"
+    assert plan["auto"]["plan"]["season"] == 2027
+    assert plan["auto"]["note"].startswith("Planning the 2027 season:")
+    june = scenario_tools.state_plan(as_of_date="2026-06-01")
+    assert june["auto"]["plan"]["season"] == 2026
+    assert scenario_tools.state_plan(as_of_date="soon")["status"] == "bad_date"
+    assert "auto" not in scenario_tools.state_plan("long_run")

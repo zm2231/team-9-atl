@@ -847,21 +847,25 @@ def county_plan(
     return plan
 
 
-def state_plan(outlook: str = "long_run") -> dict[str, Any]:
+def state_plan(outlook: str = AUTO, as_of_date: str | None = None) -> dict[str, Any]:
     """Georgia's season readiness plan in the same report shape as county_plan: the counties with the most people lacking shelter, the chance any county has a 25% outage, people lacking shelter and needing transport statewide in typical, 1-in-10 and 1-in-100 seasons, the ranked unknowns worth fixing, and the worst simulated storms. Write the plan from its report sections only.
 
-    outlook: long_run (default), recent, la_nina, neutral, el_nino or noaa_aug_2026.
+    outlook: auto (default: worked out from current conditions; the rest of the current season after as_of_date, default today, when more than half of it remains, otherwise the next full season), long_run, recent, la_nina, neutral, el_nino or noaa_aug_2026.
     """
     from google.api_core.exceptions import GoogleAPIError
     from google.auth.exceptions import GoogleAuthError
 
     from .scenario import season
 
-    if outlook not in season.OUTLOOKS:
-        outlook = "long_run"
-    run = season.run_season(outlook)
+    if outlook != AUTO and outlook not in season.OUTLOOKS:
+        outlook = AUTO
+    try:
+        name, extra, auto, _ = _outlook_args(outlook, as_of_date)
+    except ValueError as exc:
+        return _status("bad_date", f"as_of_date must be YYYY-MM-DD ({exc}).")
+    run = season.run_season(name, **extra)
     run["source"] = SOURCES["season"]
-    run["outlook_note"] = season_outlook_note(outlook)
+    run["outlook_note"] = auto["note"] if auto else season_outlook_note(outlook)
     try:
         worst = _run_query(
             f"""SELECT * FROM `{_project_id()}.{_dataset_name()}.scenario_worst_events`
@@ -869,7 +873,7 @@ def state_plan(outlook: str = "long_run") -> dict[str, Any]:
     except (GoogleAPIError, GoogleAuthError, RuntimeError):
         worst = None
     gaps = gap_sensitivity()
-    return {"scope": "state", "outlook": outlook,
+    return {"scope": "state", "outlook": outlook, **({"auto": auto} if auto else {}),
             "report": report.state_report(run, worst, gaps), "source": SOURCES["season"]}
 
 
