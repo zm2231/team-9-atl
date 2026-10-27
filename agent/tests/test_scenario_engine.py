@@ -223,3 +223,17 @@ def test_county_storm_profile():
     assert p["worst_historical_wind"]["peak_wind_kt"] > 0
     assert p["support"]["inside"] is True
     assert profile.county_storm_profile("99999")["status"] == "unknown_county"
+
+
+def test_synthetic_perturbation_rules():
+    from readiness_agent.scenario.build import synthetic
+
+    a = storms.analog_tracks(29.0, -85.5, 20.0, 9)[0]
+    rng = np.random.default_rng(5)
+    lifetime = max(p.vmax_kt for p in a.track)
+    for _ in range(20):
+        v = synthetic.perturb(a.track, rng)
+        assert abs(v.shift_km) <= synthetic.SHIFT_MAX_KM
+        assert synthetic.SPEED_RANGE[0] <= v.speed_factor <= synthetic.SPEED_RANGE[1]
+        assert len(v.track) == len(a.track)
+        assert max(p.vmax_kt for p in v.track) <= max(lifetime, 124.0) + 1e-6

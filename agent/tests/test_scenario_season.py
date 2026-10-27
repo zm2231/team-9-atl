@@ -85,10 +85,28 @@ def test_assume_generator_never_raises_need(baseline):
 
 
 def test_events_file_is_small_and_float32():
-    assert season.EVENTS_FILE.stat().st_size < 3_000_000
+    assert season.EVENTS_FILE.stat().st_size < 10_000_000
     ev = season.events()
     assert ev["pd_affected"].dtype == np.float32
-    assert ev["pd_affected"].shape == (2000, 159)
+    n = len(ev["category"])
+    assert ev["pd_affected"].shape == (n, 159)
+    assert ev["event_synthetic"].shape == ev["event_outside_support"].shape == (n,)
+    assert 0 < ev["event_synthetic"].mean() < 1
+    assert (ev["event_shift_km"][~ev["event_synthetic"]] == 0).all()
+    assert len(ev["storm_name"]) == len(ev["storm_season"])
+
+
+def test_season_reports_one_in_100():
+    r = season.run_season("long_run")
+    block = r["statewide"]["lacking_shelter"]["total"]
+    assert block["typical"] <= block["one_in_10"] <= block["one_in_100"]
+
+
+def test_synthetic_wind_climate_matches_history():
+    check = json.loads((DATA / "season_synthetic_check.json").read_text())
+    diff = check["per_county_wind_chance_difference"]
+    assert diff["p34kt"]["mean_abs_diff"] < 0.03
+    assert diff["p64kt"]["mean_abs_diff"] < 0.02
 
 
 def test_enso_backtest_is_reported():

@@ -381,7 +381,7 @@ def season_county_risk(
     assume_generator: list[str] | None = None,
     case: str = "base",
 ) -> dict[str, Any]:
-    """Season-long hurricane risk per Georgia county from 2,000 simulated storms built on every storm since 1950 near Georgia: chance per year of losing power to at least 25% of customers, power-dependent residents affected, people lacking shelter (no powered seat, no dialysis chair) and people needing transport (no vehicle), each in a typical and a 1-in-10 season.
+    """Season-long hurricane risk per Georgia county from 3,200 simulated events built on every storm since 1950 near Georgia (800 replays of the historical tracks and 2,400 synthetic variants shifted, re-intensified, re-timed and resized): chance per year of losing power to at least 25% of customers, power-dependent residents affected, people lacking shelter (no powered seat, no dialysis chair) and people needing transport (no vehicle), each in a typical, a 1-in-10 and a 1-in-100 season.
 
     outlook picks the storm rate: long_run (default, 1950-2025), recent (2000-2025), la_nina, neutral, el_nino (seasons with that ENSO state), or noaa_aug_2026 (scaled to NOAA's August 2026 outlook, an outside forecast input). sites_off and assume_generator rerun the season with shelters or dialysis centres switched off, or generators assumed. Without county_fips, returns the counties with the most people lacking shelter.
     """

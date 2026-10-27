@@ -160,9 +160,7 @@ def summarize(
     any_lam = float(rate @ out25.any(axis=1))
 
     def pair(x: np.ndarray, axis=0):
-        typical = np.median(x, axis=axis)
-        one_in_10 = np.quantile(x, 0.9, axis=axis)
-        return typical, one_in_10
+        return tuple(np.quantile(x, (0.5, 0.9, 0.99), axis=axis))
 
     county = {k: pair(v) for k, v in seasons.items()}
     state = {k: pair(v.sum(axis=1)) for k, v in seasons.items()}
@@ -175,10 +173,12 @@ def summarize(
 
 
 def _block(t, i=None) -> dict:
-    typical, one_in_10 = t
-    if i is not None:
-        typical, one_in_10 = typical[i], one_in_10[i]
-    return {"typical": round(float(typical)), "one_in_10": round(float(one_in_10))}
+    typical, one_in_10, one_in_100 = (x if i is None else x[i] for x in t)
+    return {
+        "typical": round(float(typical)),
+        "one_in_10": round(float(one_in_10)),
+        "one_in_100": round(float(one_in_100)),
+    }
 
 
 def _shape(s: dict, i=None) -> dict:
