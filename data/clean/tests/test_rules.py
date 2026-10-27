@@ -10,8 +10,7 @@ def table(con, name, cols, rows):
         con.executemany(f"INSERT INTO {name} VALUES ({', '.join('?' for _ in cols)})", rows)
 
 
-EMPOWER = ["Medicare_Benes", "Power_Dependent_Devices_DME", "Facility_ESRD_Dialysis_Any_DME", "O2_Services_Any_DME",
-           "Home_Health_Services_Any_DME", "AtHome_Hospice_Any_DME", "Any_Healthcare_Srvc_Any_DME"]
+EMPOWER = list(B.EMPOWER_FIELDS.values())
 POWER_TYPES = {"objectid": "BIGINT", "power_dependent_is_censored": "BOOLEAN"}
 NUMERIC = {"medicare_benes", "power_dependent_devices_dme", "facility_esrd_dialysis_any_dme", "o2_services_any_dme",
            "home_health_services_any_dme", "athome_hospice_any_dme", "any_healthcare_srvc_any_dme", "shape__area",
@@ -41,15 +40,14 @@ def con():
            for col in B.BQ_COLUMNS["power_dependent_counties"]]
           + ["first_state_fips_code VARCHAR", "objectid_1 DOUBLE", "power_de_1 DOUBLE"],
           [power_row("13001", "Appling", 5.0), power_row("13003", "Atkinson", 3.0)])
-    table(c, "raw_empower_live", ["FIPS_Code VARCHAR"] + [f"{e} BIGINT" for e in EMPOWER], [
+    table(c, "raw_empower_live", ["fips_code VARCHAR"] + [f"{e} BIGINT" for e in EMPOWER], [
         ["13001", 510, 45, 30, 12, 9, 8, 60], ["13003", 310, 22, 11, 11, 11, 11, 25]])
-    table(c, "raw_empower_zip", ["Zip_Code VARCHAR", "FIPS_Code VARCHAR"], [["31510", "13003"], ["30000", "13001"]])
-    table(c, "raw_cms_dialysis", ['"CMS Certification Number (CCN)" VARCHAR', '"Facility Name" VARCHAR',
-                                  '"Address Line 1" VARCHAR', '"City/Town" VARCHAR', '"ZIP Code" VARCHAR',
-                                  '"County/Parish" VARCHAR', '"# of Dialysis Stations" VARCHAR', '"Late Shift" VARCHAR',
-                                  '"Offers in-center hemodialysis" VARCHAR', '"Offers peritoneal dialysis" VARCHAR',
-                                  '"Offers home hemodialysis training" VARCHAR', '"Profit or Non-Profit" VARCHAR',
-                                  '"Chain Organization" VARCHAR'],
+    table(c, "raw_empower_zip", ["zip_code VARCHAR", "fips_code VARCHAR"], [["31510", "13003"], ["30000", "13001"]])
+    table(c, "raw_cms_dialysis", [f"{col} VARCHAR" for col in (
+              "cms_certification_number_ccn", "facility_name", "address_line_1", "city_town", "zip_code",
+              "county_parish", "of_dialysis_stations", "late_shift", "offers_in_center_hemodialysis",
+              "offers_peritoneal_dialysis", "offers_home_hemodialysis_training", "profit_or_non_profit",
+              "chain_organization")],
           [["112500", "Coast Dialysis", "2 Elm", "Pearson", "31510-1234", "Atkinson", "18", "No", "Yes", "Yes", "No",
             "Profit", " "],
            ["112501", "Town Dialysis", "3 Elm", "Town", "30000", "Appling", "12", "No", "Yes", "No", "No", "Profit", "X"]])
@@ -60,7 +58,7 @@ def con():
     c.execute("""CREATE TABLE raw_zones AS SELECT * FROM (VALUES
                  ('Coast', 'B', ST_GeomFromText('POLYGON((-82.2 30.8, -81.8 30.8, -81.8 31.2, -82.2 31.2, -82.2 30.8))')),
                  ('Coast', 'A', ST_GeomFromText('POLYGON((-82.1 30.9, -81.9 30.9, -81.9 31.1, -82.1 31.1, -82.1 30.9))')))
-                 t(County, Zone, geom)""")
+                 t(county, zone, geom)""")
     yield c
     c.close()
 
@@ -74,7 +72,7 @@ def test_hazard_cfld_percentile_and_source_columns_unchanged(con):
     B.build_hazard_tracts(con)
     assert leading(con, "hazard_tracts") == B.BQ_COLUMNS["hazard_tracts"]
     t = {r[0]: r[1:] for r in con.execute(
-        "SELECT geo_id, CFLD_EXPP, cfld_expp_clean, cfld_expp_clean_status, cfld_expp_clean_rule, hrcn_ealp_pctile, "
+        "SELECT geo_id, cfld_expp, cfld_expp_clean, cfld_expp_clean_status, cfld_expp_clean_rule, hrcn_ealp_pctile, "
         "county_fips "
         "FROM hazard_tracts").fetchall()}
     assert len(t) == 3
@@ -112,9 +110,9 @@ def test_care_facility_must_join_cms_on_ccn(con):
                             for c in B.BQ_COLUMNS["care_facilities"]],
           [["115001", "Home A ", "1 Oak", "Town", "GA", "30000", 100, "Profit", 33.0, -84.0],
            ["115002", "Home B", "2 Oak", "Town", "GA", "30000", 50, "Profit", 31.0, -82.0]])
-    table(con, "raw_cms_nh", ['"CMS Certification Number (CCN)" VARCHAR', '"County/Parish" VARCHAR',
-                              '"Number of Certified Beds" VARCHAR', '"Average Number of Residents per Day" VARCHAR',
-                              '"Provider Type" VARCHAR', '"Automatic Sprinkler Systems in All Required Areas" VARCHAR'],
+    table(con, "raw_cms_nh", [f"{col} VARCHAR" for col in (
+              "cms_certification_number_ccn", "county_parish", "number_of_certified_beds",
+              "average_number_of_residents_per_day", "provider_type", "automatic_sprinkler_systems_in_all_required_areas")],
           [["115001", "Appling", "100", "80", "Medicare and Medicaid", "Yes"]])
     with pytest.raises(AssertionError, match="care_facilities_pre: expected 2 rows, got 1"):
         B.build_care_facilities(con)
@@ -173,10 +171,10 @@ def test_every_appended_column_carries_status_and_rule(con):
     assert B.invalid_provenance(con, "dialysis_centers") == {"coordinates_rule": ["made_up"]}
 
 
-GAMAP = ["FACTYPE VARCHAR", "FACID VARCHAR", "NAME VARCHAR", "ADDRESS VARCHAR", "FAC_CITY VARCHAR", "FAC_ST VARCHAR",
-         "FAC_ZIP VARCHAR", "OPERSTDESC VARCHAR", "OPERSTATDT VARCHAR", "OPEN_DATE VARCHAR", "CLOSEDDATE VARCHAR",
-         "licensed_beds DOUBLE", "EFFECTIVE_DATE_OF_LICENSE VARCHAR", "facility_type VARCHAR", "SUBTYPE VARCHAR",
-         "COUNTY VARCHAR", "Latitude DOUBLE", "Longitude DOUBLE", "Accuracy VARCHAR"]
+GAMAP = ["factype VARCHAR", "facid VARCHAR", "name VARCHAR", "address VARCHAR", "fac_city VARCHAR", "fac_st VARCHAR",
+         "fac_zip VARCHAR", "operstdesc VARCHAR", "operstatdt VARCHAR", "open_date VARCHAR", "closeddate VARCHAR",
+         "licensed_beds DOUBLE", "effective_date_of_license VARCHAR", "facility_type VARCHAR", "subtype VARCHAR",
+         "county VARCHAR", "latitude DOUBLE", "longitude DOUBLE", "accuracy VARCHAR"]
 
 
 def gamap_row(facid, ftype, beds, lat, lon):
@@ -192,11 +190,11 @@ def test_small_personal_care_homes_lose_name_address_and_point(con):
         gamap_row("ALC1", "ASSISTED LIVING COMMUNITY", 6, 31.0, -82.0)])
     B.build_assisted_living(con)
     rows = {r[0]: r[1:] for r in con.execute(
-        "SELECT FACID, NAME, ADDRESS, Latitude, Longitude, facility_identity_status, licensed_beds, county_fips, "
+        "SELECT facid, name, address, latitude, longitude, facility_identity_status, licensed_beds, county_fips, "
         "evac_zone FROM assisted_living").fetchall()}
     assert "PCH1" not in rows
     assert rows["pch_small_13001_001"] == (None, None, 33.0, -84.0, "aggregated_small_home", 6, "13001", None)
-    hidden = [c.split()[0] for c in GAMAP if c.split()[0] not in (*B.SMALL_HOME_KEPT, "FACID", "Latitude", "Longitude")]
+    hidden = [c.split()[0] for c in GAMAP if c.split()[0] not in (*B.SMALL_HOME_KEPT, "facid", "latitude", "longitude")]
     small = con.execute(f"SELECT {', '.join(hidden)} FROM assisted_living "
                         "WHERE facility_identity_status = 'aggregated_small_home'").fetchall()
     assert small == [(None,) * len(hidden)]
@@ -213,7 +211,7 @@ def test_shelter_feed_never_reads_contact_fields(con):
     table(con, "raw_shelter_feed_fields", ["name VARCHAR", "type VARCHAR"], fields)
     B.build_gema_shelter_feed(con)
     cols = [r[0] for r in con.execute("DESCRIBE gema_shelter_feed").fetchall()]
-    assert cols == B.SHELTER_FEED_FIELDS
+    assert cols == B.SOURCE_COLUMNS["gema_shelter_feed"]
     assert not any("contact" in c or "phone" in c or c in ("remarks", "Creator", "Editor") for c in cols)
 
 
@@ -236,13 +234,13 @@ def test_storm_match_status_and_history(con):
 
 
 def test_contraflow_points_get_county_and_zone(con):
-    table(con, "raw_contraflow", ["OBJECTID INTEGER", "Interstate VARCHAR", "Exit_Num VARCHAR", "CrossRoad VARCHAR",
-                                  "Type VARCHAR", "Comments VARCHAR", "lon DOUBLE", "lat DOUBLE"],
+    table(con, "raw_contraflow", ["objectid INTEGER", "interstate VARCHAR", "exit_num VARCHAR", "crossroad VARCHAR",
+                                  "type VARCHAR", "comments VARCHAR", "lon DOUBLE", "lat DOUBLE"],
           [[1, "I-16", "167", "MLK Blvd", "Exit", None, -82.0, 31.0],
            [2, "I-16", "1", "I-75", "Exit", None, -84.0, 33.0]])
     B.build_contraflow_intersections(con)
-    rows = con.execute("SELECT OBJECTID, county_fips, county_fips_status, evac_zone, evac_zone_status, record_status "
-                       "FROM contraflow_intersections ORDER BY OBJECTID").fetchall()
+    rows = con.execute("SELECT objectid, county_fips, county_fips_status, evac_zone, evac_zone_status, record_status "
+                       "FROM contraflow_intersections ORDER BY objectid").fetchall()
     assert rows == [(1, "13003", "imputed", "A", "external", "external"),
                     (2, "13001", "imputed", None, "external", "external")]
     assert B.unprovenanced(con, "contraflow_intersections") == []
@@ -289,15 +287,24 @@ def test_evac_order_times_become_ranges_before_ts_winds(con):
 
 
 def test_oe417_unknown_customers_stay_null(con):
-    table(con, "raw_oe417", ["date_event_began VARCHAR", '"Time Event Began" VARCHAR', '"Area Affected" VARCHAR',
-                             '"Event Type" VARCHAR', '"Number of Customers Affected" VARCHAR',
-                             '"Demand Loss (MW)" VARCHAR'],
+    table(con, "raw_oe417", [f"{col} VARCHAR" for col in ("event_began_date", "time_event_began", "area_affected",
+                                                           "event_type", "number_of_customers_affected", "demand_loss_mw")],
           [["2017-09-10", "10:00", "Georgia", "Weather", "1,200,000", "Unknown"],
            ["2018-10-10", "12:00", "Georgia", "Weather", "Unknown", "300"]])
     B.build_outage_events(con)
-    rows = con.execute("SELECT event_key, customers_affected, customers_affected_status, demand_loss_mw_status "
+    rows = con.execute("SELECT event_key, customers_affected, customers_affected_status, demand_loss_mw_clean_status "
                        "FROM outage_events ORDER BY 1").fetchall()
     assert rows == [("oe417_001", 1200000, "recorded", "unrecorded"), ("oe417_002", None, "unrecorded", "recorded")]
+
+
+def test_raw_sources_expose_snake_case_and_reject_collisions(con):
+    con.execute("""CREATE TABLE src AS SELECT 1 AS "Demand Loss (MW)", 2 AS "AtHome_Any_DME", 3 AS "95% C.I.",
+                   '2017-09-10 00:00:00' AS "Date Event Began", '2017-09-10' AS date_event_began""")
+    with pytest.raises(AssertionError, match="collide after snake_case: \\['date_event_began'\\]"):
+        B.raw(con, "raw_x", "src")
+    B.raw(con, "raw_x", "src", rename={"date_event_began": "event_began_date"})
+    assert [r[0] for r in con.execute("DESCRIBE raw_x").fetchall()] == [
+        "demand_loss_mw", "athome_any_dme", "n_95_c_i", "date_event_began", "event_began_date"]
 
 
 SRC = Sources.from_env()
@@ -319,16 +326,16 @@ def test_real_inputs_canonical_numbers():
     assert nums["assisted_living"]["PERSONAL CARE HOME"]["small_homes_aggregated"] == 1044
     small = con.execute("""
         SELECT COUNT(*) FROM assisted_living a WHERE facility_identity_status = 'aggregated_small_home' AND (
-            FACID IN (SELECT FACID FROM raw_gamap2care) OR NAME IS NOT NULL OR ADDRESS IS NOT NULL
-            OR EXISTS (SELECT 1 FROM raw_gamap2care g WHERE g.Latitude = a.Latitude AND g.Longitude = a.Longitude))
+            facid IN (SELECT facid FROM raw_gamap2care) OR name IS NOT NULL OR address IS NOT NULL
+            OR EXISTS (SELECT 1 FROM raw_gamap2care g WHERE g.latitude = a.latitude AND g.longitude = a.longitude))
     """).fetchall()[0][0]
     assert small == 0
     published = con.execute("""
         SELECT COUNT(*) FROM (
             SELECT nearest_tract_geo_id, licensed_beds FROM assisted_living
             WHERE facility_identity_status = 'aggregated_small_home'
-            GROUP BY ALL HAVING COUNT(DISTINCT (FACTYPE, FAC_ST, OPERSTDESC, SUBTYPE, COUNTY, FAC_CITY, FAC_ZIP,
-                                               OPEN_DATE, Accuracy, Latitude, Longitude, county_fips, evac_zone,
+            GROUP BY ALL HAVING COUNT(DISTINCT (factype, fac_st, operstdesc, subtype, county, fac_city, fac_zip,
+                                               open_date, accuracy, latitude, longitude, county_fips, evac_zone,
                                                km_nearest_medical_shelter)) > 1)""").fetchall()[0][0]
     assert published == 0
     assert nums["evacuation_zones"]["tracts_in_zone"] == 198
@@ -336,3 +343,17 @@ def test_real_inputs_canonical_numbers():
     assert (p["dialysis_live"], p["dialysis_stations"], p["facility_esrd_dialysis_any_dme_snapshot"]) == (18026, 5956, 6009)
     assert nums["hazard_tracts"]["cfld_imputed_outside_layer"] == 2588
     assert nums["care_facilities"]["occupancy_unrecorded"] == 2
+    for name in B.TABLES:
+        bad = [c for (c,) in con.execute(f"SELECT column_name FROM (DESCRIBE {name})").fetchall()
+               if not B.SNAKE.fullmatch(c)]
+        assert not bad, f"{name}: {bad}"
+
+
+@pytest.mark.skipif(not B.OUT.exists(), reason="no built outputs")
+def test_written_parquet_column_names_load_into_bigquery():
+    con = B.connect()
+    files = sorted(B.OUT.glob("*.parquet"))
+    assert {f.stem for f in files} == set(B.TABLES)
+    bad = {f.name: [c for (c,) in con.execute(f"SELECT name FROM parquet_schema('{f}') WHERE name <> 'duckdb_schema'")
+                    .fetchall() if not B.SNAKE.fullmatch(c)] for f in files}
+    assert not {k: v for k, v in bad.items() if v}

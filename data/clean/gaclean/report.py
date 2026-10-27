@@ -20,8 +20,8 @@ def _fmt(v) -> str:
 
 
 def checks(con) -> dict[str, list[tuple]]:
-    h = _q(con, """SELECT COUNT(*) FILTER (WHERE cfld_expp_clean_status = 'imputed'), MIN(HRCN_EALP), MAX(HRCN_EALP),
-                          COUNT(*), (SELECT geo_id FROM hazard_tracts ORDER BY HRCN_EALP DESC, geo_id LIMIT 1)
+    h = _q(con, """SELECT COUNT(*) FILTER (WHERE cfld_expp_clean_status = 'imputed'), MIN(hrcn_ealp), MAX(hrcn_ealp),
+                          COUNT(*), (SELECT geo_id FROM hazard_tracts ORDER BY hrcn_ealp DESC, geo_id LIMIT 1)
                    FROM hazard_tracts""")
     p = _q(con, """SELECT COUNT(*), SUM(power_dependent_dme), SUM(power_dependent_live),
                           COUNT(*) FILTER (WHERE power_dependent_live <> power_dependent_dme),
@@ -60,7 +60,7 @@ def checks(con) -> dict[str, list[tuple]]:
     a = _q(con, """SELECT COUNT(*), COUNT(*) FILTER (WHERE facility_identity_status = 'aggregated_small_home'),
                           SUM(licensed_beds), median(km_nearest_medical_shelter)
                    FROM assisted_living""")
-    a_disagree = _q(con, """SELECT COUNT(*) FROM assisted_living_pre a JOIN assisted_living_nearest n USING (FACID) JOIN raw_power p ON p.fips_code = n.nearest_tract_county_fips WHERE lower(replace(a.COUNTY, ' ', '')) <> lower(replace(p.name, ' ', ''))""")[0]
+    a_disagree = _q(con, """SELECT COUNT(*) FROM assisted_living_pre a JOIN assisted_living_nearest n USING (facid) JOIN raw_power p ON p.fips_code = n.nearest_tract_county_fips WHERE lower(replace(a.county, ' ', '')) <> lower(replace(p.name, ' ', ''))""")[0]
     cf = _q(con, "SELECT COUNT(*), COUNT(*) FILTER (WHERE evac_zone IS NOT NULL) FROM contraflow_intersections")
     se = {k: n for k, n in con.execute("SELECT storm_match_status, COUNT(*) FROM storm_events GROUP BY 1 ORDER BY 1").fetchall()}
     sh = _q(con, "SELECT COUNT(*) FROM storm_history")[0]
@@ -69,8 +69,8 @@ def checks(con) -> dict[str, list[tuple]]:
     return {
         "hazard_tracts": [
             ("source columns", h[3], "11 NRI columns as published", "unchanged, in the BigQuery `hazard_tracts_clean` order"),
-            ("cfld_null_outside_layer", h[0], "`CFLD_EXPP` NULL", "`cfld_expp_clean` = 0, `cfld_expp_clean_status` = imputed"),
-            ("hrcn_ealp_percentile", h[3], f"`HRCN_EALP` {h[1]:.3g} to {h[2]:.3g}",
+            ("cfld_null_outside_layer", h[0], "`cfld_expp` NULL", "`cfld_expp_clean` = 0, `cfld_expp_clean_status` = imputed"),
+            ("hrcn_ealp_percentile", h[3], f"`hrcn_ealp` {h[1]:.3g} to {h[2]:.3g}",
              f"`hrcn_ealp_pctile` 0 to 1 (top: {h[4]})"),
             ("fips_from_geo_id", h[3], "no county column", "`county_fips` = left(geo_id, 5)"),
             ("gema_zone", z[0], f"no evacuation zone ({z[3]} GEMA zone polygons)",
@@ -101,11 +101,11 @@ def checks(con) -> dict[str, list[tuple]]:
             ("gema_zone", z[1], "no evacuation zone", "`evac_zone`, `evac_zone_county` from the facility point"),
         ],
         "assisted_living (GaMap2Care)": [
-            ("gamap2care_facility", a[0], "GaMap2Care facility fields", f"one row per FACID; {_fmt(a[2])} licensed beds"),
+            ("gamap2care_facility", a[0], "GaMap2Care facility fields", f"one row per `facid`; {_fmt(a[2])} licensed beds"),
             ("small_home_aggregated", a[1], "every GaMap2Care field of homes with 6 or fewer beds",
-             ("opaque `FACID` (pch_small_<county>_<n>); only `facility_type` and `licensed_beds` kept; "
-              "`Latitude`/`Longitude` = tract centroid; status aggregated_small_home")),
-            ("nearest_tract_centroid", a[0], "GaMap2Care `COUNTY` text",
+             ("opaque `facid` (pch_small_<county>_<n>); only `facility_type` and `licensed_beds` kept; "
+              "`latitude`/`longitude` = tract centroid; status aggregated_small_home")),
+            ("nearest_tract_centroid", a[0], "GaMap2Care `county` text",
              f"`county_fips` (imputed); {a_disagree} disagree with the county text, both kept"),
             ("gema_zone", z[2], "no evacuation zone", "`evac_zone`, `evac_zone_county`"),
             ("medical_shelter_distance_pending", a[0], "none",
@@ -146,7 +146,7 @@ def checks(con) -> dict[str, list[tuple]]:
                                          SELECT contraflow_utc_rule FROM evac_orders) GROUP BY 1 ORDER BY 1""").fetchall()
         ],
         "outage_events (DOE OE-417)": [
-            (rule, n, "Number of Customers Affected", "customers_affected")
+            (rule, n, "`number_of_customers_affected`", "`customers_affected`")
             for rule, n in con.execute("SELECT customers_affected_rule, COUNT(*) FROM outage_events GROUP BY 1 ORDER BY 1")
             .fetchall()
         ],

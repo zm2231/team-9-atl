@@ -9,8 +9,8 @@ its published value; cleaned values go in appended columns with `_status` and `_
 | Rule | Rows | Before | After |
 |---|---:|---|---|
 | `source columns` | 2,791 | 11 NRI columns as published | unchanged, in the BigQuery `hazard_tracts_clean` order |
-| `cfld_null_outside_layer` | 2,588 | `CFLD_EXPP` NULL | `cfld_expp_clean` = 0, `cfld_expp_clean_status` = imputed |
-| `hrcn_ealp_percentile` | 2,791 | `HRCN_EALP` 0 to 0.0329 | `hrcn_ealp_pctile` 0 to 1 (top: 13029920308) |
+| `cfld_null_outside_layer` | 2,588 | `cfld_expp` NULL | `cfld_expp_clean` = 0, `cfld_expp_clean_status` = imputed |
+| `hrcn_ealp_percentile` | 2,791 | `hrcn_ealp` 0 to 0.0329 | `hrcn_ealp_pctile` 0 to 1 (top: 13029920308) |
 | `fips_from_geo_id` | 2,791 | no county column | `county_fips` = left(geo_id, 5) |
 | `gema_zone` | 198 | no evacuation zone (27 GEMA zone polygons) | `evac_zone`, `evac_zone_county` from the tract centroid; null elsewhere |
 
@@ -41,9 +41,9 @@ its published value; cleaned values go in appended columns with `_status` and `_
 
 | Rule | Rows | Before | After |
 |---|---:|---|---|
-| `gamap2care_facility` | 1,894 | GaMap2Care facility fields | one row per FACID; 46,567 licensed beds |
-| `small_home_aggregated` | 1,044 | every GaMap2Care field of homes with 6 or fewer beds | opaque `FACID` (pch_small_<county>_<n>); only `facility_type` and `licensed_beds` kept; `Latitude`/`Longitude` = tract centroid; status aggregated_small_home |
-| `nearest_tract_centroid` | 1,894 | GaMap2Care `COUNTY` text | `county_fips` (imputed); 59 disagree with the county text, both kept |
+| `gamap2care_facility` | 1,894 | GaMap2Care facility fields | one row per `facid`; 46,567 licensed beds |
+| `small_home_aggregated` | 1,044 | every GaMap2Care field of homes with 6 or fewer beds | opaque `facid` (pch_small_<county>_<n>); only `facility_type` and `licensed_beds` kept; `latitude`/`longitude` = tract centroid; status aggregated_small_home |
+| `nearest_tract_centroid` | 1,894 | GaMap2Care `county` text | `county_fips` (imputed); 59 disagree with the county text, both kept |
 | `gema_zone` | 78 | no evacuation zone | `evac_zone`, `evac_zone_county` |
 | `medical_shelter_distance_pending` | 1,894 | none | `km_nearest_medical_shelter` median 45.2 (pending shelters_clean) |
 
@@ -97,8 +97,8 @@ its published value; cleaned values go in appended columns with `_status` and `_
 
 | Rule | Rows | Before | After |
 |---|---:|---|---|
-| `oe417_filing` | 66 | Number of Customers Affected | customers_affected |
-| `oe417_unknown` | 7 | Number of Customers Affected | customers_affected |
+| `oe417_filing` | 66 | `number_of_customers_affected` | `customers_affected` |
+| `oe417_unknown` | 7 | `number_of_customers_affected` | `customers_affected` |
 
 ## overture_places (gap fill)
 

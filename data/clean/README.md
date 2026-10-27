@@ -19,9 +19,9 @@ Inputs and licences are in [SOURCES.md](SOURCES.md). The build stops with a list
 | `hazard_tracts.parquet` | 2,791 | `geo_id` | the 11 columns of `evacuation_readiness.hazard_tracts_clean` |
 | `power_dependent_counties.parquet` | 159 | `fips_code` | the 20 columns of `evacuation_readiness.power_dependent_counties_clean` |
 | `dialysis_centers.parquet` | 355 | `ccn` | gap fill: CMS dialysis facilities with county and coordinates |
-| `assisted_living.parquet` | 1,894 | `FACID` (opaque for small homes) | GaMap2Care assisted living communities and personal care homes |
-| `contraflow_intersections.parquet` | 32 | `OBJECTID` | GEMA I-16 contraflow intersections |
-| `gema_shelter_feed.parquet` | 0 | `GlobalID` | WebEOC shelter feed, facility and status fields only; an input for `shelters_clean` |
+| `assisted_living.parquet` | 1,894 | `facid` (opaque for small homes) | GaMap2Care assisted living communities and personal care homes |
+| `contraflow_intersections.parquet` | 32 | `objectid` | GEMA I-16 contraflow intersections |
+| `gema_shelter_feed.parquet` | 0 | `globalid` | WebEOC shelter feed, facility and status fields only; an input for `shelters_clean` |
 | `storm_events.parquet` | 6,934 | `event_id` | NCEI tropical-related storm events, GA and FL, 1996-2025 |
 | `storm_history.parquet` | 192 | `storm_atcf_id`, `state` | per-storm, per-state totals for the scenario library |
 | `overture_places.parquet` | 4,858 | `id` | Overture care and transport listings, per-row licence |
@@ -33,7 +33,11 @@ Inputs and licences are in [SOURCES.md](SOURCES.md). The build stops with a list
 | `gaps.json` | | | the gap register behind `GAPS.md` |
 
 The leading columns were read from the BigQuery schemas with `bq show --schema` and hold the
-snapshot values unchanged, one row per source row. Every cleaned or added column follows with its own
+snapshot values unchanged, one row per source row. Every column name is snake_case
+(`^[a-z][a-z0-9_]*$`), so BigQuery loads each file without a character map: source names are
+lowercased and runs of other characters become `_` (`Demand Loss (MW)` → `demand_loss_mw`,
+`HRCN_EALP` → `hrcn_ealp`); BigQuery matches column names case-insensitively, so the leading columns
+still line up with the `_clean` schemas. Every cleaned or added column follows with its own
 `<column>_status` and `<column>_rule`; the build fails if one is missing. The exceptions are grouped:
 `<field>_live_low` shares `<field>_live_status`, dialysis `latitude`, `longitude` and
 `coordinates_confidence` share `coordinates_status`, and `storm_history` totals share
@@ -58,10 +62,10 @@ Status values: `recorded` (the source has a value), `unrecorded` (the source has
   live dialysis beneficiaries per station. Each center's county comes from its ZIP through the
   emPOWER ZIP table; coordinates come from the Census Geocoder, with match quality kept
   (242 exact, 81 non-exact, 32 unmatched).
-- **Coastal flood.** `CFLD_EXPP` is NULL for 2,588 tracts outside the NRI coastal-flood layer;
+- **Coastal flood.** `cfld_expp` is NULL for 2,588 tracts outside the NRI coastal-flood layer;
   `cfld_expp_clean` sets those to 0 with status `imputed`.
-- **Hurricane exposure.** `hrcn_ealp_pctile` (percentile of `HRCN_EALP`) is the canonical measure;
-  `HRCN_AFREQ` is kept beside it.
+- **Hurricane exposure.** `hrcn_ealp_pctile` (percentile of `hrcn_ealp`) is the canonical measure;
+  `hrcn_afreq` is kept beside it.
 - **Nursing-home occupancy.** CMS average residents per day over CMS certified beds: 80.8%
   statewide, 2 homes unrecorded. This is an average, not the census on the day of a storm.
 - **County of a nursing home.** Imputed from the nearest tract centroid; 11 homes disagree with
@@ -73,9 +77,9 @@ Status values: `recorded` (the source has a value), `unrecorded` (the source has
   27 zone polygons. 198 tracts are in a zone (697,384 residents), as are 26 nursing homes and 78
   assisted living or personal care homes.
 - **Small personal care homes.** 1,044 of the 1,568 personal care homes have 6 or fewer licensed beds.
-  In every output their `FACID` is an opaque key (`pch_small_<county>_<n>`, numbered by tract and
+  In every output their `facid` is an opaque key (`pch_small_<county>_<n>`, numbered by tract and
   beds); every other GaMap2Care field except `facility_type` and `licensed_beds` is null; their
-  `Latitude`/`Longitude` is the tract centroid, and their distances and evacuation zone are taken
+  `latitude`/`longitude` is the tract centroid, and their distances and evacuation zone are taken
   from it. Status `aggregated_small_home`.
 - **County of an assisted living home.** Imputed from the nearest tract centroid; 59 disagree with
   the GaMap2Care county text, and both are kept.

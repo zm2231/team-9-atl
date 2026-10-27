@@ -10,17 +10,17 @@ RULES = {
     "nearest_tract_centroid": "Assigned to the tract whose 2020 centroid is nearest (straight line, UTM 17N).",
     "fips_from_geo_id": "County FIPS = first five digits of the 2020 tract geo_id.",
     "cfld_null_outside_layer": (
-        "CFLD_EXPP null means the tract is outside NRI's coastal-flood layer: cfld_expp_clean = 0, status "
+        "cfld_expp null means the tract is outside NRI's coastal-flood layer: cfld_expp_clean = 0, status "
         "imputed. The source column is unchanged."),
     "hrcn_ealp_percentile": (
-        "Canonical hurricane exposure: percent rank (0-1) of NRI HRCN_EALP, expected annual population loss, "
-        "among Georgia hazard rows. HRCN_AFREQ stays as published."),
+        "Canonical hurricane exposure: percent rank (0-1) of NRI hrcn_ealp, expected annual population loss, "
+        "among Georgia hazard rows. hrcn_afreq stays as published."),
     "empower_live_canonical": "HHS emPOWER REST service, fetched 2026-10-27; canonical for power dependence and dialysis.",
     "empower_suppressed_1_11": "emPOWER shows counts of 1-10 as 11: the value is the range 1-11, _low = 1, value kept as upper bound.",
     "empower_snapshot_unverified": (
         "Snapshot column facility_esrd_dialysis_any_dme (6,009 statewide) does not match the live service's "
         "dialysis count (18,026); kept as published, marked suspect, never used as dialysis patients."),
-    "cfld_share": "Share of tract population in NRI's coastal-flood layer: cfld_expp_clean / POPULATION, capped at 1.",
+    "cfld_share": "Share of tract population in NRI's coastal-flood layer: cfld_expp_clean / population, capped at 1.",
     "coastal_flood_exposed": "True when cfld_expp_clean > 0.",
     "vulnerability_tract_join": "True when the hazard row's geo_id is in the snapshot vulnerability_tracts table.",
     "tract_hazard_join": "Hazard value of the facility's nearest tract (hazard_tracts clean columns).",
@@ -48,8 +48,8 @@ RULES = {
     "gamap2care_facility": "GaMap2Care facility record as published by Georgia DCH, facility fields only.",
     "small_home_aggregated": (
         f"Personal care home with {SMALL_HOME_BEDS} or fewer licensed beds, often a family home in a private "
-        "residence: FACID is replaced by an opaque key (pch_small_<county>_<n>, numbered by tract and beds); "
-        "every other GaMap2Care field except facility_type and licensed_beds is null; Latitude/Longitude are "
+        "residence: facid is replaced by an opaque key (pch_small_<county>_<n>, numbered by tract and beds); "
+        "every other GaMap2Care field except facility_type and licensed_beds is null; latitude/longitude are "
         "its tract centroid in every output. Distances and evacuation zone use the tract centroid."),
     "gema_contraflow_point": "GEMA I-16 contraflow intersection as published.",
     "webeoc_facility_fields": (
