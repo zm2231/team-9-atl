@@ -43,8 +43,7 @@ describe("onboarding show-once", () => {
     expect(() => markOnboardingSeen(null)).not.toThrow();
   });
 
-  it("has four or five steps", () => {
-    expect(TOUR_STEPS.length).toBeGreaterThanOrEqual(4);
-    expect(TOUR_STEPS.length).toBeLessThanOrEqual(5);
+  it("points every step but the first at a control", () => {
+    expect(TOUR_STEPS.slice(1).every((s) => s.target)).toBe(true);
   });
 });

@@ -14,13 +14,18 @@ export const TOUR_STEPS: TourStep[] = [
     target: ".topbar h1",
   },
   {
-    title: "Pick a county",
-    body: "Click a county on the map. The Details pane shows who can't leave, the shelters nearby and the gaps.",
+    title: "Move around and pick a county",
+    body: "Drag to pan; scroll, pinch or use + and − to zoom, and ⟲ to reset. Click a county to open Details: who can't leave, the shelters nearby and the gaps.",
     target: ".map",
   },
   {
-    title: "Simulate a storm",
-    body: "Draw a hurricane track across the map, then pick a category. Counties shade by modelled power outage.",
+    title: "Draw a hurricane track",
+    body: "Click Draw hurricane track, then press and drag across the map along the storm's path. Let go to finish; the storm is simulated at once. Redraw to replace it.",
+    target: ".controls > .btn",
+  },
+  {
+    title: "Set category and reach",
+    body: "Pick Cat 1 to 5 and set Within reach. Counties shade by modelled power outage. New simulation starts over; the old one stays in History.",
     target: ".controls",
   },
   {
@@ -30,8 +35,8 @@ export const TOUR_STEPS: TourStep[] = [
     tab: "chat",
   },
   {
-    title: "Come back to a scenario",
-    body: "History keeps every scenario you run. Opening one restores the storm and its conversation.",
+    title: "Reports and history",
+    body: "Reports open in the chat; Expand reads them full screen. History keeps every scenario you run, and opening one restores the storm and its conversation. Drag the panel's left edge to resize it.",
     target: ".history",
     tab: "chat",
   },

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { loadMapData } from "./lib/agentClient";
 import { browserStorage, useStore } from "./state/store";
 import { markOnboardingSeen, shouldShowOnboarding } from "./lib/onboarding";
@@ -8,6 +8,8 @@ import Legend from "./components/map/Legend";
 import ScenarioControls from "./components/scenario/ScenarioControls";
 import SidePanel from "./components/SidePanel";
 import Onboarding from "./components/onboarding/Onboarding";
+import SideResizer from "./components/SideResizer";
+import { useSideWidth } from "./state/useSideWidth";
 import { useHistoryPersistence } from "./state/useHistoryPersistence";
 
 function DataBanner({ onRetry }: { onRetry: () => void }) {
@@ -35,6 +37,7 @@ export default function App() {
   useHistoryPersistence();
   const [touring, setTouring] = useState(() => shouldShowOnboarding(browserStorage()));
   const helpRef = useRef<HTMLButtonElement>(null);
+  const side = useSideWidth();
 
   const closeTour = useCallback(() => {
     markOnboardingSeen(browserStorage());
@@ -75,12 +78,13 @@ export default function App() {
           </button>
         </header>
         <DataBanner onRetry={load} />
-        <main className="layout">
+        <main className="layout" style={{ "--side-width": `${side.width}px` } as CSSProperties}>
           <section className="map-col" aria-label="Map of Georgia">
             <ScenarioControls />
             <MapView />
             <Legend />
           </section>
+          <SideResizer width={side.width} min={side.min} max={side.max} onResize={side.resize} />
           <SidePanel />
         </main>
         {touring && <Onboarding onClose={closeTour} />}
