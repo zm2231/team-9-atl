@@ -8,6 +8,8 @@ from google.adk.cli.fast_api import get_fast_api_app
 
 from guard import RequestGuard
 
+SESSION_TTL = "604800s"
+
 AGENTS_DIR = Path(__file__).resolve().parent
 FRONTEND_DIST = Path(os.environ.get("FRONTEND_DIST", AGENTS_DIR.parent / "frontend" / "dist"))
 
@@ -27,13 +29,32 @@ def _export_traces_to_cloud() -> None:
     trace.set_tracer_provider(provider)
 
 
+def _register_expiring_agent_engine_sessions() -> None:
+    """Chats go to Agent Engine with a 7-day TTL instead of its 365-day default."""
+    from google.adk.cli.service_registry import get_service_registry
+    from google.adk.sessions.vertex_ai_session_service import VertexAiSessionService
+
+    class ExpiringSessions(VertexAiSessionService):
+        async def create_session(self, **kwargs):
+            kwargs.setdefault("ttl", SESSION_TTL)
+            return await super().create_session(**kwargs)
+
+    def factory(uri: str, **_):
+        _, project, _, location, _, engine_id = uri.removeprefix("agentengine://").split("/")
+        return ExpiringSessions(project=project, location=location, agent_engine_id=engine_id)
+
+    get_service_registry().register_session_service("agentengine", factory)
+
+
 if os.environ.get("TRACE_TO_CLOUD") == "true":
     _export_traces_to_cloud()
+if os.environ.get("SESSION_SERVICE_URI", "").startswith("agentengine://"):
+    _register_expiring_agent_engine_sessions()
 
 app = get_fast_api_app(
     agents_dir=str(AGENTS_DIR),
     web=False,
-    session_service_uri=None,  # in-memory sessions; nothing is persisted
+    session_service_uri=os.environ.get("SESSION_SERVICE_URI"),
     use_local_storage=False,
     max_llm_calls=16,
 )

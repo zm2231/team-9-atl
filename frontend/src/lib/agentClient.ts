@@ -8,7 +8,22 @@ export const MAP_DATA_TIMEOUT_MS = 20_000; // SC-004a
 export const WHEELCHAIR_TIMEOUT_MS = 60_000;
 export const CHAT_TIMEOUT_MS = 90_000;
 
-const userId = typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `u-${Date.now()}`;
+const USER_ID_KEY = "gsr.userId.v1";
+
+/** One id per browser, kept in localStorage, so a saved scenario can resume its agent session. */
+function browserUserId(): string {
+  const fresh = typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `u-${Date.now()}`;
+  try {
+    const saved = window.localStorage.getItem(USER_ID_KEY);
+    if (saved && /^[A-Za-z0-9_-]{1,64}$/.test(saved)) return saved;
+    window.localStorage.setItem(USER_ID_KEY, fresh);
+  } catch {
+    // Storage unavailable: this page load keeps its own id.
+  }
+  return fresh;
+}
+
+const userId = browserUserId();
 
 /** The parts of an ADK event the UI reads (camelCase, verified against google-adk 2.13). */
 export interface AgentEvent {
@@ -28,6 +43,7 @@ export async function createSession(signal?: AbortSignal): Promise<string> {
   if (!res.ok) throw new Error(`Could not start a session (HTTP ${res.status})`);
   const body = (await res.json()) as { id?: string };
   if (!body.id) throw new Error("Session response had no id");
+  createdThisPage.add(body.id);
   return body.id;
 }
 
@@ -88,7 +104,7 @@ export async function loadMapData(outer?: AbortSignal): Promise<MapData> {
   }
 }
 
-/** Live Google Maps lookups for shelters with a blank wheelchair record (at most 10 per call). */
+/** Live Google Maps lookups for shelters with a blank wheelchair record (at most 3 per call). */
 export async function checkWheelchair(shelterIds: string[], outer?: AbortSignal): Promise<WheelchairCheck[]> {
   const { signal, done } = withTimeout(WHEELCHAIR_TIMEOUT_MS, outer);
   try {
@@ -110,6 +126,15 @@ export async function checkWheelchair(shelterIds: string[], outer?: AbortSignal)
 }
 
 let chatSession: Promise<string> | null = null;
+const createdThisPage = new Set<string>();
+
+/**
+ * Chooses the agent session for the next question: a saved scenario's session to continue it, or
+ * none to start fresh (New simulation, delete).
+ */
+export function resetChatSession(sessionId?: string): void {
+  chatSession = sessionId ? Promise.resolve(sessionId) : null;
+}
 
 export function contextPart(context: ChatContext): string {
   return `CONTEXT v1 ${JSON.stringify(context)}`;
@@ -136,16 +161,13 @@ export async function streamChat(opts: {
   question: string;
   context: ChatContext;
   onEvent: (e: AgentEvent) => void;
+  /** Called with the agent session this question used, so the scenario can resume it later. */
+  onSession?: (sessionId: string) => void;
   signal?: AbortSignal;
 }): Promise<void> {
   const { signal, done } = withTimeout(CHAT_TIMEOUT_MS, opts.signal);
-  try {
-    chatSession ??= createSession(signal).catch((e) => {
-      chatSession = null;
-      throw e;
-    });
-    const sessionId = await chatSession;
-    const res = await fetch("/run_sse", {
+  const send = (sessionId: string) =>
+    fetch("/run_sse", {
       method: "POST",
       headers: { "content-type": "application/json" },
       signal,
@@ -157,7 +179,21 @@ export async function streamChat(opts: {
         new_message: { role: "user", parts: [{ text: opts.question }, { text: contextPart(opts.context) }] },
       }),
     });
+  try {
+    chatSession ??= createSession(signal).catch((e) => {
+      chatSession = null;
+      throw e;
+    });
+    let sessionId = await chatSession;
+    let res = await send(sessionId);
+    if (!res.ok && !createdThisPage.has(sessionId)) {
+      // A saved session that expired or belongs to another browser: continue in a fresh one.
+      chatSession = createSession(signal);
+      sessionId = await chatSession;
+      res = await send(sessionId);
+    }
     if (!res.ok || !res.body) throw new Error(`The agent did not answer (HTTP ${res.status})`);
+    opts.onSession?.(sessionId);
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";

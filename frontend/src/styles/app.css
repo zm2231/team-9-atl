@@ -529,3 +529,103 @@ table.receiving .flag {
   border: 1px solid var(--border);
   padding: 2px 4px;
 }
+
+/* Scenario history (feature 002) */
+.history {
+  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+  max-height: 45%;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.history__header {
+  border: 0;
+  background: none;
+  color: var(--fg);
+  font-weight: 600;
+  padding: 2px 0;
+}
+.history__list {
+  list-style: none;
+  margin: 6px 0;
+  padding: 0;
+}
+.history-item {
+  border-left: 3px solid transparent;
+  padding: 4px 6px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+}
+.history-item--current {
+  border-left-color: var(--live);
+  background: var(--county);
+}
+.history-item__open {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  padding: 0;
+}
+.history-item__name {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+}
+.history-item__meta {
+  font-size: 11px;
+  color: var(--muted);
+}
+.history-item__actions,
+.history-item__confirm {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+  margin-top: 2px;
+}
+.history-item__input {
+  width: 100%;
+  font: inherit;
+  font-size: 12px;
+  padding: 2px 4px;
+}
+.history__note {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 4px 0 0;
+}
+.history__notice {
+  font-size: 11px;
+  background: var(--no-bg);
+  color: var(--no-fg);
+  padding: 4px 6px;
+  border-radius: 4px;
+  margin: 4px 0;
+}
+.link-btn {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--live);
+  font-size: 11px;
+  text-decoration: underline;
+}
+.earlier__list {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+}
+.earlier__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.earlier__toggle {
+  margin-top: 6px;
+}

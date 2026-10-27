@@ -61,6 +61,8 @@ cannot confirm that a shelter is accepting evacuees or has capacity.
 
 Tracing: Cloud Run sets `TRACE_TO_CLOUD=true`, so ADK exports a span for each agent run, model call and tool call to Cloud Trace (console: Trace explorer). Locally it is off unless you set the variable.
 
+Sessions: Cloud Run sets `SESSION_SERVICE_URI=agentengine://...` (Vertex AI Agent Engine `evac-readiness-sessions`, id in `deploy/config.sh`), so a chat survives instance restarts and can be resumed by its `user_id` and `session_id`. Sessions expire after 7 days (`SESSION_TTL` in `agent/server.py`); Agent Engine's default would keep them a year. Locally sessions stay in memory unless you set the variable.
+
 Runtime settings (both `.env` and Cloud Run): `GOOGLE_GENAI_USE_VERTEXAI=TRUE`, `GOOGLE_CLOUD_LOCATION=global` (Gemini 3 models are served from `global`), `MODEL_NAME=gemini-3-flash-preview`, `EVAC_DATASET=evac_prod`.
 
 ## Data

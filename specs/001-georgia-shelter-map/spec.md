@@ -299,7 +299,7 @@ get a ranked list with reasons and a separate counted "could not tell you" secti
   with the exclusion stated per FR-007.
 - **FR-019**: The system MUST label all simulation output as an illustrative planning scenario and
   not a forecast.
-- **FR-020**: The user MUST be able to remove or reset the simulated hurricane.
+- **FR-020**: The user MUST be able to remove or reset the simulated hurricane (via **New simulation**, which keeps the previous scenario in History; see feature 002).
 
 **Data boundaries**
 
