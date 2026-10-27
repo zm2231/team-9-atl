@@ -29,21 +29,21 @@ const cobb: LineString = { type: "LineString", coordinates: [[-84.7, 33.8], [-84
 
 describe("ReceivingList", () => {
   it("header shows the cutoff and all three wheelchair counts", () => {
-    render(<ReceivingListView scenario={scenario(cobb, 200)} shelterById={shelterById} onSelect={() => {}} />);
+    render(<ReceivingListView scenario={scenario(cobb, 200)} shelterById={shelterById} unit="km" onSelect={() => {}} />);
     const header = screen.getByTestId("receiving-header");
     expect(header).toHaveTextContent("within 200 km");
     expect(header).toHaveTextContent(/\d+ yes · \d+ no · \d+ not recorded/);
   });
 
   it('shows "Not recorded", never "No", for a blank wheelchair flag', () => {
-    render(<ReceivingListView scenario={scenario(cobb, 200)} shelterById={shelterById} onSelect={() => {}} />);
+    render(<ReceivingListView scenario={scenario(cobb, 200)} shelterById={shelterById} unit="km" onSelect={() => {}} />);
     // Commerce Primary School has no wheelchair record.
     const row = screen.getByText("Commerce Primary School").closest("tr")!;
     expect(row).toHaveTextContent("Not recorded");
   });
 
   it("a suspect shelter row shows its warning and reason, and totals name it", () => {
-    render(<ReceivingListView scenario={scenario(cobb, 200)} shelterById={shelterById} onSelect={() => {}} />);
+    render(<ReceivingListView scenario={scenario(cobb, 200)} shelterById={shelterById} unit="km" onSelect={() => {}} />);
     const row = screen.getByText("Commerce High School").closest("tr")!;
     expect(row).toHaveTextContent("!");
     expect(row.nextElementSibling).toHaveTextContent("Capacity looks implausible; ranked as 0");
@@ -51,19 +51,35 @@ describe("ReceivingList", () => {
   });
 
   it("shows the empty state for an empty list", () => {
-    render(<ReceivingListView scenario={scenario(cobb, 25)} shelterById={shelterById} onSelect={() => {}} />);
+    render(<ReceivingListView scenario={scenario(cobb, 25)} shelterById={shelterById} unit="km" onSelect={() => {}} />);
     expect(screen.getByTestId("receiving-empty")).toHaveTextContent("No shelters within 25 km");
   });
 
+  it("shows every distance in miles when miles are selected (FR-001, FR-005)", () => {
+    const sc = scenario(cobb, 200);
+    render(<ReceivingListView scenario={sc} shelterById={shelterById} unit="mi" onSelect={() => {}} />);
+    expect(screen.getByTestId("receiving-header")).toHaveTextContent("within 124 mi");
+    expect(screen.getByRole("columnheader", { name: "mi*" })).toHaveAttribute("title", "Distance (straight-line)");
+    const first = sc.receiving[0];
+    const miles = Math.round((first.distance_km.value ?? 0) / 1.609344);
+    expect(screen.getAllByTestId("receiving-row")[0]).toHaveTextContent(miles < 1 ? "<1 mi" : `${miles} mi`);
+    expect(screen.getByTestId("receiving-list")).not.toHaveTextContent(/\bkm\b/);
+  });
+
+  it("shows the empty state in miles", () => {
+    render(<ReceivingListView scenario={scenario(cobb, 25)} shelterById={shelterById} unit="mi" onSelect={() => {}} />);
+    expect(screen.getByTestId("receiving-empty")).toHaveTextContent("No shelters within 16 mi");
+  });
+
   it("is labeled illustrative (FR-019)", () => {
-    render(<ReceivingListView scenario={scenario(cobb, 200)} shelterById={shelterById} onSelect={() => {}} />);
+    render(<ReceivingListView scenario={scenario(cobb, 200)} shelterById={shelterById} unit="km" onSelect={() => {}} />);
     expect(screen.getByText("Illustrative scenario — not a forecast")).toBeInTheDocument();
   });
 });
 
 describe("ReceivingList: filled and live-checked data is called out", () => {
   const view = (extra: Partial<Parameters<typeof ReceivingListView>[0]> = {}) =>
-    render(<ReceivingListView scenario={scenario(cobb, 200)} shelterById={shelterById} onSelect={() => {}} {...extra} />);
+    render(<ReceivingListView scenario={scenario(cobb, 200)} shelterById={shelterById} unit="km" onSelect={() => {}} {...extra} />);
 
   it("offers a Maps check only for not-recorded shelters and calls it back with their ids", () => {
     const ids: string[][] = [];
@@ -95,7 +111,7 @@ describe("ReceivingList: filled and live-checked data is called out", () => {
     const id = sc.receiving[0].shelter_id;
     const map = new Map(shelterById);
     map.set(id, { ...filled, shelter_id: id });
-    render(<ReceivingListView scenario={sc} shelterById={map} onSelect={() => {}} />);
+    render(<ReceivingListView scenario={sc} shelterById={map} unit="km" onSelect={() => {}} />);
     expect(screen.getAllByText("NOAA map").length).toBeGreaterThan(0);
     expect(screen.getByTestId("surge-noaa-note")).toHaveTextContent("1 surge flags had no registry record");
     expect(screen.getAllByText("Floods from Cat 3").length).toBeGreaterThan(0);

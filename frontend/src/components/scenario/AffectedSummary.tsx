@@ -2,6 +2,7 @@ import { exclusionNote, flagCountsLine, formatNumber } from "../../lib/flags";
 import { capacitySummary, listFlagCounts } from "../../lib/simulation";
 import { useStore } from "../../state/store";
 import { countyNames } from "../../lib/geo";
+import { formatDistance } from "../../lib/units";
 import { useScenario } from "../../state/scenario";
 
 /** Shelters inside the simulated band (FR-018, FR-019). */
@@ -26,7 +27,7 @@ export default function AffectedSummary() {
         </div>
       )}
       <h2>
-        Category {scenario.category} track · {scenario.half_width_km} km either side
+        Category {scenario.category} track · {formatDistance(scenario.half_width_km, state.unit)} either side
       </h2>
       <div className="small">
         <strong>Affected counties ({names.length}):</strong> {names.join(", ") || "none in Georgia"}

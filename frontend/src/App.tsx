@@ -5,8 +5,7 @@ import { ScenarioProvider } from "./state/scenario";
 import MapView from "./components/map/MapView";
 import Legend from "./components/map/Legend";
 import ScenarioControls from "./components/scenario/ScenarioControls";
-import DetailsPanel from "./components/summary/DetailsPanel";
-import ChatPanel from "./components/chat/ChatPanel";
+import SidePanel from "./components/SidePanel";
 import { useHistoryPersistence } from "./state/useHistoryPersistence";
 
 function DataBanner({ onRetry }: { onRetry: () => void }) {
@@ -63,8 +62,7 @@ export default function App() {
             <MapView />
             <Legend />
           </section>
-          <DetailsPanel />
-          <ChatPanel />
+          <SidePanel />
         </main>
       </div>
     </ScenarioProvider>
