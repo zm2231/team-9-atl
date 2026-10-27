@@ -40,7 +40,6 @@ CATEGORY_FLOOR_KT = {0: 34, 1: 64, 2: 83, 3: 96, 4: 113, 5: 137}
 RELOCATION_SHARE = {"low": 0.10, "base": 0.20, "high": 0.40}
 SITE_UPDATES_TABLE = "scenario_site_updates"
 SITING_TABLE = "scenario_siting"
-MAX_BYTES_BILLED = 100_000_000
 SITING_POOL = 60
 SOURCES["planner"] = (
     "Planner-reported site updates (scenario_site_updates), shown next to the registry"
@@ -133,18 +132,9 @@ def _status(status: str, message: str, **extra: Any) -> dict[str, Any]:
     return {"status": status, "message": message, **extra, "source": SOURCES["scenario"]}
 
 
-def _capped_query(sql: str, params: list[Any]) -> list[dict[str, Any]]:
-    from google.cloud import bigquery
-
-    from .evacuation_tools import _bigquery_client
-
-    config = bigquery.QueryJobConfig(maximum_bytes_billed=MAX_BYTES_BILLED, query_parameters=params)
-    return [dict(r) for r in _bigquery_client().query(sql, job_config=config).result()]
-
-
 def _fetch_site_updates() -> list[dict[str, Any]]:
     table = f"`{_project_id()}.{_dataset_name()}.{SITE_UPDATES_TABLE}`"
-    rows = _capped_query(
+    rows = _run_query(
         f"SELECT update_id, site_kind, site_id, field, value, entered_by, entered_at, note "
         f"FROM {table} ORDER BY entered_at",
         [],
@@ -682,6 +672,8 @@ def _section(source: str, build) -> dict[str, Any]:
 
     try:
         return {**build(), "source": source}
+    except QueryTooLargeError:
+        raise
     except (GoogleAPIError, GoogleAuthError, RuntimeError, KeyError, ValueError) as exc:
         return {"status": NOT_DETERMINED, "reason": type(exc).__name__, "source": source}
 
@@ -877,16 +869,19 @@ def record_site_update(
         bigquery.ScalarQueryParameter("note", "STRING", note),
     ]
     try:
-        _capped_query(
+        _run_query(
             f"INSERT INTO {table} (update_id, site_kind, site_id, field, value, entered_by, "
             "entered_at, note) VALUES (@update_id, @site_kind, @site_id, @field, @value, "
             "@entered_by, CURRENT_TIMESTAMP(), @note)",
             params,
         )
     except (GoogleAPIError, GoogleAuthError, RuntimeError) as exc:
+        too_large = isinstance(exc, QueryTooLargeError)
         return {
-            "status": "error",
-            "message": f"Could not record the update: {type(exc).__name__}",
+            "status": "query_too_large" if too_large else "error",
+            "message": str(exc)
+            if too_large
+            else f"Could not record the update: {type(exc).__name__}",
             "source": SOURCES["planner"],
         }
     return {
@@ -906,7 +901,7 @@ def _siting_pool() -> list[dict[str, Any]] | None:
 
     table = f"`{_project_id()}.{_dataset_name()}.{SITING_TABLE}`"
     try:
-        rows = _capped_query(
+        rows = _run_query(
             f"SELECT candidate_id, kind, name, county_fips, shelter_id, lat, lon, seats_assumed, "
             f"lacking_shelter_1in10_reduction FROM {table} "
             "ORDER BY lacking_shelter_1in10_reduction DESC LIMIT @n",

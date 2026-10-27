@@ -243,3 +243,14 @@ def test_as_of_after_last_storm_gives_an_empty_season():
     assert r["statewide"]["lacking_shelter"]["total"]["one_in_10"] == 0
     assert r["statewide"]["probability"]["p_lacking_shelter_any"] == 0
     assert season.siting_base(as_of_date="2026-12-31")["before"]["state_1in10"] == 0
+
+
+def test_county_plan_surfaces_the_byte_cap(monkeypatch):
+    from readiness_agent.evacuation_tools import QueryTooLargeError, query_capped
+
+    def capped(*_a, **_k):
+        raise QueryTooLargeError("Query would bill more than 100,000,000 bytes; not run")
+
+    monkeypatch.setattr(scenario_tools, "_readiness_brief", capped)
+    plan = query_capped(scenario_tools.county_plan)("13051")
+    assert plan["status"] == "query_too_large" and "100,000,000" in plan["message"]

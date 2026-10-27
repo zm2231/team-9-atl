@@ -280,6 +280,8 @@ def test_run_query_caps_bytes_and_reports_the_cap(monkeypatch):
     gaps = scenario_tools.gap_sensitivity()
     assert gaps["status"] == "query_too_large" and gaps["gaps"] == []
     assert f"{MAX_BYTES_BILLED:,}" in gaps["message"] and gaps["source"]
+    update = scenario_tools.record_site_update("medical_shelter", "140058", "seats", "10")
+    assert update["status"] == "query_too_large"
 
 
 def test_county_storm_profile_returns_sourced_error(monkeypatch):
