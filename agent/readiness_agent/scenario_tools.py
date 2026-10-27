@@ -545,7 +545,8 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
     plan["generator_switch_effect"] = _section(SOURCES["season"], generator_switch)
 
     def audit():
-        ranked = list(dict.fromkeys(_geo_ids(plan["readiness_brief"].get("brief"))))
+        brief = plan["readiness_brief"].get("brief") or {}
+        ranked = list(dict.fromkeys(_geo_ids((brief.get("who_cannot_leave") or {}).get("tracts"))))
         if not ranked:
             raise ValueError("the brief ranked no tracts")
         rows = _run_query(
