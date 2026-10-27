@@ -289,7 +289,11 @@ def run_scenario(
             ),
         }
 
-    n_runs = draws if isinstance(draws, int) and not isinstance(draws, bool) and 1 <= draws <= MAX_DRAWS else N_DRAWS
+    n_runs = (
+        draws
+        if isinstance(draws, int) and not isinstance(draws, bool) and 1 <= draws <= MAX_DRAWS
+        else N_DRAWS
+    )
     result = engine.run(tracks, n_draws=n_runs, seed=SEED)
     one = isinstance(run_index, int) and not isinstance(run_index, bool) and 0 <= run_index < n_runs
     if one:
@@ -468,7 +472,8 @@ def run_scenario(
         "receiving": receiving,
         "selected_county_fips": county_fips if county_fips in index else None,
         "selected_county_name": counties[index[county_fips]]["county_name"]
-        if county_fips in index else None,
+        if county_fips in index
+        else None,
         "planner_updates": _planner_report(planner),
         "ignored_ids": [*switches["invalid"], *request["invalid"]],
     }
@@ -511,13 +516,14 @@ def _auto_note(cond: dict[str, Any]) -> str:
         "No conditions predictor beat the 1950-2025 long-run rate in the leave-one-season-out "
         "back-test, so the conditions part is the long-run rate"
         if all(v == ["long_run"] for v in sel.values())
-        else "Conditions model predictors: " + "; ".join(f"{k}: {', '.join(v)}"
-                                                         for k, v in sel.items())
+        else "Conditions model predictors: "
+        + "; ".join(f"{k}: {', '.join(v)}" for k, v in sel.items())
     )
     noaa = cond["inputs"]["noaa_outlook"]
     noaa_text = (
         f"blended {cond['weights']['noaa_outlook']:g} with the outside forecast input "
-        f"{noaa['name']} (issued {noaa['issued']}, {noaa['url']})" if noaa
+        f"{noaa['name']} (issued {noaa['issued']}, {noaa['url']})"
+        if noaa
         else cond["noaa_note"].rstrip(".")
     )
     note = (
@@ -547,9 +553,22 @@ def _outlook_args(
     rest = cond["rest_of_current_season"]
     auto = {
         "note": _auto_note(cond),
-        **{k: cond[k] for k in ("as_of_date", "plan", "share_of_season_remaining", "inputs",
-                                "noaa_note", "conditions_model", "noaa_implied", "blended",
-                                "weights", "backtest", "method")},
+        **{
+            k: cond[k]
+            for k in (
+                "as_of_date",
+                "plan",
+                "share_of_season_remaining",
+                "inputs",
+                "noaa_note",
+                "conditions_model",
+                "noaa_implied",
+                "blended",
+                "weights",
+                "backtest",
+                "method",
+            )
+        },
         "rest_of_current_season": rest and {k: v for k, v in rest.items() if k != "custom"},
     }
     run_as_of = cond["plan"]["run_as_of_date"]
@@ -577,12 +596,21 @@ def season_county_risk(
     stations_override: dict[str, int] | None = None,
     add_sites: list[dict[str, Any]] | None = None,
     as_of_date: str | None = None,
+    uncertainty: str = "fixed",
 ) -> dict[str, Any]:
     """Season-long hurricane risk per Georgia county from 3,200 simulated events built on every storm since 1950 near Georgia (800 replays of the historical tracks and 2,400 synthetic variants shifted, re-intensified, re-timed and resized): chance per year of losing power to at least 25% of customers, power-dependent residents affected, people lacking shelter (no powered seat, no dialysis chair) and people needing transport (no vehicle), each in a typical, a 1-in-10 and a 1-in-100 season.
 
-    outlook picks the storm rate: auto (default) works it out from current conditions (season_conditions): the rest of the current season after as_of_date (default today) when more than half of it remains, otherwise the next full season with the rest of the current season in auto.rest_of_current_season; long_run (1950-2025), recent (2000-2025), la_nina, neutral, el_nino (seasons with that ENSO state), or noaa_aug_2026 (scaled to NOAA's August 2026 outlook, an outside forecast input). sites_off and assume_generator rerun the season with shelters or dialysis centres switched off, or generators assumed. seats_override, stations_override and add_sites [{lat, lon, seats, generator}] are further what-ifs. Planner-reported site updates are always applied. Each result carries probability: the share of simulated seasons with anyone lacking shelter, with 50 or more, and with anyone lacking a dialysis chair. Without county_fips, returns the counties with the most people lacking shelter.
+    outlook picks the storm rate: auto (default) works it out from current conditions (season_conditions): the rest of the current season after as_of_date (default today) when more than half of it remains, otherwise the next full season with the rest of the current season in auto.rest_of_current_season; long_run (1950-2025), recent (2000-2025), la_nina, neutral, el_nino (seasons with that ENSO state), or noaa_aug_2026 (scaled to NOAA's August 2026 outlook, an outside forecast input). sites_off and assume_generator rerun the season with shelters or dialysis centres switched off, or generators assumed. seats_override, stations_override and add_sites [{lat, lon, seats, generator}] are further what-ifs. Planner-reported site updates are always applied. Each result carries probability: the share of simulated seasons with anyone lacking shelter, with 50 or more, and with anyone lacking a dialysis chair. uncertainty="sampled" draws the unknowns (relocation share, Florida inflow, dialysis absorption, unrecorded generators, no-vehicle share) per simulated season and adds spread_attribution; the default "fixed" uses the case. Without county_fips, returns the counties with the most people lacking shelter.
     """
     from .scenario import data, season, site_updates
+
+    if uncertainty not in season.UNCERTAINTY_MODES:
+        return {
+            "status": "unknown_uncertainty",
+            "message": f"uncertainty must be one of: {', '.join(season.UNCERTAINTY_MODES)}.",
+            "counties": [],
+            "source": SOURCES["season"],
+        }
 
     if outlook != AUTO and outlook not in season.OUTLOOKS:
         return {
@@ -605,12 +633,14 @@ def season_county_risk(
         add_sites,
         site_updates.effective_sites(data.sites(), planner),
     )
+
     def run_with(run_name: str, kwargs: dict) -> dict[str, Any]:
         return season.run_season(
             run_name,
             sites_off=sorted(switches["sites_off"] | set(planner["sites_off"])),
             assume_generator=sorted(switches["assume_generator"]),
             case=case,
+            uncertainty=uncertainty,
             **site_updates.season_kwargs(planner, request),
             **kwargs,
         )
@@ -628,8 +658,11 @@ def season_county_risk(
         "outlook": outlook,
         "label": run["label"],
         "outlook_note": note,
-        **({"auto": auto, "as_of": run.get("as_of"), "severity": run.get("severity")}
-           if auto else {}),
+        **(
+            {"auto": auto, "as_of": run.get("as_of"), "severity": run.get("severity")}
+            if auto
+            else {}
+        ),
         "storms_per_year": run["storms_per_year"],
         "case": case,
         "sites_off": run["sites_off"],
@@ -638,6 +671,7 @@ def season_county_risk(
         "ignored_ids": [*run["ignored_ids"], *switches["invalid"], *request["invalid"]],
         "added_sites": run["added_sites"],
         "planner_updates": _planner_report(planner),
+        "uncertainty": run["uncertainty"],
         "statewide": run["statewide"],
         "counties": rows,
         "source": SOURCES["season"],
@@ -711,11 +745,15 @@ def _readiness_brief(county_fips: str) -> dict[str, Any]:
 
 
 def county_plan(
-    county_fips: str, outlook: str = AUTO, as_of_date: str | None = None
+    county_fips: str,
+    outlook: str = AUTO,
+    as_of_date: str | None = None,
+    uncertainty: str = "fixed",
 ) -> dict[str, Any]:
     """One call that assembles a county's season readiness plan: the readiness brief (who cannot leave, where they would go, what to fix, what we could not tell), how often the power goes out under the chosen outlook and the long run, people lacking shelter and needing transport in a typical and a 1-in-10 season, what confirming every unrecorded medical-shelter generator would change, and an audit of the brief's ranked tracts against the state. Sections that cannot be filled are marked not_determined. Write the plan from these sections only, and verify the top shelters live with Google Maps.
 
     outlook: auto (default: worked out from current conditions; the rest of the current season after as_of_date, default today, when more than half of it remains, otherwise the next full season with the rest of the current season reported separately), long_run, recent, la_nina, neutral, el_nino or noaa_aug_2026.
+    uncertainty: fixed (default) or sampled, which draws the unknowns per simulated season.
     """
     from google.cloud import bigquery
 
@@ -725,6 +763,8 @@ def county_plan(
         return _status("needs_county", "Give a Georgia county_fips, for example 13051.")
     if outlook != AUTO and outlook not in season.OUTLOOKS:
         outlook = AUTO
+    if uncertainty not in season.UNCERTAINTY_MODES:
+        uncertainty = "fixed"
     county = next((c for c in data.counties() if c["county_fips"] == county_fips), None)
     if county is None:
         return _status("unknown_county", "No Georgia county has that FIPS code.")
@@ -738,7 +778,9 @@ def county_plan(
     except ValueError as exc:
         return _status("bad_date", f"as_of_date must be YYYY-MM-DD ({exc}).")
 
-    def run_season(name: str, assume_generator: list[str] | None = None) -> dict[str, Any]:
+    def run_season(
+        name: str, assume_generator: list[str] | None = None, mode: str | None = None
+    ) -> dict[str, Any]:
         run_name, extra = name, {}
         if name == AUTO and auto_args:
             run_name, extra = auto_args[0], auto_args[1]
@@ -746,6 +788,7 @@ def county_plan(
             run_name,
             sites_off=planner["sites_off"],
             assume_generator=assume_generator or (),
+            uncertainty=mode or uncertainty,
             **planner_kwargs,
             **extra,
         )
@@ -774,7 +817,11 @@ def county_plan(
         out: dict[str, Any] = {"by_outlook": rows}
         if auto_args and auto_args[3]:
             rest = season.run_season(
-                "custom", sites_off=planner["sites_off"], **planner_kwargs, **auto_args[3]
+                "custom",
+                sites_off=planner["sites_off"],
+                uncertainty=uncertainty,
+                **planner_kwargs,
+                **auto_args[3],
             )
             out["rest_of_current_season"] = {
                 "season": auto_args[2]["rest_of_current_season"]["season"],
@@ -790,8 +837,8 @@ def county_plan(
             for s in data.sites().get("medical_shelters", [])
             if s.get("generator") == "UNRECORDED"
         ]
-        base = run_season(outlook)
-        fixed = run_season(outlook, assume_generator=unrecorded)
+        base = run_season(outlook, mode="fixed")
+        fixed = run_season(outlook, assume_generator=unrecorded, mode="fixed")
         return {
             "switch": "every medical shelter without a recorded generator assumed to have one",
             "shelters_switched": len(unrecorded),
@@ -805,12 +852,14 @@ def county_plan(
             },
             "reading": "Shortfalls count a shelter as powered only when a generator is recorded; "
             "the truth lies between recorded_only and all_assumed.",
+            "unknowns": "fixed values in this section, whatever the plan's uncertainty mode",
         }
 
     plan: dict[str, Any] = {
         "county_fips": county_fips,
         "county_name": county["county_name"],
         "outlook": outlook,
+        "uncertainty": uncertainty,
         **({"auto": auto_args[2]} if auto_args else {}),
         "planner_updates": _planner_report(planner),
     }
@@ -840,7 +889,9 @@ def county_plan(
         }
 
     plan["audit"] = _section(SOURCES["audit"], audit)
-    plan["source"] = "Assembled from the readiness brief and the season model; each section names its source"
+    plan["source"] = (
+        "Assembled from the readiness brief and the season model; each section names its source"
+    )
     storm_profile = county_storm_profile(county_fips, outlook)
     plan["scope"] = "county"
     plan["report"] = report.county_report(plan, storm_profile)
@@ -869,12 +920,19 @@ def state_plan(outlook: str = AUTO, as_of_date: str | None = None) -> dict[str, 
     try:
         worst = _run_query(
             f"""SELECT * FROM `{_project_id()}.{_dataset_name()}.scenario_worst_events`
-                ORDER BY power_dependent_affected DESC LIMIT 10""", [])
+                ORDER BY power_dependent_affected DESC LIMIT 10""",
+            [],
+        )
     except (GoogleAPIError, GoogleAuthError, RuntimeError):
         worst = None
     gaps = gap_sensitivity()
-    return {"scope": "state", "outlook": outlook, **({"auto": auto} if auto else {}),
-            "report": report.state_report(run, worst, gaps), "source": SOURCES["season"]}
+    return {
+        "scope": "state",
+        "outlook": outlook,
+        **({"auto": auto} if auto else {}),
+        "report": report.state_report(run, worst, gaps),
+        "source": SOURCES["season"],
+    }
 
 
 def record_site_update(
@@ -1032,8 +1090,7 @@ def county_storm_profile(county_fips: str, outlook: str = "long_run") -> dict[st
 
 
 def get_report(report_id: str | None = None) -> dict[str, Any]:
-    """Return a precomputed report (same shape as county_plan, state_plan and run_scenario reports) by report_id, or list the available ones when report_id is empty. Use it when the planner asks for one of the prepared reports; run the live tools for anything else.
-    """
+    """Return a precomputed report (same shape as county_plan, state_plan and run_scenario reports) by report_id, or list the available ones when report_id is empty. Use it when the planner asks for one of the prepared reports; run the live tools for anything else."""
     from google.api_core.exceptions import GoogleAPIError
     from google.auth.exceptions import GoogleAuthError
     from google.cloud import bigquery
@@ -1041,17 +1098,28 @@ def get_report(report_id: str | None = None) -> dict[str, Any]:
     table = f"`{_project_id()}.{_dataset_name()}.scenario_reports`"
     try:
         if not report_id:
-            rows = _run_query(f"SELECT report_id, scope, title, built_at FROM {table} "
-                              "ORDER BY report_id", [])
+            rows = _run_query(
+                f"SELECT report_id, scope, title, built_at FROM {table} ORDER BY report_id", []
+            )
             return {"reports": rows, "source": SOURCES["reports"]}
-        rows = _run_query(f"SELECT * FROM {table} WHERE report_id = @id",
-                          [bigquery.ScalarQueryParameter("id", "STRING", report_id)])
+        rows = _run_query(
+            f"SELECT * FROM {table} WHERE report_id = @id",
+            [bigquery.ScalarQueryParameter("id", "STRING", report_id)],
+        )
     except (GoogleAPIError, GoogleAuthError, RuntimeError) as exc:
         return {"status": "error", "message": type(exc).__name__, "source": SOURCES["reports"]}
     if not rows:
-        return {"status": "unknown_report",
-                "message": "No precomputed report has that id; call get_report() with no id "
-                "to list them.", "source": SOURCES["reports"]}
+        return {
+            "status": "unknown_report",
+            "message": "No precomputed report has that id; call get_report() with no id "
+            "to list them.",
+            "source": SOURCES["reports"],
+        }
     row = rows[0]
-    return {"report_id": row["report_id"], "title": row["title"], "built_at": str(row["built_at"]),
-            "report": json.loads(row["report_json"]), "source": SOURCES["reports"]}
+    return {
+        "report_id": row["report_id"],
+        "title": row["title"],
+        "built_at": str(row["built_at"]),
+        "report": json.loads(row["report_json"]),
+        "source": SOURCES["reports"],
+    }

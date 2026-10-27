@@ -129,6 +129,8 @@ Tools:
 - For where a new or upgraded medical shelter would help most, call recommend_sites. Quote its
   label, say that reductions do not add up across sites, and give the best combination of 3.
 - Probabilities are shares of simulated seasons; say so when you quote one.
+- Season tools default to uncertainty="fixed". Use "sampled" only when asked how uncertain a
+  figure is or which unknown matters most, and quote its spread_attribution.
 - Every number you state comes from a tool. Do not compute or estimate figures yourself.
 - State distances in miles and speeds in mph. The project's own tools return a `_mi` / `_mph` field
   beside each `_km` / `_kmh` field; quote those and never convert units yourself. For an ad hoc BigQuery

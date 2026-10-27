@@ -247,6 +247,104 @@ def test_as_of_after_last_storm_gives_an_empty_season():
     assert season.siting_base(as_of_date="2026-12-31")["before"]["state_1in10"] == 0
 
 
+def test_fixed_default_is_unchanged():
+    a, b = season.run_season(), season.run_season(uncertainty="fixed")
+    assert a["statewide"] == b["statewide"] and a["uncertainty"]["mode"] == "fixed"
+
+
+def test_sampled_mode_reports_ranges_and_attribution():
+    r = season.run_season(uncertainty="sampled")
+    u = r["uncertainty"]
+    assert u["mode"] == "sampled"
+    assert set(u["unknowns"]) == set(season.UNKNOWNS)
+    assert "0.375" in u["unknowns"]["unrecorded_generators"]
+    assert "8 medical shelters" in u["unknowns"]["unrecorded_generators"]
+    rows = u["spread_attribution"]["lacking_shelter"]["unknowns"]
+    assert sum(x["sobol_first_order"] for x in rows.values()) <= 1
+    total = r["statewide"]["lacking_shelter"]["total"]
+    assert total["typical"] <= total["one_in_10"] <= total["one_in_100"]
+    with pytest.raises(ValueError):
+        season.run_season(uncertainty="maybe")
+
+
+def test_first_order_estimator_on_known_cases():
+    rng = np.random.default_rng(0)
+    x = rng.random(5000)
+    assert season.first_order(x, x)["sobol_first_order"] > 0.99
+    assert season.first_order(rng.random(5000), x)["sobol_first_order"] < 0.01
+    y = x + rng.random(5000)
+    assert abs(season.first_order(y, x)["sobol_first_order"] - 0.5) < 0.05
+
+
+def test_tools_accept_uncertainty():
+    r = scenario_tools.season_county_risk(county_fips="13051", uncertainty="sampled")
+    assert r["uncertainty"]["mode"] == "sampled"
+    assert scenario_tools.season_county_risk(uncertainty="bogus")["status"] == "unknown_uncertainty"
+
+
+def test_generator_attribution_uses_the_on_off_pattern():
+    rng = np.random.default_rng(0)
+    bits = rng.random((5000, 2)) < 0.5
+    code = bits @ np.array([1, 2])
+    y = bits[:, 0].astype(float) - bits[:, 1]
+    seats_total = bits.sum(axis=1)
+    by_pattern = season.first_order(y, code, categorical=True)["sobol_first_order"]
+    by_seats = season.first_order(y, seats_total.astype(float))["sobol_first_order"]
+    assert by_pattern > 0.95 and by_seats < 0.05
+    assert season.first_order(np.array([]), np.array([]))["sobol_first_order"] == 0
+
+
+def test_sampled_county_plan_keeps_a_fixed_generator_comparison(monkeypatch):
+    def fail(*_a, **_k):
+        raise RuntimeError("offline")
+
+    monkeypatch.setattr(scenario_tools, "_readiness_brief", fail)
+    monkeypatch.setattr(scenario_tools, "_run_query", fail)
+    plan = scenario_tools.county_plan("13051", uncertainty="sampled")
+    assert plan["uncertainty"] == "sampled"
+    gen = plan["generator_switch_effect"]
+    assert gen["unknowns"].startswith("fixed values")
+    fixed = season.run_season()["statewide"]["lacking_shelter"]["total"]
+    assert gen["statewide_lacking_shelter"]["recorded_only"] == fixed
+    sampled = plan["power_outage_frequency"]["by_outlook"]["long_run"]
+    assert (
+        sampled["lacking_shelter"]
+        != next(c for c in season.run_season()["counties"] if c["county_fips"] == "13051")[
+            "lacking_shelter"
+        ]
+    )
+
+
+def test_sampled_with_pinned_draws_equals_fixed(monkeypatch):
+    real = np.random.default_rng
+
+    class Pinned:
+        def __init__(self, seed):
+            self.g = real(seed)
+
+        def poisson(self, *a, **k):
+            return self.g.poisson(*a, **k)
+
+        def choice(self, *a, **k):
+            return self.g.choice(*a, **k)
+
+        def triangular(self, lo, mode, hi, size):
+            return np.full(size, 0.2)
+
+        def uniform(self, lo, hi, size):
+            return np.full(size, {0.05: 0.15, 1.0: 1.0, 0.0: 1.0}[lo])
+
+        def random(self, shape):
+            return np.ones(shape)
+
+    monkeypatch.setattr(season.np.random, "default_rng", Pinned)
+    pinned = season.run_season(uncertainty="sampled")
+    monkeypatch.setattr(season.np.random, "default_rng", real)
+    fixed = season.run_season()
+    assert pinned["statewide"] == fixed["statewide"]
+    assert pinned["counties"] == fixed["counties"]
+
+
 def test_county_plan_surfaces_the_byte_cap(monkeypatch):
     from readiness_agent.evacuation_tools import QueryTooLargeError, query_capped
 
@@ -256,6 +354,19 @@ def test_county_plan_surfaces_the_byte_cap(monkeypatch):
     monkeypatch.setattr(scenario_tools, "_readiness_brief", capped)
     plan = query_capped(scenario_tools.county_plan)("13051")
     assert plan["status"] == "query_too_large" and "100,000,000" in plan["message"]
+
+
+def test_generator_patterns_stay_distinct_beyond_63_shelters():
+    sites = [
+        {"lat": 32.0 + i * 0.01, "lon": -83.5, "seats": 10, "generator": "UNRECORDED"}
+        for i in range(60)
+    ]
+    r = season.run_season(uncertainty="sampled", add_sites=sites, n_seasons=500)
+    assert len(r["added_sites"]) == 60
+    ev, masks, _ = season._prepare((), (), "base", {"add_sites": sites})
+    rate = season.outlook_event_rates("long_run")
+    _, params = season.sampled_seasons(ev, masks, rate, 500, season.SEED)
+    assert len(np.unique(params["unrecorded_generators"])) > 400
 
 
 def test_county_fips_update_moves_the_site_grouping(monkeypatch):

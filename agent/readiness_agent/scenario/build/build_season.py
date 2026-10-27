@@ -356,6 +356,9 @@ def statewide_lacking(ev: dict, outlook: str = "long_run", **params) -> np.ndarr
 
 
 def fix_ranking(ctx: dict, ev: dict) -> list[dict]:
+    voi = season.run_season(uncertainty="sampled", n_seasons=N_SEASONS_TABLE)["uncertainty"][
+        "spread_attribution"
+    ]["lacking_shelter"]["unknowns"]
     unrec = np.isin(ev["shelter_generator"], ["YES", "UNRECORDED"])
     shifted = biased(ctx["outage"], ctx["peak"], 0.7)
     bias_ev = {**ev, **impacts(shifted, ev["category"], ctx["counties"], ev)}
@@ -394,19 +397,39 @@ def fix_ranking(ctx: dict, ev: dict) -> list[dict]:
                 "swing": round(hi - lo),
                 "p_helps": round(float((diff >= 1).mean()), 4) if paired else None,
                 "expected_reduction_per_year": round(float(diff.mean()), 1) if paired else None,
+                **sampled_voi(voi, sw["gap"]),
             }
         )
     return sorted(rows, key=lambda r: -r["swing"])
 
 
-def stability(seeds: int = STABILITY_SEEDS, n: int = STABILITY_SEASONS) -> dict:
+SAMPLED_UNKNOWN = {
+    "medical_shelter_generators": "unrecorded_generators",
+    "relocation_share": "relocation_share",
+    "florida_inflow": "florida_inflow",
+    "dialysis_surge_absorption": "dialysis_per_station",
+}
+
+
+def sampled_voi(voi: dict, gap: str) -> dict:
+    row = voi.get(SAMPLED_UNKNOWN.get(gap, ""))
+    return {
+        "sampled_variance_share": row["sobol_first_order"] if row else None,
+        "sampled_sd_reduction_if_known": row["sd_reduction_if_known"] if row else None,
+    }
+
+
+def stability(
+    seeds: int = STABILITY_SEEDS, n: int = STABILITY_SEASONS, uncertainty: str = "fixed"
+) -> dict:
     values = [
-        season.run_season(n_seasons=n, seed=SEED + k)["statewide"]["lacking_shelter"]["total"][
-            "one_in_10"
-        ]
+        season.run_season(n_seasons=n, seed=SEED + k, uncertainty=uncertainty)["statewide"][
+            "lacking_shelter"
+        ]["total"]["one_in_10"]
         for k in range(seeds)
     ]
     return {
+        "uncertainty": uncertainty,
         "seeds": seeds,
         "seasons_per_run": n,
         "min": int(min(values)),
@@ -417,7 +440,8 @@ def stability(seeds: int = STABILITY_SEEDS, n: int = STABILITY_SEASONS) -> dict:
 
 def stability_text(st: dict) -> str:
     return (
-        f"Stability: statewide lacking shelter in a 1-in-10 season across {st['seeds']} seeds of "
+        f"Stability ({st['uncertainty']} unknowns): statewide lacking shelter in a 1-in-10 "
+        f"season across {st['seeds']} seeds of "
         f"{st['seasons_per_run']:,} simulated seasons: min {st['min']:,}, median "
         f"{st['median']:,.0f}, max {st['max']:,}."
     )
@@ -749,6 +773,19 @@ FIX_SCHEMA = [
         ),
     ),
     ("expected_reduction_per_year", "FLOAT", "Mean difference across the same seasons"),
+    (
+        "sampled_variance_share",
+        "FLOAT",
+        (
+            "Sampled unknowns: share of the variance of statewide lacking shelter this unknown "
+            "explains alone (first-order Sobol); null where the gap is not a sampled unknown"
+        ),
+    ),
+    (
+        "sampled_sd_reduction_if_known",
+        "FLOAT",
+        "Expected drop in the standard deviation of statewide lacking shelter if it were known",
+    ),
 ]
 SEASON_P_SCHEMA = [
     OUTLOOK_FIELD,
@@ -836,6 +873,7 @@ def main() -> None:
     ranking = fix_ranking(ctx, ev)
     p_rows = [r for o in season.OUTLOOKS for r in season_p_rows(o)]
     stable = stability()
+    stable_sampled = stability(uncertainty="sampled")
     long_run = season.run_season("long_run", n_seasons=N_SEASONS_TABLE)["statewide"]
     observed = observed_counts()
     bt = backtest(ev, observed, long_run)
@@ -857,7 +895,12 @@ def main() -> None:
             p_rows,
             SEASON_P_SCHEMA,
             f"Probabilities per outlook as shares of {N_SEASONS_TABLE:,} simulated seasons "
-            "(worst storm of each season). " + stability_text(stable) + " " + NOTE,
+            "(worst storm of each season). "
+            + stability_text(stable)
+            + " "
+            + stability_text(stable_sampled)
+            + " "
+            + NOTE,
         )
         load(
             "scenario_fix_ranking",
@@ -865,7 +908,12 @@ def main() -> None:
             FIX_SCHEMA,
             "Unknowns ranked by how much each moves statewide people lacking shelter in a "
             "1-in-10 season (long_run outlook), with p_helps and expected reduction per year "
-            "over the same simulated seasons. " + stability_text(stable) + " " + NOTE,
+            "over the same simulated seasons. "
+            + stability_text(stable)
+            + " "
+            + stability_text(stable_sampled)
+            + " "
+            + NOTE,
         )
         load(
             "scenario_worst_events",
@@ -897,6 +945,7 @@ def main() -> None:
                 "backtest": {k: v for k, v in bt.items() if k != "rows"},
                 "ranking": ranking,
                 "stability": stable,
+                "stability_sampled": stable_sampled,
                 "severity": {
                     o: season.severity_shares(season.outlook_event_rates(o), ev["category"])
                     for o in season.OUTLOOKS

@@ -142,3 +142,17 @@ Per-request what-ifs sit next to `sites_off` and `assume_generator` on `run_scen
 ### Season interface for other modules
 
 `season.run_season(..., as_of_date=None, custom=None)`: `as_of_date` keeps only storms whose closest approach to Georgia falls after that month and day (`as_of.share_of_season_remaining`; about 5% after 27 October). `outlook="custom"` with `custom={storms_per_year, hurricane_share, major_share, source}` reweights events to those shares; it is an internal interface, not a tool argument. `season.season_remaining_share(as_of_date)` returns the share alone.
+
+### Sampled unknowns
+
+`run_season`, `season_county_risk` and `county_plan` take `uncertainty`: `fixed` (default, unchanged: the `case` sets the relocation share and the other unknowns stay at their stated values) or `sampled`. In `sampled`, each simulated season draws its own value for every unknown, applied to all of that season's storms:
+
+| Unknown | Draw | Why |
+|---|---|---|
+| Relocation share | triangular(0.10, 0.20, 0.40) | The low and high fixed cases bound it; the base case is the mode |
+| Florida inflow | uniform(0.05, 0.25) | No intake record by home state; brackets the fixed 0.15 |
+| Dialysis patients per station | uniform(1, 2) | One with a late shift, up to two with extra shifts; no centre reports surge capacity |
+| Generator at each `UNRECORDED` medical shelter | Bernoulli(3/8) | A prior from the 8 medical shelters whose generator is recorded (3 YES, 5 NO) |
+| No-vehicle share | uniform between each county's all-household and 65+ share | One draw per season, at the same point of every county's range |
+
+Results keep the same typical / 1-in-10 / 1-in-100 figures and probabilities, now including the unknowns, plus `uncertainty.spread_attribution`: for statewide lacking shelter and needing transport, each unknown's first-order Sobol index (20 equal-count bins, less the (bins - 1) / seasons bias a pure-noise input shows), the squared correlation alongside, and the expected drop in standard deviation if it were known. Whatever the unknowns do not explain is the storms. `scenario_fix_ranking` gains `sampled_variance_share` and `sampled_sd_reduction_if_known`.
