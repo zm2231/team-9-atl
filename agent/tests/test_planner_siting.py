@@ -341,3 +341,27 @@ def test_sampled_with_pinned_draws_equals_fixed(monkeypatch):
     fixed = season.run_season()
     assert pinned["statewide"] == fixed["statewide"]
     assert pinned["counties"] == fixed["counties"]
+
+
+def test_county_plan_surfaces_the_byte_cap(monkeypatch):
+    from readiness_agent.evacuation_tools import QueryTooLargeError, query_capped
+
+    def capped(*_a, **_k):
+        raise QueryTooLargeError("Query would bill more than 100,000,000 bytes; not run")
+
+    monkeypatch.setattr(scenario_tools, "_readiness_brief", capped)
+    plan = query_capped(scenario_tools.county_plan)("13051")
+    assert plan["status"] == "query_too_large" and "100,000,000" in plan["message"]
+
+
+def test_generator_patterns_stay_distinct_beyond_63_shelters():
+    sites = [
+        {"lat": 32.0 + i * 0.01, "lon": -83.5, "seats": 10, "generator": "UNRECORDED"}
+        for i in range(60)
+    ]
+    r = season.run_season(uncertainty="sampled", add_sites=sites, n_seasons=500)
+    assert len(r["added_sites"]) == 60
+    ev, masks, _ = season._prepare((), (), "base", {"add_sites": sites})
+    rate = season.outlook_event_rates("long_run")
+    _, params = season.sampled_seasons(ev, masks, rate, 500, season.SEED)
+    assert len(np.unique(params["unrecorded_generators"])) > 400

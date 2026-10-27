@@ -370,7 +370,9 @@ def sampled_seasons(
         "no_vehicle_share": rng.uniform(0.0, 1.0, size=n),
     }
     gen = rng.random((n, len(unknown_gen))) < prior["p"]
-    params["unrecorded_generators"] = gen @ (2 ** np.arange(gen.shape[1]))
+    params["unrecorded_generators"] = (
+        np.unique(gen, axis=0, return_inverse=True)[1].ravel() if gen.shape[1] else np.zeros(n, int)
+    )
 
     picks = draws["picks"]
     s_of = np.repeat(np.arange(n), draws["k"])
