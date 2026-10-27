@@ -125,6 +125,8 @@ def test_corridor_mapping():
     assert movement.corridor_for("13051", MACON, chatham) == "I-16"
     assert movement.corridor_for("13185", MACON, lowndes) == "I-75 S"
     assert movement.corridor_for("13127", (32.08, -81.09), glynn) == "I-95"
+    statesboro = (32.45, -81.78)
+    assert movement.corridor_for("13051", statesboro, chatham) == "I-16"
     assert movement.corridor_for("13121", (34.5, -84.9), fulton) is None
     assert movement.corridor_for("99999", MACON) is None
 

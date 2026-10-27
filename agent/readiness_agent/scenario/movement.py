@@ -105,8 +105,8 @@ def corridor_for(origin_county_fips: str, dest_latlon: tuple[float, float],
     if origin is None:
         return None
     (olat, olon), (dlat, dlon) = origin, dest_latlon
-    # Coast-to-coast northbound trips use I-95; inland from the coast I-16; south Georgia north I-75.
-    if olon >= -81.9 and dlon >= -82.2 and dlat > olat + 0.3:
+    # Northbound trips along the coastal strip use I-95; inland from the coast I-16; south Georgia north I-75.
+    if olon >= -81.9 and dlon >= -81.6 and dlat > olat + 0.3:
         return "I-95"
     if olon >= -82.6 and olat <= 32.6 and dlon < olon - 0.5:
         return "I-16"
