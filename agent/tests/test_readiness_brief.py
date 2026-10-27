@@ -33,7 +33,7 @@ def fake(monkeypatch):
         ],
         "shelters": [shelter("a", wc=True, surge=True), shelter("b", flood=True), shelter("c", wc=False, gen=True)],
         "facilities": [{"ccn": "115641", "name": "Riverview", "city": "Savannah", "beds": 284.0,
-                        "coastal_flood_exposed": True},
+                        "coastal_flood_exposed": True, "cfld_share": 0.0020497},
                        {"ccn": "115339", "name": "Pruitt", "city": "Savannah", "beds": 140.0,
                         "coastal_flood_exposed": None}],
         "destinations": [shelter("a", wc=True) | {"serves_tracts": ["t1", "t2"], "nearest_km": 1.2}],
@@ -72,7 +72,8 @@ def test_who_cannot_leave_ranks_tracts_with_reasons_and_lists_facilities(fake):
     assert who["tracts"][1]["reasons"] == ["50 households without a vehicle", "12 in group quarters"]
     assert who["facilities"][0]["certified_beds"] == 284
     assert who["facilities"][0]["coastal_flood_exposed"] == "YES"
-    assert who["facilities"][0]["reasons"][1] == "in a coastal-flood-exposed tract"
+    assert who["facilities"][0]["tract_coastal_flood_share_pct"] == 0.2
+    assert "0.2% of residents exposed to coastal flooding" in who["facilities"][0]["reasons"][1]
     assert "not recorded" in who["facilities"][0]["reasons"][2]
     assert who["facilities"][1]["coastal_flood_exposed"] == "UNRECORDED"
     assert len(who["facilities"][1]["reasons"]) == 2
