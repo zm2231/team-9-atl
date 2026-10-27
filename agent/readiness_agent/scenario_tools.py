@@ -134,7 +134,7 @@ def run_scenario(
 
     Uses the track drawn on the map (sent in CONTEXT v1) when there is one; otherwise matches past storms that passed near (lat, lon) with a similar heading, time of year and intensity. Call it whenever the user asks what a storm would do, who is at risk, or where people could go. All numbers come from this tool; report them as a scenario range from 27 past storms.
 
-    sites_off (shelter_id or ccn) and assume_generator (shelter_id) are operator what-ifs, merged with CONTEXT v1 scenario.site_overrides; the result then carries baseline, with_switches and delta for people lacking shelter and needing transport.
+    sites_off (shelter_id or ccn) and assume_generator (shelter_id) are operator what-ifs (assume_generator on a shelter recorded NO means adding a generator there; on UNRECORDED it means confirming one; each site's generator_assumption says which), merged with CONTEXT v1 scenario.site_overrides; the result then carries baseline, with_switches and delta for people lacking shelter and needing transport.
     """
     case = case if case in CASES else "base"
     ctx = _context(tool_context)
@@ -404,6 +404,7 @@ def season_county_risk(
             "outlook": outlook, "label": run["label"], "outlook_note": note,
             "storms_per_year": run["storms_per_year"], "case": case,
             "sites_off": run["sites_off"], "assume_generator": run["assume_generator"],
+            "generator_assumptions": run["generator_assumptions"],
             "ignored_ids": [*run["ignored_ids"], *switches["invalid"]],
             "statewide": run["statewide"],
             "counties": rows, "run": "live",

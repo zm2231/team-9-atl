@@ -17,7 +17,7 @@ The drawn track and category come from the `CONTEXT v1` part of the user's messa
 | `county_fips` | string | no | `CONTEXT v1` `county_fips` | The selected county; turns on the receiving-site section |
 | `case` | `low`, `base`, `high` | no | `base` | Traffic and relocation assumptions |
 | `sites_off` | list of `shelter_id` or `ccn` | no | `CONTEXT v1` `scenario.site_overrides.off` | Operator what-if: the site takes nobody |
-| `assume_generator` | list of `shelter_id` | no | `CONTEXT v1` `scenario.site_overrides.assume_generator` | Operator what-if: the shelter's seats count as powered |
+| `assume_generator` | list of `shelter_id` | no | `CONTEXT v1` `scenario.site_overrides.assume_generator` | Operator what-if: the shelter's seats count as powered. On a shelter recorded `UNRECORDED` it confirms a generator; on one recorded `NO` it models adding one. Each site carries `generator_assumption` (`confirm_unrecorded` or `add_where_recorded_no`); season results carry `generator_assumptions` per id. `county_plan`'s generator section assumes only `UNRECORDED` |
 
 A one-off scenario is conditional: it uses only the past storms that were at a similar place, heading, time of year and strength, and reports what share of them went on to reach Georgia. The season view for a county (`season_county_risk`) is unconditional: it uses every storm since 1950 that came within 250 km of Georgia, weighted by how often each kind occurs.
 

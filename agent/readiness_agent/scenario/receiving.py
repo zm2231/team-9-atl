@@ -67,6 +67,10 @@ def receiving_sites(county: dict, sites: dict, down_counties: set[str],
             "county_fips": site.get("county_fips"),
             "generator": _flag(site.get("generator")),
             "generator_assumed": _site_id(site) in assume_generator and kind == "medical_shelter",
+            "generator_assumption": (
+                {"UNRECORDED": "confirm_unrecorded", "NO": "add_where_recorded_no"}.get(
+                    _flag(site.get("generator")))
+                if _site_id(site) in assume_generator and kind == "medical_shelter" else None),
             "straight_line_km": round(km, 1),
             "drive_minutes": {"value": round(trip["minutes"]), "status": trip["status"]},
             "evacuation_delay_minutes": {c: round(v) for c, v in delay.items()},

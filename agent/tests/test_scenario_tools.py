@@ -207,3 +207,14 @@ def test_county_plan_assumes_generators_only_where_unrecorded(monkeypatch):
     assert unrecorded and recorded_no
     assert seen["ids"] == unrecorded and not seen["ids"] & recorded_no
     assert plan["generator_switch_effect"]["shelters_switched"] == len(unrecorded)
+
+
+def test_assumed_generator_reports_what_it_overrides():
+    from readiness_agent.scenario import data, season
+
+    meds = data.sites()["medical_shelters"]
+    no = next(s["shelter_id"] for s in meds if s["generator"] == "NO")
+    unrec = next(s["shelter_id"] for s in meds if s["generator"] == "UNRECORDED")
+    run = season.run_season("long_run", assume_generator=[no, unrec])
+    assert run["generator_assumptions"][no].startswith("adds a generator")
+    assert run["generator_assumptions"][unrec].startswith("confirms a generator")

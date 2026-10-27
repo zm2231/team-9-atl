@@ -197,6 +197,13 @@ def _shape(s: dict, i=None) -> dict:
     }
 
 
+ASSUMPTION_READING = {
+    "UNRECORDED": "confirms a generator where none is recorded either way",
+    "NO": "adds a generator where the record says none",
+    "YES": "no change: a generator is already recorded",
+}
+
+
 def run_season(
     outlook: str = "long_run",
     sites_off: tuple[str, ...] | list[str] = (),
@@ -235,6 +242,11 @@ def run_season(
         "relocation_share": RELOCATION_SHARE[case],
         "sites_off": sorted(off & known),
         "assume_generator": sorted(gen & set(shelter_ids)),
+        "generator_assumptions": {
+            sid: ASSUMPTION_READING[str(rec)]
+            for sid, rec in zip(shelter_ids, ev["shelter_generator"], strict=True)
+            if sid in gen
+        },
         "ignored_ids": ignored,
         "statewide": {
             "p_any_county_outage25_per_year": round(s["p_any_county_outage25_per_year"], 4),
