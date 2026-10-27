@@ -1,8 +1,7 @@
-"""Session-start map data, served through the agent without an LLM call (research R2).
+"""The on-demand Google Maps wheelchair check, served through the agent without an LLM call.
 
-The frontend sends exactly LOAD_MAP_DATA_COMMAND on a dedicated session. Returning Content from a
+The frontend sends CHECK_WHEELCHAIR_COMMAND on a dedicated session. Returning Content from a
 before_agent_callback ends the turn with that content, so the root model is never invoked.
-CHECK_WHEELCHAIR_COMMAND works the same way for the on-demand Google Maps wheelchair check.
 """
 
 from __future__ import annotations
@@ -14,7 +13,6 @@ from google.genai import types
 
 from . import map_data, wheelchair_check
 
-LOAD_MAP_DATA_COMMAND = "LOAD_MAP_DATA v1"
 CHECK_WHEELCHAIR_COMMAND = "CHECK_WHEELCHAIR v1"
 
 
@@ -23,16 +21,6 @@ def _user_text(callback_context) -> str:
     if not content or not content.parts:
         return ""
     return "".join(p.text or "" for p in content.parts).strip()
-
-
-def load_map_data_callback(callback_context) -> types.Content | None:
-    if _user_text(callback_context) != LOAD_MAP_DATA_COMMAND:
-        return None
-    try:
-        payload = _map_data()
-    except Exception as exc:  # surfaced to the frontend's failed state, never as partial data
-        payload = {"schema": map_data.SCHEMA, "error": f"{type(exc).__name__}: {exc}"}
-    return types.Content(role="model", parts=[types.Part(text=json.dumps(payload))])
 
 
 def _map_data() -> dict:

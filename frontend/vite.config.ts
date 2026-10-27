@@ -13,6 +13,7 @@ export default defineConfig({
     // ADK rejects requests whose Origin differs from its own, so the proxy presents the agent's origin.
     proxy: {
       "/apps": { target: AGENT, changeOrigin: true, headers: { origin: AGENT } },
+      "/map-data": { target: AGENT, changeOrigin: true },
       "/run": { target: AGENT, changeOrigin: true, headers: { origin: AGENT } }, // also matches /run_sse
     },
   },

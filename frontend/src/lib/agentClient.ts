@@ -2,7 +2,6 @@
 import type { ChatContext, MapData, WheelchairCheck } from "./types";
 
 export const APP = "readiness_agent";
-export const LOAD_MAP_DATA_COMMAND = "LOAD_MAP_DATA v1";
 export const CHECK_WHEELCHAIR_COMMAND = "CHECK_WHEELCHAIR v1";
 export const MAP_DATA_TIMEOUT_MS = 20_000; // SC-004a
 export const WHEELCHAIR_TIMEOUT_MS = 60_000;
@@ -90,11 +89,11 @@ async function runCommand<T>(text: string, what: string, signal: AbortSignal): P
   }
 }
 
-/** Session-start data load through the agent; no LLM call is made (contracts §2). */
 export async function loadMapData(outer?: AbortSignal): Promise<MapData> {
   const { signal, done } = withTimeout(MAP_DATA_TIMEOUT_MS, outer);
   try {
-    const payload = await runCommand<MapData & { error?: string }>(LOAD_MAP_DATA_COMMAND, "Map data", signal);
+    const res = await fetch("/map-data", { signal });
+    const payload = (await res.json().catch(() => ({ error: `HTTP ${res.status}` }))) as MapData & { error?: string };
     if (payload.error) throw new Error(`The agent could not load map data: ${payload.error}`);
     if (payload.schema !== "map-data/v1") throw new Error(`Unknown map data version: ${String(payload.schema)}`);
     return payload;
