@@ -1,6 +1,6 @@
 # `run_scenario`: inputs and outputs
 
-Draft, 2026-10-27. A Python function tool on the readiness agent. It does all the arithmetic; the model only decides when to call it and explains what comes back.
+Contract for the `run_scenario` tool, 2026-10-27. A Python function tool on the readiness agent. It does all the arithmetic; the model only decides when to call it and explains what comes back.
 
 ## Inputs
 
@@ -23,6 +23,17 @@ The model is fixed (27 storms, 2018-2025) and the random seed is fixed, so the s
 
 ## Output
 
+### Top-level fields shared with `CONTEXT v1`
+
+These reuse the names of the scenario object the frontend already sends, so the map can apply a modelled result the same way it applies its own band:
+
+| Field | Meaning |
+|---|---|
+| `affected_county_fips` | Counties whose median outage is at least 10% |
+| `affected_shelter_ids` | Medical shelters in those counties or inside the chosen category's surge zone |
+| `receiving_top` | `shelter_id` or `ccn` of the receiving sites in rank order (selected county only) |
+
+
 ### `scenario` (one object)
 
 | Field | Meaning |
@@ -31,6 +42,7 @@ The model is fixed (27 storms, 2018-2025) and the random seed is fixed, so the s
 | `match` | For matched storms: how many matched, and the share that came within 100 km of Georgia |
 | `origin`, `category` | As used |
 | `past_storms_used` | Names and years of the past tracks behind the range, e.g. `Michael 2018` |
+| `likelihood` | How often this kind of storm has happened since 1950: `matching_storms`, `years`, `per_year`, `return_period_years`, `p_at_least_one_per_season`, an 80% range on the yearly rate, and up to five example storms. Historical frequency only: not a forecast, no climate-trend adjustment |
 | `support` | `within_labeled_support`, or `outside_labeled_support` when no past storm from this origin reached this intensity with trustworthy outage data (every Atlantic-coast hurricane today) |
 | `range_label` | Always "scenario range from 27 past storms"; the range held 77% of counties when tested on storms left out |
 | `assumptions` | Each stated value used: share of power-dependent residents who seek a powered seat, the outage level at which a dialysis centre counts as down, the "affected" threshold, traffic case |
