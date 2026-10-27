@@ -441,10 +441,13 @@ def season_outlook_note(outlook: str) -> str:
         )
     if outlook in ("la_nina", "neutral", "el_nino"):
         enso = backtest["enso_conditional"]["share_inside"]
+        counties = 159
+        change = "a small improvement" if enso > long_run else "no improvement"
         return (
-            f"Back-test 2018-2025 conditioning each year on its ENSO state: {enso:.0%} of "
-            f"counties inside the range against {long_run:.0%} long-run. Conditioning on ENSO "
-            "does not measurably improve on the long-run rate; both miss the 80% target."
+            f"Back-test 2018-2025 conditioning each year on its ENSO state: {enso:.1%} of "
+            f"counties inside the range against {long_run:.1%} long-run "
+            f"({round(enso * counties)} vs {round(long_run * counties)} of {counties} counties), "
+            f"{change}, still short of the 80% target."
         )
     if outlook == "noaa_aug_2026":
         return (
@@ -522,7 +525,7 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
 
     def generator_switch():
         unrecorded = [s["shelter_id"] for s in data.sites().get("medical_shelters", [])
-                      if s.get("generator") != "YES"]
+                      if s.get("generator") == "UNRECORDED"]
         base = season.run_season(outlook)
         fixed = season.run_season(outlook, assume_generator=unrecorded)
         return {

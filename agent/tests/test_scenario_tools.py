@@ -151,7 +151,7 @@ def test_season_with_switches_runs_live_and_reports_ignored_ids():
     r = season_county_risk(county_fips="13127", outlook="el_nino", sites_off=["nope"])
     assert r["run"] == "live" and r["ignored_ids"] == ["nope"]
     assert len(r["counties"]) == 1
-    assert "ENSO" in r["outlook_note"]
+    assert "a small improvement" in r["outlook_note"] and "115 vs 113" in r["outlook_note"]
 
 
 def test_outlook_notes_state_backtest_honestly():
@@ -184,3 +184,26 @@ def test_county_plan_rejects_non_georgia():
     from readiness_agent.scenario_tools import county_plan
 
     assert county_plan("12001")["status"] == "needs_county"
+
+
+def test_county_plan_assumes_generators_only_where_unrecorded(monkeypatch):
+    from readiness_agent import scenario_tools
+    from readiness_agent.scenario import data, season
+
+    seen = {}
+    real = season.run_season
+
+    def spy(outlook, **kw):
+        if kw.get("assume_generator"):
+            seen["ids"] = set(kw["assume_generator"])
+        return real(outlook, **kw)
+
+    monkeypatch.setattr(season, "run_season", spy)
+    monkeypatch.setattr(scenario_tools, "_readiness_brief", lambda _f: {})
+    plan = scenario_tools.county_plan("13051")
+    meds = data.sites()["medical_shelters"]
+    unrecorded = {s["shelter_id"] for s in meds if s["generator"] == "UNRECORDED"}
+    recorded_no = {s["shelter_id"] for s in meds if s["generator"] == "NO"}
+    assert unrecorded and recorded_no
+    assert seen["ids"] == unrecorded and not seen["ids"] & recorded_no
+    assert plan["generator_switch_effect"]["shelters_switched"] == len(unrecorded)
