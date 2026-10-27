@@ -195,10 +195,56 @@ these counts because EAGLE-I has no data-quality index before 2018. The widest o
 storms and reached far inland, so the power-dependent demand trigger is county outage share, not
 coastal zone.
 
+## Corridor load vs capacity (`corridor_vc.py`, `out/corridor_vc.json`)
+
+A peak-hour volume-to-capacity ratio for I-75 S (FL line to Macon), I-16 (with contraflow) and I-95,
+for three storm origins and the low / base / high cases. It is meant to scale live drive times in
+the scenario tool. **Every row has status `assumption`.** Volumes come from the scenario populations
+above (`out/scenario_origins.csv` and the scenario rates in `out/numbers.json`), and every parameter
+that turns them into vehicles per hour is assumed:
+
+| Origin | Scenario used | Leaving vehicles counted |
+|---|---|---|
+| `gulf` | (c) Florida west coast, up I-75 | Florida residents with a car whose destination is Georgia |
+| `florida_peninsula` | (b) NE Florida, Georgia coast also ordered out | as above for Florida, plus every Georgia coastal resident with a car who leaves |
+| `atlantic_ga` | (a) Georgia coast | every Georgia coastal resident with a car who leaves |
+
+Georgia residents count wherever they are headed, because they drive Georgia roads either way.
+Carless residents are not on the road.
+
+| Parameter (assumption) | Low | Base | High |
+|---|---:|---:|---:|
+| Persons per evacuating vehicle | 2.5 | 2.0 | 1.6 |
+| Share of vehicles in the peak hour | 0.06 | 0.09 | 0.12 |
+| Flow per lane, vehicles per hour | 1,800 | 1,500 | 1,200 |
+
+The low case pairs the low scenario volume with the capacity-friendly end of each bracket, and the
+high case the reverse, so the range is wide by construction. Lanes per direction are assumed, not
+measured: I-75 S 3, I-95 3, I-16 2 plus the 2 reversed eastbound lanes under contraflow (4). The
+corridor share of each origin's vehicles is also assumed: Chatham and Bryan 100% on I-16; Liberty
+50% on I-95 then I-16; McIntosh and Glynn 40%; Camden 30%; NE Florida 40% on I-95 then I-16, 40% on
+I-10 to I-75, and 20% elsewhere; Florida west coast 100% on I-75. A vehicle that uses I-95 and then
+I-16 counts on both. Only evacuation traffic is counted, because live drive times already include
+normal traffic.
+
+| V/C | Low | Base | High |
+|---|---:|---:|---:|
+| `gulf` on I-75 S | 0.17 | 2.04 | 12.14 |
+| `florida_peninsula` on I-16 | 0.33 | 1.50 | 5.08 |
+| `florida_peninsula` on I-95 | 0.17 | 0.94 | 3.61 |
+| `florida_peninsula` on I-75 S | 0.09 | 0.65 | 2.75 |
+| `atlantic_ga` on I-16 | 0.26 | 1.01 | 3.01 |
+| `atlantic_ga` on I-95 | 0.07 | 0.29 | 0.86 |
+
+Corridors an origin does not use under these shares are 0. A ratio above 1 means peak demand
+exceeds capacity: the road carries its capacity and departures spread over more hours, so a delay
+multiplier built on it needs a ceiling. Per-row vehicles, peak-hour vehicles and capacity are in
+`out/numbers.json` under `corridor_vc`.
+
 ## Limits
 
-- Straight-line distances. Routes are a buffer, not a network flow. There is no drive time and no
-  road capacity.
+- Straight-line distances. Routes are a buffer, not a network flow. Road capacity is only the
+  assumed peak-hour ratio above; there is no network assignment.
 - The fill is nearest-first by construction, so "first full" depends on the entry point chosen.
 - Every share is an assumption. GDOT's Milton counts (I-75 northbound +280%) confirm direction, not volume.
 - Shelter records are a registry, not live status. This is planning, not operations.

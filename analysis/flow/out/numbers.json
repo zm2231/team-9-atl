@@ -264,6 +264,432 @@
     },
     "state_clean_capacity": 571869.0
   },
+  "corridor_vc": {
+    "assumptions": {
+      "corridors": {
+        "I-16": {
+          "contraflow_lanes": 2,
+          "lanes": 2,
+          "route_source": "GDOT SR 404 + GDOT contraflow route"
+        },
+        "I-75 S": {
+          "contraflow_lanes": 0,
+          "lanes": 3,
+          "route_source": "GDOT SR 401 (FL line to Macon)"
+        },
+        "I-95": {
+          "contraflow_lanes": 0,
+          "lanes": 3,
+          "route_source": "TIGER I-95 (not in the GDOT layer)"
+        }
+      },
+      "lane_flow_vph": {
+        "base": 1500,
+        "high": 1200,
+        "low": 1800
+      },
+      "paths": {
+        "13029": {
+          "I-16": 1.0
+        },
+        "13039": {
+          "I-16": 0.3,
+          "I-95": 0.3
+        },
+        "13051": {
+          "I-16": 1.0
+        },
+        "13127": {
+          "I-16": 0.4,
+          "I-95": 0.4
+        },
+        "13179": {
+          "I-16": 0.5,
+          "I-95": 0.5
+        },
+        "13191": {
+          "I-16": 0.4,
+          "I-95": 0.4
+        },
+        "FL_b_ne_florida": {
+          "I-16": 0.4,
+          "I-75 S": 0.4,
+          "I-95": 0.4
+        },
+        "FL_c_fl_west_coast": {
+          "I-75 S": 1.0
+        }
+      },
+      "peak_hour_share": {
+        "base": 0.09,
+        "high": 0.12,
+        "low": 0.06
+      },
+      "persons_per_vehicle": {
+        "base": 2.0,
+        "high": 1.6,
+        "low": 2.5
+      }
+    },
+    "origins": {
+      "atlantic_ga": "a_ga_coast",
+      "florida_peninsula": "b_ne_florida",
+      "gulf": "c_fl_west_coast"
+    },
+    "rows": [
+      {
+        "capacity_vph": 5400,
+        "case": "low",
+        "contraflow": false,
+        "corridor": "I-75 S",
+        "evacuating_vehicles": 15543,
+        "origin": "gulf",
+        "peak_hour_vehicles": 933,
+        "route_source": "GDOT SR 401 (FL line to Macon)",
+        "scenario": "c_fl_west_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.173
+      },
+      {
+        "capacity_vph": 7200,
+        "case": "low",
+        "contraflow": true,
+        "corridor": "I-16",
+        "evacuating_vehicles": 0,
+        "origin": "gulf",
+        "peak_hour_vehicles": 0,
+        "route_source": "GDOT SR 404 + GDOT contraflow route",
+        "scenario": "c_fl_west_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.0
+      },
+      {
+        "capacity_vph": 5400,
+        "case": "low",
+        "contraflow": false,
+        "corridor": "I-95",
+        "evacuating_vehicles": 0,
+        "origin": "gulf",
+        "peak_hour_vehicles": 0,
+        "route_source": "TIGER I-95 (not in the GDOT layer)",
+        "scenario": "c_fl_west_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.0
+      },
+      {
+        "capacity_vph": 4500,
+        "case": "base",
+        "contraflow": false,
+        "corridor": "I-75 S",
+        "evacuating_vehicles": 102004,
+        "origin": "gulf",
+        "peak_hour_vehicles": 9180,
+        "route_source": "GDOT SR 401 (FL line to Macon)",
+        "scenario": "c_fl_west_coast",
+        "status": "assumption",
+        "volume_to_capacity": 2.04
+      },
+      {
+        "capacity_vph": 6000,
+        "case": "base",
+        "contraflow": true,
+        "corridor": "I-16",
+        "evacuating_vehicles": 0,
+        "origin": "gulf",
+        "peak_hour_vehicles": 0,
+        "route_source": "GDOT SR 404 + GDOT contraflow route",
+        "scenario": "c_fl_west_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.0
+      },
+      {
+        "capacity_vph": 4500,
+        "case": "base",
+        "contraflow": false,
+        "corridor": "I-95",
+        "evacuating_vehicles": 0,
+        "origin": "gulf",
+        "peak_hour_vehicles": 0,
+        "route_source": "TIGER I-95 (not in the GDOT layer)",
+        "scenario": "c_fl_west_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.0
+      },
+      {
+        "capacity_vph": 3600,
+        "case": "high",
+        "contraflow": false,
+        "corridor": "I-75 S",
+        "evacuating_vehicles": 364300,
+        "origin": "gulf",
+        "peak_hour_vehicles": 43716,
+        "route_source": "GDOT SR 401 (FL line to Macon)",
+        "scenario": "c_fl_west_coast",
+        "status": "assumption",
+        "volume_to_capacity": 12.143
+      },
+      {
+        "capacity_vph": 4800,
+        "case": "high",
+        "contraflow": true,
+        "corridor": "I-16",
+        "evacuating_vehicles": 0,
+        "origin": "gulf",
+        "peak_hour_vehicles": 0,
+        "route_source": "GDOT SR 404 + GDOT contraflow route",
+        "scenario": "c_fl_west_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.0
+      },
+      {
+        "capacity_vph": 3600,
+        "case": "high",
+        "contraflow": false,
+        "corridor": "I-95",
+        "evacuating_vehicles": 0,
+        "origin": "gulf",
+        "peak_hour_vehicles": 0,
+        "route_source": "TIGER I-95 (not in the GDOT layer)",
+        "scenario": "c_fl_west_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.0
+      },
+      {
+        "capacity_vph": 5400,
+        "case": "low",
+        "contraflow": false,
+        "corridor": "I-75 S",
+        "evacuating_vehicles": 8459,
+        "origin": "florida_peninsula",
+        "peak_hour_vehicles": 508,
+        "route_source": "GDOT SR 401 (FL line to Macon)",
+        "scenario": "b_ne_florida",
+        "status": "assumption",
+        "volume_to_capacity": 0.094
+      },
+      {
+        "capacity_vph": 7200,
+        "case": "low",
+        "contraflow": true,
+        "corridor": "I-16",
+        "evacuating_vehicles": 39321,
+        "origin": "florida_peninsula",
+        "peak_hour_vehicles": 2359,
+        "route_source": "GDOT SR 404 + GDOT contraflow route",
+        "scenario": "b_ne_florida",
+        "status": "assumption",
+        "volume_to_capacity": 0.328
+      },
+      {
+        "capacity_vph": 5400,
+        "case": "low",
+        "contraflow": false,
+        "corridor": "I-95",
+        "evacuating_vehicles": 15040,
+        "origin": "florida_peninsula",
+        "peak_hour_vehicles": 902,
+        "route_source": "TIGER I-95 (not in the GDOT layer)",
+        "scenario": "b_ne_florida",
+        "status": "assumption",
+        "volume_to_capacity": 0.167
+      },
+      {
+        "capacity_vph": 4500,
+        "case": "base",
+        "contraflow": false,
+        "corridor": "I-75 S",
+        "evacuating_vehicles": 32383,
+        "origin": "florida_peninsula",
+        "peak_hour_vehicles": 2914,
+        "route_source": "GDOT SR 401 (FL line to Macon)",
+        "scenario": "b_ne_florida",
+        "status": "assumption",
+        "volume_to_capacity": 0.648
+      },
+      {
+        "capacity_vph": 6000,
+        "case": "base",
+        "contraflow": true,
+        "corridor": "I-16",
+        "evacuating_vehicles": 99894,
+        "origin": "florida_peninsula",
+        "peak_hour_vehicles": 8990,
+        "route_source": "GDOT SR 404 + GDOT contraflow route",
+        "scenario": "b_ne_florida",
+        "status": "assumption",
+        "volume_to_capacity": 1.498
+      },
+      {
+        "capacity_vph": 4500,
+        "case": "base",
+        "contraflow": false,
+        "corridor": "I-95",
+        "evacuating_vehicles": 46778,
+        "origin": "florida_peninsula",
+        "peak_hour_vehicles": 4210,
+        "route_source": "TIGER I-95 (not in the GDOT layer)",
+        "scenario": "b_ne_florida",
+        "status": "assumption",
+        "volume_to_capacity": 0.936
+      },
+      {
+        "capacity_vph": 3600,
+        "case": "high",
+        "contraflow": false,
+        "corridor": "I-75 S",
+        "evacuating_vehicles": 82609,
+        "origin": "florida_peninsula",
+        "peak_hour_vehicles": 9913,
+        "route_source": "GDOT SR 401 (FL line to Macon)",
+        "scenario": "b_ne_florida",
+        "status": "assumption",
+        "volume_to_capacity": 2.754
+      },
+      {
+        "capacity_vph": 4800,
+        "case": "high",
+        "contraflow": true,
+        "corridor": "I-16",
+        "evacuating_vehicles": 203164,
+        "origin": "florida_peninsula",
+        "peak_hour_vehicles": 24380,
+        "route_source": "GDOT SR 404 + GDOT contraflow route",
+        "scenario": "b_ne_florida",
+        "status": "assumption",
+        "volume_to_capacity": 5.079
+      },
+      {
+        "capacity_vph": 3600,
+        "case": "high",
+        "contraflow": false,
+        "corridor": "I-95",
+        "evacuating_vehicles": 108314,
+        "origin": "florida_peninsula",
+        "peak_hour_vehicles": 12998,
+        "route_source": "TIGER I-95 (not in the GDOT layer)",
+        "scenario": "b_ne_florida",
+        "status": "assumption",
+        "volume_to_capacity": 3.61
+      },
+      {
+        "capacity_vph": 5400,
+        "case": "low",
+        "contraflow": false,
+        "corridor": "I-75 S",
+        "evacuating_vehicles": 0,
+        "origin": "atlantic_ga",
+        "peak_hour_vehicles": 0,
+        "route_source": "GDOT SR 401 (FL line to Macon)",
+        "scenario": "a_ga_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.0
+      },
+      {
+        "capacity_vph": 7200,
+        "case": "low",
+        "contraflow": true,
+        "corridor": "I-16",
+        "evacuating_vehicles": 30862,
+        "origin": "atlantic_ga",
+        "peak_hour_vehicles": 1852,
+        "route_source": "GDOT SR 404 + GDOT contraflow route",
+        "scenario": "a_ga_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.257
+      },
+      {
+        "capacity_vph": 5400,
+        "case": "low",
+        "contraflow": false,
+        "corridor": "I-95",
+        "evacuating_vehicles": 6581,
+        "origin": "atlantic_ga",
+        "peak_hour_vehicles": 395,
+        "route_source": "TIGER I-95 (not in the GDOT layer)",
+        "scenario": "a_ga_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.073
+      },
+      {
+        "capacity_vph": 4500,
+        "case": "base",
+        "contraflow": false,
+        "corridor": "I-75 S",
+        "evacuating_vehicles": 0,
+        "origin": "atlantic_ga",
+        "peak_hour_vehicles": 0,
+        "route_source": "GDOT SR 401 (FL line to Macon)",
+        "scenario": "a_ga_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.0
+      },
+      {
+        "capacity_vph": 6000,
+        "case": "base",
+        "contraflow": true,
+        "corridor": "I-16",
+        "evacuating_vehicles": 67511,
+        "origin": "atlantic_ga",
+        "peak_hour_vehicles": 6076,
+        "route_source": "GDOT SR 404 + GDOT contraflow route",
+        "scenario": "a_ga_coast",
+        "status": "assumption",
+        "volume_to_capacity": 1.013
+      },
+      {
+        "capacity_vph": 4500,
+        "case": "base",
+        "contraflow": false,
+        "corridor": "I-95",
+        "evacuating_vehicles": 14395,
+        "origin": "atlantic_ga",
+        "peak_hour_vehicles": 1296,
+        "route_source": "TIGER I-95 (not in the GDOT layer)",
+        "scenario": "a_ga_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.288
+      },
+      {
+        "capacity_vph": 3600,
+        "case": "high",
+        "contraflow": false,
+        "corridor": "I-75 S",
+        "evacuating_vehicles": 0,
+        "origin": "atlantic_ga",
+        "peak_hour_vehicles": 0,
+        "route_source": "GDOT SR 401 (FL line to Macon)",
+        "scenario": "a_ga_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.0
+      },
+      {
+        "capacity_vph": 4800,
+        "case": "high",
+        "contraflow": true,
+        "corridor": "I-16",
+        "evacuating_vehicles": 120555,
+        "origin": "atlantic_ga",
+        "peak_hour_vehicles": 14467,
+        "route_source": "GDOT SR 404 + GDOT contraflow route",
+        "scenario": "a_ga_coast",
+        "status": "assumption",
+        "volume_to_capacity": 3.014
+      },
+      {
+        "capacity_vph": 3600,
+        "case": "high",
+        "contraflow": false,
+        "corridor": "I-95",
+        "evacuating_vehicles": 25705,
+        "origin": "atlantic_ga",
+        "peak_hour_vehicles": 3085,
+        "route_source": "TIGER I-95 (not in the GDOT layer)",
+        "scenario": "a_ga_coast",
+        "status": "assumption",
+        "volume_to_capacity": 0.857
+      }
+    ]
+  },
   "equity": {
     "sets": {
       "coastal_flood_tracts": {
