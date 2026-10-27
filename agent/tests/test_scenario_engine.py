@@ -1,3 +1,4 @@
+import json
 import math
 import time
 
@@ -41,7 +42,7 @@ def test_counties_shape():
     keys = {
         "county_fips", "county_name", "lat", "lon", "pop", "power_dependent", "oxygen",
         "home_health", "dialysis_patients", "power_dependent_censored", "nursing_home_beds",
-        "assisted_living_beds",
+        "assisted_living_beds", "no_vehicle_share_65", "no_vehicle_share_all",
     }
     assert keys <= set(rows[0])
 
@@ -152,9 +153,11 @@ def test_strong_landfall_gives_big_outage_in_south_ga():
 def test_people_at_risk_thresholds():
     counties = [
         {"power_dependent": 100, "oxygen": 10, "home_health": 20, "dialysis_patients": 50,
-         "nursing_home_beds": 30, "assisted_living_beds": 5},
+         "nursing_home_beds": 30, "assisted_living_beds": 5,
+         "no_vehicle_share_65": 0.1, "no_vehicle_share_all": 0.05},
         {"power_dependent": 200, "oxygen": 0, "home_health": 0, "dialysis_patients": 40,
-         "nursing_home_beds": 0, "assisted_living_beds": 0},
+         "nursing_home_beds": 0, "assisted_living_beds": 0,
+         "no_vehicle_share_65": 0.2, "no_vehicle_share_all": 0.1},
     ]
     result = engine.Result(
         outage=np.array([[0.6, 0.2]]), track_of_draw=np.zeros(1, int),
@@ -166,3 +169,25 @@ def test_people_at_risk_thresholds():
     assert p["oxygen"].tolist() == [[6.0, 0.0]]
     assert p["dialysis"].tolist() == [[50.0, 0.0]]
     assert p["facility_beds"].tolist() == [[35.0, 0.0]]
+    assert np.allclose(p["no_vehicle"], [[6.0, 8.0]])
+    assert np.allclose(p["no_vehicle_low"], [[3.0, 4.0]])
+
+
+def test_vehicle_shares_match_acs():
+    acs = json.loads((data.DATA_DIR / "acs_vehicles.json").read_text())["counties"]
+    for row in data.counties():
+        src = acs[row["county_fips"]]
+        assert row["no_vehicle_share_65"] == src["no_vehicle_share_65"]
+        assert row["no_vehicle_share_all"] == src["no_vehicle_share_all"]
+        assert 0 <= row["no_vehicle_share_all"] <= 1 and 0 <= row["no_vehicle_share_65"] <= 1
+
+
+def test_no_vehicle_at_risk_on_real_counties():
+    counties = data.counties()
+    t = storms.drawn_track([[-85.0, 27.0], [-84.3, 30.0], [-83.5, 33.5]], 4)
+    r = engine.run([t], n_draws=400, seed=1)
+    p = engine.people_at_risk(r, counties)
+    assert p["no_vehicle"].shape == p["no_vehicle_low"].shape == r.outage.shape
+    assert (p["no_vehicle"] <= p["power_dependent"] + 1e-9).all()
+    share65 = np.array([c["no_vehicle_share_65"] for c in counties])
+    assert np.allclose(p["no_vehicle"], p["power_dependent"] * share65)

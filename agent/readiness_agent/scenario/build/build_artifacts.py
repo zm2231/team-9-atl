@@ -50,6 +50,18 @@ def facility_beds() -> dict:
     return json.loads(raw)["counties"]
 
 
+def with_vehicle_access(rows: list[dict]) -> list[dict]:
+    acs = json.loads((DATA / "acs_vehicles.json").read_text())["counties"]
+    return [
+        {
+            **r,
+            "no_vehicle_share_65": float(acs[r["county_fips"]]["no_vehicle_share_65"]),
+            "no_vehicle_share_all": float(acs[r["county_fips"]]["no_vehicle_share_all"]),
+        }
+        for r in rows
+    ]
+
+
 def build_counties(bq: bigquery.Client) -> list[dict]:
     rows = query(bq, f"""
       SELECT t.county_fips, p.county AS county_name,
@@ -66,7 +78,7 @@ def build_counties(bq: bigquery.Client) -> list[dict]:
       WHERE t.total_pop > 0
       GROUP BY 1, 2 ORDER BY 1""")
     beds = facility_beds()
-    return [
+    return with_vehicle_access([
         {
             "county_fips": r.county_fips, "county_name": r.county_name,
             "lat": round(r.lat, 5), "lon": round(r.lon, 5), "pop": int(r.pop),
@@ -80,7 +92,7 @@ def build_counties(bq: bigquery.Client) -> list[dict]:
             ),
         }
         for r in rows
-    ]
+    ])
 
 
 def read_gazetteer(path: str) -> list[dict]:
