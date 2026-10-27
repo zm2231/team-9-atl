@@ -1,0 +1,727 @@
+{
+ "report_version": 1,
+ "scope": "run",
+ "subject": {
+  "county_fips": "13051",
+  "county_name": "Chatham",
+  "runs": {
+   "n": 20,
+   "seed": 20261027,
+   "run_index": 7
+  },
+  "scenario": {
+   "source": "drawn_track",
+   "origin": "gulf",
+   "category": 3,
+   "month": 10
+  }
+ },
+ "season": null,
+ "sections": {
+  "who_cannot_leave": {
+   "status": "not_applicable",
+   "source": "",
+   "figures": [],
+   "items": [],
+   "note": null,
+   "reason": "Ask for a county plan for tracts and facilities."
+  },
+  "power_outage": {
+   "status": "ok",
+   "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+   "figures": [
+    {
+     "key": "counties_affected",
+     "label": "Counties with 10%+ outage",
+     "unit": "count",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+     "value": 57,
+     "range": null,
+     "range_kind": null
+    }
+   ],
+   "items": [
+    {
+     "county_fips": "13121",
+     "county_name": "Fulton",
+     "outage_share": {
+      "p10": 0.377,
+      "p50": 0.377,
+      "p90": 0.377
+     },
+     "peak_wind_kt": 32.5,
+     "ts_winds_arrive_h": null,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13077",
+     "county_name": "Coweta",
+     "outage_share": {
+      "p10": 0.885,
+      "p50": 0.885,
+      "p90": 0.885
+     },
+     "peak_wind_kt": 32.4,
+     "ts_winds_arrive_h": null,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13185",
+     "county_name": "Lowndes",
+     "outage_share": {
+      "p10": 0.924,
+      "p50": 0.924,
+      "p90": 0.924
+     },
+     "peak_wind_kt": 56.4,
+     "ts_winds_arrive_h": 13.3,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13151",
+     "county_name": "Henry",
+     "outage_share": {
+      "p10": 0.246,
+      "p50": 0.246,
+      "p90": 0.246
+     },
+     "peak_wind_kt": 32.7,
+     "ts_winds_arrive_h": null,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13233",
+     "county_name": "Polk",
+     "outage_share": {
+      "p10": 0.565,
+      "p50": 0.565,
+      "p90": 0.565
+     },
+     "peak_wind_kt": 32.1,
+     "ts_winds_arrive_h": null,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13089",
+     "county_name": "Dekalb",
+     "outage_share": {
+      "p10": 0.086,
+      "p50": 0.086,
+      "p90": 0.086
+     },
+     "peak_wind_kt": 32.6,
+     "ts_winds_arrive_h": null,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13015",
+     "county_name": "Bartow",
+     "outage_share": {
+      "p10": 0.312,
+      "p50": 0.312,
+      "p90": 0.312
+     },
+     "peak_wind_kt": 32.2,
+     "ts_winds_arrive_h": null,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13045",
+     "county_name": "Carroll",
+     "outage_share": {
+      "p10": 0.182,
+      "p50": 0.182,
+      "p90": 0.182
+     },
+     "peak_wind_kt": 32.2,
+     "ts_winds_arrive_h": null,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13275",
+     "county_name": "Thomas",
+     "outage_share": {
+      "p10": 0.455,
+      "p50": 0.455,
+      "p90": 0.455
+     },
+     "peak_wind_kt": 61.9,
+     "ts_winds_arrive_h": 12.3,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13205",
+     "county_name": "Mitchell",
+     "outage_share": {
+      "p10": 0.927,
+      "p50": 0.927,
+      "p90": 0.927
+     },
+     "peak_wind_kt": 54.5,
+     "ts_winds_arrive_h": 13.3,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13305",
+     "county_name": "Wayne",
+     "outage_share": {
+      "p10": 0.545,
+      "p50": 0.545,
+      "p90": 0.545
+     },
+     "peak_wind_kt": 43.8,
+     "ts_winds_arrive_h": 24.6,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13131",
+     "county_name": "Grady",
+     "outage_share": {
+      "p10": 0.892,
+      "p50": 0.892,
+      "p90": 0.892
+     },
+     "peak_wind_kt": 61.4,
+     "ts_winds_arrive_h": 12.3,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13019",
+     "county_name": "Berrien",
+     "outage_share": {
+      "p10": 0.708,
+      "p50": 0.708,
+      "p90": 0.708
+     },
+     "peak_wind_kt": 55.5,
+     "ts_winds_arrive_h": 16.4,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13267",
+     "county_name": "Tattnall",
+     "outage_share": {
+      "p10": 0.885,
+      "p50": 0.885,
+      "p90": 0.885
+     },
+     "peak_wind_kt": 43.3,
+     "ts_winds_arrive_h": 25.6,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13261",
+     "county_name": "Sumter",
+     "outage_share": {
+      "p10": 0.48,
+      "p50": 0.48,
+      "p90": 0.48
+     },
+     "peak_wind_kt": 37.4,
+     "ts_winds_arrive_h": 20.5,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13129",
+     "county_name": "Gordon",
+     "outage_share": {
+      "p10": 0.262,
+      "p50": 0.262,
+      "p90": 0.262
+     },
+     "peak_wind_kt": 32.1,
+     "ts_winds_arrive_h": null,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13153",
+     "county_name": "Houston",
+     "outage_share": {
+      "p10": 0.125,
+      "p50": 0.125,
+      "p90": 0.125
+     },
+     "peak_wind_kt": 35.9,
+     "ts_winds_arrive_h": 26.6,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13241",
+     "county_name": "Rabun",
+     "outage_share": {
+      "p10": 0.633,
+      "p50": 0.633,
+      "p90": 0.633
+     },
+     "peak_wind_kt": 32.4,
+     "ts_winds_arrive_h": null,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "outage_share": {
+      "p10": 0.086,
+      "p50": 0.086,
+      "p90": 0.086
+     },
+     "peak_wind_kt": 39.2,
+     "ts_winds_arrive_h": 28.7,
+     "status": [
+      "modelled"
+     ]
+    },
+    {
+     "county_fips": "13069",
+     "county_name": "Coffee",
+     "outage_share": {
+      "p10": 0.246,
+      "p50": 0.246,
+      "p90": 0.246
+     },
+     "peak_wind_kt": 48.7,
+     "ts_winds_arrive_h": 19.4,
+     "status": [
+      "modelled"
+     ]
+    }
+   ],
+   "note": null
+  },
+  "people_at_risk": {
+   "status": "ok",
+   "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+   "figures": [
+    {
+     "key": "power_dependent_at_risk",
+     "label": "Power-dependent residents losing power",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+     "value": 14702,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "oxygen_users_at_risk",
+     "label": "Oxygen users losing power",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+     "value": 3686,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "dialysis_patients_at_risk",
+     "label": "Dialysis patients whose centre is down",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+     "value": 1158,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "facility_beds_exposed",
+     "label": "Nursing-home and assisted-living beds exposed",
+     "unit": "beds",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+     "value": 4496,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "needing_transport_no_vehicle",
+     "label": "Needing transport: no vehicle (65+ households)",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+     "value": 1416,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "needing_transport_no_vehicle_low",
+     "label": "Needing transport: no vehicle (all households)",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+     "value": 977,
+     "range": null,
+     "range_kind": null
+    }
+   ],
+   "items": [],
+   "note": "Lacking shelter and needing transport are separate needs and are never added: one person can be in both. These figures are planning arithmetic on county totals and stated assumptions (share seeking a seat, Florida inflow, patients per station), not counts of unique people."
+  },
+  "where_they_would_go": {
+   "status": "ok",
+   "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+   "figures": [
+    {
+     "key": "seeking_powered_seat",
+     "label": "Seeking a powered seat",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+     "value": 40,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "powered_seats_reachable",
+     "label": "Powered seats reachable",
+     "unit": "seats",
+     "provenance": "registry",
+     "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+     "value": 737,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "no_powered_seat",
+     "label": "Lacking shelter: no powered seat",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+     "value": 0,
+     "range": null,
+     "range_kind": null
+    },
+    {
+     "key": "cannot_arrive_in_time",
+     "label": "Needing transport: cannot arrive in time",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+     "value": 0,
+     "range": null,
+     "range_kind": null
+    }
+   ],
+   "items": [
+    {
+     "kind": "dialysis_centre",
+     "ccn": "112639",
+     "stations": 26,
+     "name": "DaVita Derenne Dialysis",
+     "county_fips": "13051",
+     "generator": "UNRECORDED",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 1.8,
+     "drive_minutes": {
+      "value": 3,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": null,
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "dialysis_centre",
+     "ccn": "112507",
+     "stations": 43,
+     "name": "FMC - BMA OF COASTAL DIALYSIS",
+     "county_fips": "13051",
+     "generator": "UNRECORDED",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 5.2,
+     "drive_minutes": {
+      "value": 12,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": null,
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "dialysis_centre",
+     "ccn": "112891",
+     "stations": 16,
+     "name": "DaVita Savannah Riverside at Home",
+     "county_fips": "13051",
+     "generator": "UNRECORDED",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 6.1,
+     "drive_minutes": {
+      "value": 15,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": null,
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "dialysis_centre",
+     "ccn": "112811",
+     "stations": 12,
+     "name": "DaVita Pooler Dialysis",
+     "county_fips": "13051",
+     "generator": "UNRECORDED",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 16.0,
+     "drive_minutes": {
+      "value": 21,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": null,
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "dialysis_centre",
+     "ccn": "112802",
+     "stations": 11,
+     "name": "FRESENIUS MEDICAL CARE RINCON",
+     "county_fips": "13103",
+     "generator": "UNRECORDED",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 27.1,
+     "drive_minutes": {
+      "value": 32,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": null,
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "medical_shelter",
+     "shelter_id": "331512",
+     "seats": 375,
+     "name": "Langston Chapel Elementary School",
+     "county_fips": "13031",
+     "generator": "YES",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 72.0,
+     "drive_minutes": {
+      "value": 53,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": "I-16",
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "medical_shelter",
+     "shelter_id": "331513",
+     "seats": 362,
+     "name": "Langston Chapel Middle School",
+     "county_fips": "13031",
+     "generator": "YES",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 72.1,
+     "drive_minutes": {
+      "value": 53,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": "I-16",
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "medical_shelter",
+     "shelter_id": "331534",
+     "seats": 120,
+     "name": "Metter United Methodist Church",
+     "county_fips": "13043",
+     "generator": "NO",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 96.3,
+     "drive_minutes": {
+      "value": 63,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": "I-16",
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "medical_shelter",
+     "shelter_id": "331526",
+     "seats": 200,
+     "name": "Guido Evangelistic Association",
+     "county_fips": "13043",
+     "generator": "NO",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 96.5,
+     "drive_minutes": {
+      "value": 63,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": "I-16",
+     "arrives_before_ts_winds": true
+    },
+    {
+     "kind": "medical_shelter",
+     "shelter_id": "331524",
+     "seats": 53,
+     "name": "Cedar St Baptist Church",
+     "county_fips": "13043",
+     "generator": "NO",
+     "generator_assumed": false,
+     "generator_assumption": null,
+     "straight_line_km": 96.6,
+     "drive_minutes": {
+      "value": 64,
+      "status": "live"
+     },
+     "evacuation_delay_minutes": {
+      "low": 0,
+      "base": 0,
+      "high": 0
+     },
+     "corridor": "I-16",
+     "arrives_before_ts_winds": true
+    }
+   ],
+   "note": "Drive times: live."
+  },
+  "what_to_fix": {
+   "status": "ok",
+   "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+   "figures": [],
+   "items": [],
+   "note": "No shortfall at the reachable sites in this scenario."
+  },
+  "storm_history": {
+   "status": "ok",
+   "source": "drawn_track",
+   "figures": [],
+   "items": [
+    {
+     "matching_storms": 4,
+     "years": [
+      1950,
+      2026
+     ],
+     "per_year": 0.0519,
+     "return_period_years": 19.2,
+     "p_at_least_one_per_season": 0.0506,
+     "per_year_range80": [
+      0.026,
+      0.0909
+     ],
+     "example_storms": [
+      "Helene 2024",
+      "Idalia 2023",
+      "Michael 2018",
+      "Dennis 2005"
+     ]
+    }
+   ],
+   "note": "Support: within_labeled_support; scenario range from 35 past storms."
+  },
+  "planner_updates": {
+   "status": "ok",
+   "source": "scenario_site_updates",
+   "figures": [],
+   "items": [],
+   "note": "No planner updates in effect."
+  },
+  "could_not_tell": {
+   "status": "ok",
+   "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)",
+   "figures": [],
+   "items": [
+    "Outage is modelled from wind exposure; local tree and line conditions are not known.",
+    "Whether a shelter will open during this storm is not known from this data."
+   ],
+   "note": null
+  },
+  "audit": {
+   "status": "not_applicable",
+   "source": "",
+   "figures": [],
+   "items": [],
+   "note": null,
+   "reason": "The audit compares a county plan's ranked tracts."
+  }
+ },
+ "source": "Simulated \u00b7 outage model fitted on DOE EAGLE-I county outages (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range; ext_eaglei_county_storm_2014_2025) and NOAA IBTrACS tracks; residents at risk from HHS emPOWER (power_dependent_counties_clean)"
+}

@@ -1,0 +1,440 @@
+{
+ "report_version": 1,
+ "scope": "state",
+ "subject": {
+  "county_fips": null,
+  "county_name": "Georgia"
+ },
+ "season": {
+  "outlook": "long_run",
+  "label": "Every storm 1950-2025 that came within 250 km of Georgia",
+  "storms_per_year": 2.632,
+  "note": "Back-test 2018-2025: 80% of counties inside the range (target 80%). 2018-2025 had more storms than the long-run average, so this view understates it."
+ },
+ "sections": {
+  "who_cannot_leave": {
+   "status": "ok",
+   "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+   "figures": [],
+   "items": [
+    {
+     "kind": "county",
+     "county_fips": "13089",
+     "county_name": "Dekalb",
+     "lacking_shelter_one_in_10": 490,
+     "power_dependent_affected_one_in_10": 2450
+    },
+    {
+     "kind": "county",
+     "county_fips": "13121",
+     "county_name": "Fulton",
+     "lacking_shelter_one_in_10": 423,
+     "power_dependent_affected_one_in_10": 2113
+    },
+    {
+     "kind": "county",
+     "county_fips": "13135",
+     "county_name": "Gwinnett",
+     "lacking_shelter_one_in_10": 325,
+     "power_dependent_affected_one_in_10": 1624
+    },
+    {
+     "kind": "county",
+     "county_fips": "13051",
+     "county_name": "Chatham",
+     "lacking_shelter_one_in_10": 318,
+     "power_dependent_affected_one_in_10": 1288
+    },
+    {
+     "kind": "county",
+     "county_fips": "13127",
+     "county_name": "Glynn",
+     "lacking_shelter_one_in_10": 155,
+     "power_dependent_affected_one_in_10": 450
+    },
+    {
+     "kind": "county",
+     "county_fips": "13067",
+     "county_name": "Cobb",
+     "lacking_shelter_one_in_10": 120,
+     "power_dependent_affected_one_in_10": 599
+    },
+    {
+     "kind": "county",
+     "county_fips": "13215",
+     "county_name": "Muscogee",
+     "lacking_shelter_one_in_10": 117,
+     "power_dependent_affected_one_in_10": 585
+    },
+    {
+     "kind": "county",
+     "county_fips": "13139",
+     "county_name": "Hall",
+     "lacking_shelter_one_in_10": 108,
+     "power_dependent_affected_one_in_10": 541
+    },
+    {
+     "kind": "county",
+     "county_fips": "13039",
+     "county_name": "Camden",
+     "lacking_shelter_one_in_10": 99,
+     "power_dependent_affected_one_in_10": 304
+    },
+    {
+     "kind": "county",
+     "county_fips": "13021",
+     "county_name": "Bibb",
+     "lacking_shelter_one_in_10": 92,
+     "power_dependent_affected_one_in_10": 460
+    }
+   ],
+   "note": "Counties with the most people lacking shelter in a 1-in-10 season; ask for a county plan for tract and facility detail."
+  },
+  "power_outage": {
+   "status": "ok",
+   "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+   "figures": [
+    {
+     "key": "p_any_county_outage25_per_year",
+     "label": "Chance per year that any Georgia county has a 25%+ customer outage",
+     "unit": "share",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": 0.8485,
+     "range": null,
+     "range_kind": null
+    }
+   ],
+   "items": [],
+   "note": "Season figures are a planning stress test, not a forecast. Back-testing 2018-2025, the model expected 119 county outages of 25%+ statewide against 200 observed, and it under-predicts major storms (Irma 2017: 38% observed, 11% modelled); read the 1-in-10 and 1-in-100 figures as floors for a major storm."
+  },
+  "people_at_risk": {
+   "status": "ok",
+   "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+   "figures": [
+    {
+     "key": "power_dependent_affected",
+     "label": "Power-dependent residents losing power",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": null,
+     "range": {
+      "typical": 6217,
+      "one_in_10": 16582,
+      "one_in_100": 31898
+     },
+     "range_kind": "season"
+    },
+    {
+     "key": "no_powered_seat",
+     "label": "Lacking shelter: no powered seat",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": null,
+     "range": {
+      "typical": 1066,
+      "one_in_10": 2899,
+      "one_in_100": 5710
+     },
+     "range_kind": "season"
+    },
+    {
+     "key": "no_dialysis_chair",
+     "label": "Lacking shelter: no dialysis chair",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": null,
+     "range": {
+      "typical": 0,
+      "one_in_10": 513,
+      "one_in_100": 2129
+     },
+     "range_kind": "season"
+    },
+    {
+     "key": "lacking_shelter_total",
+     "label": "Lacking shelter: seats plus chairs (upper bound; a dialysis patient can be in both)",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": null,
+     "range": {
+      "typical": 1153,
+      "one_in_10": 3247,
+      "one_in_100": 7802
+     },
+     "range_kind": "season"
+    },
+    {
+     "key": "needing_transport_no_vehicle",
+     "label": "Needing transport: no vehicle (65+ households)",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": null,
+     "range": {
+      "typical": 542,
+      "one_in_10": 1499,
+      "one_in_100": 2897
+     },
+     "range_kind": "season"
+    },
+    {
+     "key": "needing_transport_no_vehicle_low",
+     "label": "Needing transport: no vehicle (all households)",
+     "unit": "people",
+     "provenance": "simulated",
+     "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)",
+     "value": null,
+     "range": {
+      "typical": 388,
+      "one_in_10": 1050,
+      "one_in_100": 2047
+     },
+     "range_kind": "season"
+    }
+   ],
+   "items": [],
+   "note": "Lacking shelter and needing transport are separate needs and are never added: one person can be in both. These figures are planning arithmetic on county totals and stated assumptions (share seeking a seat, Florida inflow, patients per station), not counts of unique people."
+  },
+  "where_they_would_go": {
+   "status": "not_applicable",
+   "source": "",
+   "figures": [],
+   "items": [],
+   "note": null,
+   "reason": "Destinations are matched per county; ask for a county plan."
+  },
+  "what_to_fix": {
+   "status": "ok",
+   "source": "Simulated \u00b7 season model rerun with each unknown set low and high (scenario_fix_ranking)",
+   "figures": [],
+   "items": [
+    {
+     "gap": "relocation_share",
+     "description": "Share of power-dependent residents who seek a powered seat: 0.1 vs 0.4",
+     "record_to_collect": "County special-needs registry counts and past shelter intake",
+     "uncovered_1in10_low": 1388,
+     "uncovered_1in10_high": 4657,
+     "swing": 3269
+    },
+    {
+     "gap": "medical_shelter_generators",
+     "description": "Medical shelters with no generator record: none powered vs all powered",
+     "record_to_collect": "Generator on site and fuel days for each medical shelter (GEMA)",
+     "uncovered_1in10_low": 1044,
+     "uncovered_1in10_high": 2444,
+     "swing": 1400
+    },
+    {
+     "gap": "storm_rates",
+     "description": "Storm frequency from tracks 1950-2025 vs 2000-2025",
+     "record_to_collect": "None; a modelling choice between long and recent climate",
+     "uncovered_1in10_low": 2444,
+     "uncovered_1in10_high": 2873,
+     "swing": 429
+    },
+    {
+     "gap": "model_major_storm_bias",
+     "description": "Outage model under-predicts major storms by 0.7 logit vs no bias",
+     "record_to_collect": "County outage records for more Category 3+ landfalls near Georgia",
+     "uncovered_1in10_low": 2444,
+     "uncovered_1in10_high": 2816,
+     "swing": 371
+    },
+    {
+     "gap": "dialysis_surge_absorption",
+     "description": "Displaced patients a dialysis station can absorb: 0.5 vs 2",
+     "record_to_collect": "Each centre's extra-shift capacity in an emergency (ESRD Network 6)",
+     "uncovered_1in10_low": 2344,
+     "uncovered_1in10_high": 2576,
+     "swing": 232
+    },
+    {
+     "gap": "florida_inflow",
+     "description": "Share of Georgia receiving capacity Florida evacuees take: 0 vs 0.3",
+     "record_to_collect": "Shelter intake by home state from Irma 2017 and Ian 2022",
+     "uncovered_1in10_low": 2423,
+     "uncovered_1in10_high": 2480,
+     "swing": 57
+    }
+   ],
+   "note": null
+  },
+  "storm_history": {
+   "status": "ok",
+   "source": "scenario_worst_events",
+   "figures": [],
+   "items": [
+    {
+     "rank": 1,
+     "parent_storm": "Babe 1977",
+     "shift_km": 51.1,
+     "category_change": 1,
+     "speed_factor": 0.76,
+     "size_factor": 1.36,
+     "category_near_georgia": 1,
+     "outside_support": false,
+     "power_dependent_affected": 38386,
+     "lacking_shelter": 13402,
+     "worst_county_fips": "13121",
+     "worst_county_name": "Fulton"
+    },
+    {
+     "rank": 2,
+     "parent_storm": "Babe 1977",
+     "shift_km": -6.4,
+     "category_change": 1,
+     "speed_factor": 0.8,
+     "size_factor": 1.34,
+     "category_near_georgia": 1,
+     "outside_support": false,
+     "power_dependent_affected": 28781,
+     "lacking_shelter": 7302,
+     "worst_county_fips": "13089",
+     "worst_county_name": "Dekalb"
+    },
+    {
+     "rank": 3,
+     "parent_storm": "Helene 2024",
+     "shift_km": 30.1,
+     "category_change": 0,
+     "speed_factor": 0.81,
+     "size_factor": 1.28,
+     "category_near_georgia": 4,
+     "outside_support": false,
+     "power_dependent_affected": 28595,
+     "lacking_shelter": 7025,
+     "worst_county_fips": "13135",
+     "worst_county_name": "Gwinnett"
+    },
+    {
+     "rank": 4,
+     "parent_storm": "Helene 2024",
+     "shift_km": -29.6,
+     "category_change": -1,
+     "speed_factor": 1.01,
+     "size_factor": 0.94,
+     "category_near_georgia": 3,
+     "outside_support": false,
+     "power_dependent_affected": 27718,
+     "lacking_shelter": 5849,
+     "worst_county_fips": "13121",
+     "worst_county_name": "Fulton"
+    },
+    {
+     "rank": 5,
+     "parent_storm": "Michael 2018",
+     "shift_km": -24.1,
+     "category_change": 0,
+     "speed_factor": 1.09,
+     "size_factor": 1.32,
+     "category_near_georgia": 4,
+     "outside_support": false,
+     "power_dependent_affected": 26693,
+     "lacking_shelter": 6423,
+     "worst_county_fips": "13089",
+     "worst_county_name": "Dekalb"
+    },
+    {
+     "rank": 6,
+     "parent_storm": "Eloise 1975",
+     "shift_km": -8.1,
+     "category_change": 0,
+     "speed_factor": 1.12,
+     "size_factor": 1.12,
+     "category_near_georgia": 3,
+     "outside_support": false,
+     "power_dependent_affected": 26683,
+     "lacking_shelter": 8775,
+     "worst_county_fips": "13135",
+     "worst_county_name": "Gwinnett"
+    },
+    {
+     "rank": 7,
+     "parent_storm": "Opal 1995",
+     "shift_km": 13.0,
+     "category_change": 1,
+     "speed_factor": 0.76,
+     "size_factor": 0.98,
+     "category_near_georgia": 4,
+     "outside_support": false,
+     "power_dependent_affected": 24652,
+     "lacking_shelter": 5437,
+     "worst_county_fips": "13121",
+     "worst_county_name": "Fulton"
+    },
+    {
+     "rank": 8,
+     "parent_storm": "Michael 2018",
+     "shift_km": -98.7,
+     "category_change": 0,
+     "speed_factor": 1.03,
+     "size_factor": 0.71,
+     "category_near_georgia": 4,
+     "outside_support": false,
+     "power_dependent_affected": 23937,
+     "lacking_shelter": 5777,
+     "worst_county_fips": "13135",
+     "worst_county_name": "Gwinnett"
+    },
+    {
+     "rank": 9,
+     "parent_storm": "Andrew 1992",
+     "shift_km": 20.7,
+     "category_change": 1,
+     "speed_factor": 1.2,
+     "size_factor": 1.19,
+     "category_near_georgia": 1,
+     "outside_support": false,
+     "power_dependent_affected": 23486,
+     "lacking_shelter": 5916,
+     "worst_county_fips": "13121",
+     "worst_county_name": "Fulton"
+    },
+    {
+     "rank": 10,
+     "parent_storm": "Helene 2024",
+     "shift_km": -82.8,
+     "category_change": 0,
+     "speed_factor": 0.88,
+     "size_factor": 1.07,
+     "category_near_georgia": 4,
+     "outside_support": false,
+     "power_dependent_affected": 23469,
+     "lacking_shelter": 5666,
+     "worst_county_fips": "13121",
+     "worst_county_name": "Fulton"
+    }
+   ],
+   "note": null
+  },
+  "planner_updates": {
+   "status": "ok",
+   "source": "scenario_site_updates",
+   "figures": [],
+   "items": [],
+   "note": "No planner updates in effect."
+  },
+  "could_not_tell": {
+   "status": "not_applicable",
+   "source": "",
+   "figures": [],
+   "items": [],
+   "note": null,
+   "reason": "Record gaps are counted per county."
+  },
+  "audit": {
+   "status": "not_applicable",
+   "source": "",
+   "figures": [],
+   "items": [],
+   "note": null,
+   "reason": "The audit compares a county plan's ranked tracts."
+  }
+ },
+ "source": "Simulated \u00b7 storm exposure from NOAA IBTrACS tracks since 1950; outage response fitted on EAGLE-I labels (35 storms 2016-2025, 7,808 county-storm rows; held-out storms: 79% of counties inside the 10-90 range) (scenario_season_county)"
+}

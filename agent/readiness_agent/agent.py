@@ -28,11 +28,13 @@ from .scenario_tools import (
     county_plan,
     county_storm_profile,
     gap_sensitivity,
+    get_report,
     recommend_sites,
     record_site_update,
     run_scenario,
     season_conditions,
     season_county_risk,
+    state_plan,
 )
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-edc952746633")
@@ -105,6 +107,11 @@ Tools:
 - For "what does this season look like" or the current conditions, call season_conditions and
   report its inputs with their sources and dates, the blended outlook with its range and weights,
   and its back-test.
+- Reports come in four scopes with one shape (report.sections): county_plan for a county,
+  state_plan for Georgia, run_scenario with run_index for one simulated run, and run_scenario
+  with draws=N for N runs. Prepared reports load instantly with get_report(report_id); call
+  get_report() with no id to list them. Write reports from report.sections only, with each figure's
+  provenance and range; say "not determined" for a section marked not_determined.
 - For a county's season plan (outage frequency, outlooks, generator what-ifs), call county_plan
   once. It already contains build_readiness_brief's result, so do not call both. Write from its
   sections and say "not determined" for any section marked not_determined.
@@ -227,6 +234,8 @@ root_agent = Agent(
                 season_county_risk,
                 gap_sensitivity,
                 county_plan,
+                get_report,
+                state_plan,
                 record_site_update,
                 recommend_sites,
                 county_storm_profile,
