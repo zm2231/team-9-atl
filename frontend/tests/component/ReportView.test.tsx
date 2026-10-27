@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import ReportView from "../../src/components/chat/ReportView";
 import type { Report } from "../../src/lib/types";
@@ -16,5 +16,13 @@ describe("ReportView", () => {
   it("shows the reason for sections that do not apply", () => {
     render(<ReportView report={run as unknown as Report} />);
     expect(screen.getByText("Ask for a county plan for tracts and facilities.")).toBeTruthy();
+  });
+
+  it("expands to full screen and closes with Escape", () => {
+    render(<ReportView report={county as unknown as Report} />);
+    fireEvent.click(screen.getByRole("button", { name: "Open report full screen" }));
+    expect(screen.getByTestId("report").className).toContain("report--expanded");
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.getByTestId("report").className).not.toContain("report--expanded");
   });
 });

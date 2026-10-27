@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { Report, ReportFigure } from "../../lib/types";
 
 const TITLES: Record<string, string> = {
@@ -31,11 +32,32 @@ function figureValue(f: ReportFigure): string {
 }
 
 export default function ReportView({ report }: { report: Report }) {
+  const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setExpanded(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [expanded]);
   return (
-    <section className="report" data-testid="report" aria-label={`${report.scope} report`}>
+    <section
+      className={expanded ? "report report--expanded" : "report"}
+      data-testid="report"
+      aria-label={`${report.scope} report`}
+      aria-modal={expanded || undefined}
+      role={expanded ? "dialog" : undefined}
+    >
       <div className="report__head">
         Report · {report.scope}
         {report.season?.label && <span className="report__season"> · {report.season.label}</span>}
+        <button
+          type="button"
+          className="btn report__expand"
+          onClick={() => setExpanded((v) => !v)}
+          aria-label={expanded ? "Close full-screen report" : "Open report full screen"}
+        >
+          {expanded ? "✕ Close" : "⤢ Expand"}
+        </button>
       </div>
       {Object.entries(report.sections).map(([key, s]) => (
         <div key={key} className="report__section" data-status={s.status}>
