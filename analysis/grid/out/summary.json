@@ -658,6 +658,20 @@
       "last_within_800km_utc": "2025-07-07 12:00"
     }
   ],
+  "storms_after_eaglei_coverage": [
+    {
+      "sid": "2026199N26277",
+      "storm": "Bertha",
+      "season": 2026,
+      "closest_km_to_ga": 237.2
+    },
+    {
+      "sid": "2026278N22264",
+      "storm": "Isaias",
+      "season": 2026,
+      "closest_km_to_ga": 101.6
+    }
+  ],
   "storm_rows": [
     {
       "state": "Florida",

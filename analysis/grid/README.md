@@ -18,8 +18,11 @@ The build checks:
 - every censored restore time that feeds a tier is at least the LOW threshold;
 - every non-key column has `_status` and `_rule` companions, with values from the vocabulary in `build_grid.py`.
 
-The test recomputes the published EAGLE-I storm summary (`ga_fl_storm_outage_summary.parquet`, 9 storms × 226
-counties) from the 15-minute file with that summary's own windows and requires every field to match. Every
+One test recomputes the published EAGLE-I storm summary (`ga_fl_storm_outage_summary.parquet`, 9 storms ×
+226 counties = 2,034 rows) from the 15-minute file with that summary's own windows. It requires the same
+2,034 rows and the same value in every field the summary and the recomputation share. A second test checks,
+on synthetic data, how statewide gaps, null values, the window-start value and the passage-limited peak are
+handled. Every
 number below is in `out/summary.json`, written by the same run, which also records the SHA-256 of each input.
 
 ## Outputs
@@ -40,7 +43,8 @@ is also in `summary.json`. Precedence: `unrecorded` > `suspect` > `low_data` > `
 
 **Rule (`ibtracs_storm_list`).** Every IBTrACS v04r01 North Atlantic storm (main track) from seasons 2018–2025
 with a track point within **250 km of the Georgia state polygon** (`dist_ga_km` in the IBTrACS extract). EAGLE-I
-ends on 2025-12-31, so the two 2026 storms in the extract are out. The same storms apply to Florida's
+ends on 2025-12-31, so storms from later seasons that meet the distance rule are out
+(`storms_after_eaglei_coverage` in `summary.json`: Bertha 2026 and Isaias 2026). The same storms apply to Florida's
 counties; Florida-only storms that never came within 250 km of Georgia are not in the list (Milton 2024 is
 one).
 

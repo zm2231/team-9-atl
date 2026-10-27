@@ -433,6 +433,11 @@ def summarize(con) -> dict:
           SELECT sid, storm, season, closest_km_to_ga, max_wind_kt, window_start_local, window_end_local,
                  strftime(timezone('UTC', last_within_800km), '%Y-%m-%d %H:%M') AS last_within_800km_utc
           FROM storm_list ORDER BY first_within_800km"""),
+        "storms_after_eaglei_coverage": rows(con, f"""
+          SELECT SID AS sid, upper(NAME[1]) || lower(NAME[2:]) AS storm, any_value(SEASON) AS season,
+                 round(min(dist_ga_km), 1) AS closest_km_to_ga
+          FROM read_parquet('{IBTRACS}') WHERE SEASON > {STORM_SEASONS[1]}
+          GROUP BY SID, NAME HAVING min(dist_ga_km) <= {STORM_DISTANCE_KM} ORDER BY sid"""),
         "storm_rows": rows(con, """
           SELECT state, count(*) AS rows, count(DISTINCT fips_code) AS counties, count(DISTINCT sid) AS storms
           FROM county_storm_outages GROUP BY 1 ORDER BY 1"""),
