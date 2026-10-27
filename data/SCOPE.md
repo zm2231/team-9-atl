@@ -34,23 +34,39 @@ The hardest pre-season calls for medically fragile residents are: who loses powe
 | Live operations, dispatch, any active storm | Maps grounding terms forbid emergency response; this is planning weeks ahead |
 | Forecasting a real storm's track | NHC's job; we model plausible storms |
 | Individuals or addresses | County counts only |
-| Storm surge, rain flooding, tornadoes as separate hazards | No time to model; SLOSH zones are shown as context |
+| Rain flooding and tornadoes as modelled hazards | No time-resolved data we can model in time; NCEI reports shown as context. Surge is in scope, tied to the storm clock |
 | How long restoration takes | Peak outage only |
-| Car-by-car traffic simulation, route choice | Cannot be calibrated in time; three movement layers instead |
+| Car-by-car traffic, individual route choice | Cannot be calibrated; corridor traffic is replayed from past evacuations instead |
 | Florida's own residents | Florida evacuees enter only as a share of Georgia capacity they take |
 | Modelling the nursing-home evacuate-or-stay decision | Generator status is unrecorded; it is a fix-list item |
 | Wind accuracy beyond the parametric field | No observed wind data; the model is checked against outages instead |
 | Storing Routes or Maps results | Maps terms; computed live per request |
+
+## Hazards over time
+
+| Hazard | How it enters | Clock | Data |
+|---|---|---|---|
+| Wind and power | County outage range from the model | Hour tropical-storm winds reach each county | IBTrACS, EAGLE-I |
+| Storm surge | Shelters and dialysis centres in the chosen category's surge zone drop out; coastal route segments in the zone close | At tropical-storm wind arrival on the coast | NOAA SLOSH Georgia basin, Cat 1-5 |
+| Rain flooding, tornadoes | Context only | none | NCEI Storm Events |
 
 ## Movement and congestion
 
 | Layer | What | Source |
 |---|---|---|
 | Live drive time | County to shortlisted receiving site, live per request, never stored | Routes API (enabled; Cloud Run account needs `serviceusage.serviceUsageConsumer`) |
-| Evacuation congestion | Routes time x (1 + 0.15 (v/c)^4). Capacity about 2,000 vehicles per hour per lane, I-16 contraflow. Load = background + county departures + Florida inflow by origin (Gulf to I-75; peninsula to I-75 and I-95; Atlantic to I-16 and I-95), low/base/high | g-flow corridor model; GDOT's measured Milton surge on I-75 as a direction check |
+| Evacuation traffic, replayed from history | Corridor queue on I-75 S, I-16 (contraflow), I-95: departures timed from past order timelines (Irma first reported 96 h before TS winds, effective 35 h, contraflow 35 h; Dorian 41 h / 21 h), surge size from GDOT measurements (Milton I-75 NB +280% / +342%, I-95 +264%), normal volume from GDOT counts (to pull). Queue = previous + arrivals - capacity, never below zero; low/base/high | `ga_evacuation_orders`, GDOT, g-flow corridor model |
 | Storm deadline | Travel must finish before tropical-storm winds reach the county | each simulated track |
 
 The season view uses the deadline and straight-line reach. The single-storm view adds live Routes and congestion.
+
+## Agent architecture (built on what is deployed)
+
+- **One ADK agent, not multi-agent.** Gemini 3 runs Maps grounding and function tools in one agent (verified in `agent/README.md`, already true on `main`). A Maps-only sub-agent in `AgentTool` is the fallback only if the model is pinned to 2.5.
+- **No custom MCP server.** The challenge requires consuming a Google-managed MCP server (BigQuery's, already wired) and says not to author one. Our logic ships as Python function tools.
+- **Existing:** `google_maps_grounding`, BigQuery MCP `execute_sql_readonly`, four function tools, `before_agent_callback` for map data.
+- **New:** `run_scenario` (numpy engine, reads the drawn track from `CONTEXT v1`, live Routes), `season_county_risk`, `gap_sensitivity`.
+- **Numbers come from tools, never the model.** The model picks tools, explains, and acts on Maps grounding.
 
 ## What the numbers can and cannot claim
 
@@ -77,6 +93,7 @@ Full list in `CLAIMS.md`. The ones that shape the demo:
 - Each storm is predicted with that storm held out: 10th-90th range holds at least 75% of held-out counties.
 - Season back-test: for at least 80% of counties, the observed 2018-2025 count of storms causing 25%+ outage falls inside the model's 10th-90th range.
 - The deployed agent answers a drawn-track scenario in under 10 seconds and a season question in under 5. Routes failure degrades to straight-line and never fails a turn.
+- Replayed traffic base case reproduces the direction and rough size of GDOT's measured Milton surge on I-75.
 - `pytest -q` passes without credentials, and codex-review returns SHIP.
 
 ## Timeline to the 16:15 freeze
