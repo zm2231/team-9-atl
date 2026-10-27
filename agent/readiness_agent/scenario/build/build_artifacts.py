@@ -26,10 +26,10 @@ EM_ITERS = 8
 LOSO_DRAWS = 1000
 SEED = 20261027
 BIG_STORM_SHARE = 0.10
-LABEL_TABLE = os.getenv("OUTAGE_LABEL_TABLE", "county_storm_outages")
+LABEL_TABLE = os.getenv("OUTAGE_LABEL_TABLE", "ext_eaglei_county_storm_2014_2025")
 MIN_COVERAGE = 0.5
 BASELINE = {
-    "model": "five exposure inputs, county and storm effects (27 storms, 6,075 rows)",
+    "model": "five exposure inputs, county and storm effects, county_storm_outages (27 storms, 6,075 rows)",
     "mae": 0.0419, "median_mae": 0.0359, "inside_10_90": 0.7789, "big_storm_mae": 0.1374,
     "big_storm_inside_10_90": 0.7523, "big_storm_bias": -0.0801,
 }
@@ -208,10 +208,10 @@ def label_query(bq: bigquery.Client) -> list:
             AND eaglei_total_customers_2024 > 0
           ORDER BY sid, fips_code""")
     return query(bq, f"""
-      SELECT fips_code, sid, peak_share, covered_customers AS customers
+      SELECT fips_code, sid, peak_share_total AS peak_share, total_customers AS customers
       FROM {table(LABEL_TABLE)}
-      WHERE peak_share_status = 'recorded' AND peak_share IS NOT NULL
-        AND covered_customers > 0 AND (coverage IS NULL OR coverage >= @min_coverage)
+      WHERE peak_share_status != 'suspect' AND peak_share_total IS NOT NULL
+        AND total_customers > 0 AND (coverage IS NULL OR coverage >= @min_coverage)
       ORDER BY sid, fips_code""",
       bigquery.ScalarQueryParameter("min_coverage", "FLOAT64", MIN_COVERAGE))
 

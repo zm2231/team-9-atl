@@ -2,8 +2,8 @@
  "events": 3200,
  "historical_events": 800,
  "synthetic_events": 2400,
- "synthetic_outside_support": 126,
- "historical_outside_support": 40,
+ "synthetic_outside_support": 117,
+ "historical_outside_support": 36,
  "rules": {
   "cross_track_shift_km": "normal, sd 50, clipped to +-150, perpendicular to heading",
   "category_change": "-1 / 0 / +1 with probability 0.25 / 0.5 / 0.25 at the peak near Georgia, to the next category's midpoint, never above the storm's own lifetime peak",
@@ -28,57 +28,57 @@
  "season_historical_only": {
   "statewide": {
    "pd_affected": {
-    "p50": 4639,
-    "p90": 11734,
-    "p99": 23796
+    "p50": 6292,
+    "p90": 16618,
+    "p99": 31927
    },
    "lacking_shelter": {
-    "p50": 851,
-    "p90": 2288,
-    "p99": 5552
+    "p50": 1174,
+    "p90": 3325,
+    "p99": 7393
    }
   },
   "top_counties": [
    {
-    "county_fips": "13121",
-    "county_name": "Fulton",
-    "lacking_shelter": {
-     "p50": 33,
-     "p90": 221,
-     "p99": 653
-    },
-    "power_dependent_affected": {
-     "p50": 165,
-     "p90": 1107,
-     "p99": 3265
-    }
-   },
-   {
     "county_fips": "13089",
     "county_name": "Dekalb",
     "lacking_shelter": {
-     "p50": 29,
-     "p90": 197,
-     "p99": 537
+     "p50": 77,
+     "p90": 443,
+     "p99": 971
     },
     "power_dependent_affected": {
-     "p50": 146,
-     "p90": 985,
-     "p99": 2685
+     "p50": 387,
+     "p90": 2215,
+     "p99": 4110
+    }
+   },
+   {
+    "county_fips": "13121",
+    "county_name": "Fulton",
+    "lacking_shelter": {
+     "p50": 52,
+     "p90": 412,
+     "p99": 1127
+    },
+    "power_dependent_affected": {
+     "p50": 258,
+     "p90": 2060,
+     "p99": 4863
     }
    },
    {
     "county_fips": "13135",
     "county_name": "Gwinnett",
     "lacking_shelter": {
-     "p50": 27,
-     "p90": 190,
-     "p99": 418
+     "p50": 43,
+     "p90": 344,
+     "p99": 649
     },
     "power_dependent_affected": {
-     "p50": 137,
-     "p90": 951,
-     "p99": 2090
+     "p50": 214,
+     "p90": 1720,
+     "p99": 3243
     }
    },
    {
@@ -86,97 +86,97 @@
     "county_name": "Chatham",
     "lacking_shelter": {
      "p50": 0,
-     "p90": 150,
-     "p99": 399
+     "p90": 318,
+     "p99": 423
     },
     "power_dependent_affected": {
-     "p50": 77,
-     "p90": 704,
-     "p99": 1986
+     "p50": 142,
+     "p90": 1300,
+     "p99": 2174
     }
    },
    {
     "county_fips": "13127",
     "county_name": "Glynn",
     "lacking_shelter": {
-     "p50": 10,
-     "p90": 122,
-     "p99": 220
+     "p50": 16,
+     "p90": 157,
+     "p99": 269
     },
     "power_dependent_affected": {
-     "p50": 33,
-     "p90": 272,
-     "p99": 677
+     "p50": 53,
+     "p90": 460,
+     "p99": 843
     }
    },
    {
     "county_fips": "13215",
     "county_name": "Muscogee",
     "lacking_shelter": {
-     "p50": 13,
-     "p90": 90,
-     "p99": 618
-    },
-    "power_dependent_affected": {
-     "p50": 64,
-     "p90": 449,
-     "p99": 1216
-    }
-   },
-   {
-    "county_fips": "13039",
-    "county_name": "Camden",
-    "lacking_shelter": {
-     "p50": 6,
-     "p90": 82,
-     "p99": 176
-    },
-    "power_dependent_affected": {
      "p50": 20,
-     "p90": 160,
-     "p99": 517
+     "p90": 134,
+     "p99": 695
+    },
+    "power_dependent_affected": {
+     "p50": 99,
+     "p90": 669,
+     "p99": 1643
     }
    },
    {
     "county_fips": "13139",
     "county_name": "Hall",
     "lacking_shelter": {
-     "p50": 10,
-     "p90": 75,
-     "p99": 253
+     "p50": 14,
+     "p90": 118,
+     "p99": 386
     },
     "power_dependent_affected": {
-     "p50": 51,
-     "p90": 376,
-     "p99": 1262
-    }
-   },
-   {
-    "county_fips": "13063",
-    "county_name": "Clayton",
-    "lacking_shelter": {
-     "p50": 10,
-     "p90": 71,
-     "p99": 167
-    },
-    "power_dependent_affected": {
-     "p50": 50,
-     "p90": 357,
-     "p99": 837
+     "p50": 68,
+     "p90": 592,
+     "p99": 1397
     }
    },
    {
     "county_fips": "13021",
     "county_name": "Bibb",
     "lacking_shelter": {
-     "p50": 7,
-     "p90": 62,
-     "p99": 351
+     "p50": 8,
+     "p90": 99,
+     "p99": 507
     },
     "power_dependent_affected": {
-     "p50": 33,
-     "p90": 310,
-     "p99": 1431
+     "p50": 41,
+     "p90": 496,
+     "p99": 1728
+    }
+   },
+   {
+    "county_fips": "13067",
+    "county_name": "Cobb",
+    "lacking_shelter": {
+     "p50": 12,
+     "p90": 96,
+     "p99": 322
+    },
+    "power_dependent_affected": {
+     "p50": 62,
+     "p90": 479,
+     "p99": 1612
+    }
+   },
+   {
+    "county_fips": "13039",
+    "county_name": "Camden",
+    "lacking_shelter": {
+     "p50": 8,
+     "p90": 95,
+     "p99": 190
+    },
+    "power_dependent_affected": {
+     "p50": 27,
+     "p90": 257,
+     "p99": 546
     }
    }
   ]
@@ -184,57 +184,57 @@
  "season_with_synthetic": {
   "statewide": {
    "pd_affected": {
-    "p50": 4904,
-    "p90": 12435,
-    "p99": 26693
+    "p50": 6491,
+    "p90": 17101,
+    "p99": 32313
    },
    "lacking_shelter": {
-    "p50": 897,
-    "p90": 2444,
-    "p99": 6279
+    "p50": 1205,
+    "p90": 3391,
+    "p99": 7996
    }
   },
   "top_counties": [
    {
-    "county_fips": "13121",
-    "county_name": "Fulton",
-    "lacking_shelter": {
-     "p50": 37,
-     "p90": 237,
-     "p99": 861
-    },
-    "power_dependent_affected": {
-     "p50": 183,
-     "p90": 1185,
-     "p99": 4167
-    }
-   },
-   {
     "county_fips": "13089",
     "county_name": "Dekalb",
     "lacking_shelter": {
-     "p50": 30,
-     "p90": 215,
-     "p99": 664
+     "p50": 78,
+     "p90": 482,
+     "p99": 1085
     },
     "power_dependent_affected": {
-     "p50": 150,
-     "p90": 1076,
-     "p99": 3270
+     "p50": 388,
+     "p90": 2412,
+     "p99": 4352
+    }
+   },
+   {
+    "county_fips": "13121",
+    "county_name": "Fulton",
+    "lacking_shelter": {
+     "p50": 56,
+     "p90": 441,
+     "p99": 1148
+    },
+    "power_dependent_affected": {
+     "p50": 279,
+     "p90": 2203,
+     "p99": 4920
     }
    },
    {
     "county_fips": "13135",
     "county_name": "Gwinnett",
     "lacking_shelter": {
-     "p50": 27,
-     "p90": 190,
-     "p99": 688
+     "p50": 46,
+     "p90": 339,
+     "p99": 916
     },
     "power_dependent_affected": {
-     "p50": 137,
-     "p90": 948,
-     "p99": 3268
+     "p50": 231,
+     "p90": 1694,
+     "p99": 4220
     }
    },
    {
@@ -242,103 +242,103 @@
     "county_name": "Chatham",
     "lacking_shelter": {
      "p50": 0,
-     "p90": 150,
-     "p99": 401
+     "p90": 318,
+     "p99": 427
     },
     "power_dependent_affected": {
-     "p50": 76,
-     "p90": 773,
-     "p99": 2052
+     "p50": 138,
+     "p90": 1266,
+     "p99": 2156
     }
    },
    {
     "county_fips": "13127",
     "county_name": "Glynn",
     "lacking_shelter": {
-     "p50": 11,
-     "p90": 131,
-     "p99": 276
+     "p50": 18,
+     "p90": 160,
+     "p99": 297
     },
     "power_dependent_affected": {
-     "p50": 34,
-     "p90": 313,
-     "p99": 838
+     "p50": 55,
+     "p90": 460,
+     "p99": 907
     }
    },
    {
     "county_fips": "13215",
     "county_name": "Muscogee",
     "lacking_shelter": {
-     "p50": 12,
-     "p90": 88,
-     "p99": 654
+     "p50": 17,
+     "p90": 129,
+     "p99": 717
     },
     "power_dependent_affected": {
-     "p50": 61,
-     "p90": 439,
-     "p99": 1385
+     "p50": 86,
+     "p90": 643,
+     "p99": 1680
     }
    },
    {
-    "county_fips": "13039",
-    "county_name": "Camden",
+    "county_fips": "13067",
+    "county_name": "Cobb",
     "lacking_shelter": {
-     "p50": 6,
-     "p90": 85,
-     "p99": 190
+     "p50": 13,
+     "p90": 116,
+     "p99": 466
     },
     "power_dependent_affected": {
-     "p50": 23,
-     "p90": 227,
-     "p99": 563
+     "p50": 63,
+     "p90": 579,
+     "p99": 2330
     }
    },
    {
     "county_fips": "13139",
     "county_name": "Hall",
     "lacking_shelter": {
-     "p50": 10,
-     "p90": 75,
-     "p99": 275
+     "p50": 13,
+     "p90": 112,
+     "p99": 410
     },
     "power_dependent_affected": {
-     "p50": 50,
-     "p90": 376,
-     "p99": 1343
+     "p50": 66,
+     "p90": 560,
+     "p99": 1840
     }
    },
    {
-    "county_fips": "13063",
-    "county_name": "Clayton",
+    "county_fips": "13039",
+    "county_name": "Camden",
     "lacking_shelter": {
      "p50": 10,
-     "p90": 72,
-     "p99": 221
+     "p90": 105,
+     "p99": 196
     },
     "power_dependent_affected": {
-     "p50": 52,
-     "p90": 361,
-     "p99": 1107
+     "p50": 33,
+     "p90": 317,
+     "p99": 587
     }
    },
    {
-    "county_fips": "13045",
-    "county_name": "Carroll",
+    "county_fips": "13021",
+    "county_name": "Bibb",
     "lacking_shelter": {
      "p50": 9,
-     "p90": 67,
-     "p99": 234
+     "p90": 93,
+     "p99": 415
     },
     "power_dependent_affected": {
      "p50": 44,
-     "p90": 336,
-     "p99": 1170
+     "p90": 463,
+     "p99": 1670
     }
    }
   ]
  },
  "backtest_share_inside": {
-  "historical_only": 0.736,
-  "with_synthetic": 0.748
+  "historical_only": 0.805,
+  "with_synthetic": 0.805
  }
 }
