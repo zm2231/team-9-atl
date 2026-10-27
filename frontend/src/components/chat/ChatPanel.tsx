@@ -55,6 +55,7 @@ export default function ChatPanel() {
       await streamChat({
         question,
         context,
+        onSession: (sessionId) => dispatch({ type: "chatSession", sessionId }),
         onEvent: (e: AgentEvent) => {
           acc = foldEvent(acc, e);
           update({

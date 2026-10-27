@@ -148,3 +148,13 @@ describe("history reducer (T012)", () => {
     expect(d.currentScenarioId).toBeNull();
   });
 });
+
+describe("agent session on the current scenario", () => {
+  it("records the session the current scenario's questions went to", () => {
+    const s = run([
+      { type: "setTrack", track: glynn, id: "a", now: iso(1) },
+      { type: "chatSession", sessionId: "sess-1" },
+    ]);
+    expect(s.history[0].session_id).toBe("sess-1");
+  });
+});

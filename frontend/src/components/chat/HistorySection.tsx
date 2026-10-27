@@ -56,7 +56,7 @@ function HistoryItem({ s, current, busy, now }: { s: SavedScenario; current: boo
           onClick={() => {
             if (current) return;
             dispatch({ type: "openScenario", id: s.id });
-            resetChatSession();
+            resetChatSession(s.session_id);
           }}
         >
           <span className="history-item__name">{s.name}</span>

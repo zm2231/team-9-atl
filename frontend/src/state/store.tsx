@@ -88,6 +88,7 @@ export type Action =
   | { type: "setDrawing"; drawing: boolean }
   | { type: "setDetailsOpen"; open: boolean }
   | { type: "chatStart"; exchange: ChatExchange; now?: string }
+  | { type: "chatSession"; sessionId: string }
   | { type: "chatUpdate"; id: string; patch: Partial<ChatExchange> }
   | { type: "liveCheck"; shelterId: string; status: LiveCheckStatus; placeIds: string[] }
   | { type: "wheelchairChecked"; results: WheelchairCheck[] };
@@ -210,6 +211,11 @@ export function reducer(state: State, action: Action): State {
       return { ...state, drawing: action.drawing };
     case "setDetailsOpen":
       return { ...state, detailsOpen: action.open };
+    case "chatSession":
+      return {
+        ...state,
+        history: updateCurrent(state, (h) => (h.session_id === action.sessionId ? h : { ...h, session_id: action.sessionId })),
+      };
     case "chatStart": {
       const now = action.now ?? new Date().toISOString();
       const text = toSavedQuestionText(action.exchange.question);

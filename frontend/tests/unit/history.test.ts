@@ -4,6 +4,7 @@ import {
   MAX_SCENARIOS,
   STORAGE_KEY,
   abbreviateCounties,
+  isValidScenario,
   capHistory,
   defaultName,
   isValidDocument,
@@ -146,5 +147,13 @@ describe("SC-005: nothing computed and no Maps content is ever stored (T007 g)",
     }
     expect(raw).not.toContain("Google Maps");
     expect(isValidDocument(JSON.parse(raw))).toBe(true);
+  });
+});
+
+describe("saved session ids", () => {
+  it("accepts a well-formed session_id and rejects a malformed one", () => {
+    const base = JSON.parse(JSON.stringify(scenario("s1", 1)));
+    expect(isValidScenario({ ...base, session_id: "123456789" })).toBe(true);
+    expect(isValidScenario({ ...base, session_id: "bad id!" })).toBe(false);
   });
 });

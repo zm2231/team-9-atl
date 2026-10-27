@@ -4,9 +4,9 @@ import type { LineString, Point } from "geojson";
 import type { Category } from "./types";
 
 export const STORAGE_KEY = "gsr.scenarioHistory.v1";
-export const MAX_SCENARIOS = 50;
-export const MAX_QUESTIONS = 100;
-export const MAX_QUESTION_CHARS = 2000;
+export const MAX_SCENARIOS = 20;
+export const MAX_QUESTIONS = 30;
+export const MAX_QUESTION_CHARS = 500;
 export const MAX_NAME_CHARS = 80;
 
 export interface SavedQuestion {
@@ -25,11 +25,13 @@ export interface SavedScenario {
   created_at: string;
   updated_at: string;
   last_opened_at: string;
+  /** The agent session this scenario's questions went to; reopening continues it. */
+  session_id?: string;
 }
 
 const SCENARIO_KEYS = new Set([
   "id", "name", "nameIsCustom", "track", "category", "cutoff_km", "questions",
-  "created_at", "updated_at", "last_opened_at",
+  "created_at", "updated_at", "last_opened_at", "session_id",
 ]);
 
 const isObj = (x: unknown): x is Record<string, unknown> => !!x && typeof x === "object" && !Array.isArray(x);
@@ -65,7 +67,8 @@ export function isValidScenario(s: unknown): s is SavedScenario {
     [1, 2, 3, 4, 5].includes(s.category as number) &&
     typeof s.cutoff_km === "number" && s.cutoff_km >= 25 && s.cutoff_km <= 200 &&
     Array.isArray(s.questions) && s.questions.length <= MAX_QUESTIONS && s.questions.every(isQuestion) &&
-    isIso(s.created_at) && isIso(s.updated_at) && isIso(s.last_opened_at)
+    isIso(s.created_at) && isIso(s.updated_at) && isIso(s.last_opened_at) &&
+    (s.session_id === undefined || (typeof s.session_id === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(s.session_id)))
   );
 }
 
