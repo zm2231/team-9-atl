@@ -23,7 +23,13 @@ from .evacuation_tools import (
     record_live_check,
 )
 from .readiness_brief import build_readiness_brief
-from .scenario_tools import county_plan, gap_sensitivity, run_scenario, season_county_risk
+from .scenario_tools import (
+    county_plan,
+    gap_sensitivity,
+    run_scenario,
+    season_conditions,
+    season_county_risk,
+)
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "qwiklabs-gcp-04-edc952746633")
 DATASET_ID = os.getenv("EVAC_DATASET", "evac_prod")
@@ -82,9 +88,15 @@ Tools:
   receiving list carry a ccn, name and county; ground them with Google Maps by name and county,
   never through get_shelters.
 - For season-long risk use season_county_risk; for what to fix first use gap_sensitivity. Its
-  outlook defaults to long_run; use another outlook only when asked, and quote its outlook_note,
-  which says whether that outlook beat the long run in the 2018-2025 back-test. noaa_aug_2026 is
-  an outside forecast input: name NOAA's August 2026 outlook as its source.
+  outlook defaults to auto, which works the outlook out from current NOAA conditions and keeps
+  only the rest of the season. Never ask the planner for a forecast or for storm counts. Quote
+  the auto outlook_note: it names every input with its date, says what share of the season
+  remains, and says whether the conditions model beat the long run in its back-test. Use
+  long_run, recent, la_nina, neutral, el_nino or noaa_aug_2026 only when asked, and quote their
+  outlook_note. noaa_aug_2026 is an outside forecast input: name NOAA's August 2026 outlook.
+- For "what does this season look like" or the current conditions, call season_conditions and
+  report its inputs with their sources and dates, the blended outlook with its range and weights,
+  and its back-test.
 - For a county's season plan (outage frequency, outlooks, generator what-ifs), call county_plan
   once. It already contains build_readiness_brief's result, so do not call both. Write from its
   sections and say "not determined" for any section marked not_determined.
@@ -163,6 +175,7 @@ root_agent = Agent(
         get_shelters,
         record_live_check,
         run_scenario,
+        season_conditions,
         season_county_risk,
         gap_sensitivity,
         county_plan,

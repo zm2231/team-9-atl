@@ -1,0 +1,317 @@
+{
+ "years": [
+  1950,
+  2025
+ ],
+ "storms_per_year": 2.632,
+ "hurricane_share": 0.24,
+ "major_share": 0.085,
+ "count_family": "poisson",
+ "count_family_reason": "the family with the better leave-one-season-out log score for long_run",
+ "predictors": {
+  "oni": {
+   "source": "NOAA CPC Oceanic Nino Index, Aug-Oct season (data/oni.txt)",
+   "mean": 0.016052631578947367,
+   "sd": 0.7865933861434723
+  },
+  "tna": {
+   "source": "NOAA PSL Tropical North Atlantic index (SST anomaly 5.5-23.5N, 15-57.5W, HadISST, 1991-2020 base), used as the Atlantic Main Development Region SST anomaly",
+   "url": "https://psl.noaa.gov/data/correlation/tna.data",
+   "mean": -0.19171052631578944,
+   "sd": 0.3633331294949744
+  }
+ },
+ "oni_only_per_unit": {
+  "rate_ratio": 0.874,
+  "ci95": [
+   0.729,
+   1.048
+  ],
+  "p": 0.145
+ },
+ "long_run_county_coverage_2018_2025": 0.711,
+ "models": [
+  {
+   "predictors": [
+    "long_run"
+   ],
+   "loso_log_score": {
+    "poisson": -146.637,
+    "negbin": -147.472
+   },
+   "loso_share_log_score": {
+    "hurricane": -68.215,
+    "major": -25.598
+   },
+   "county_coverage_2018_2025": 0.7107,
+   "count": {
+    "coef": [
+     0.9675840262617056
+    ],
+    "cov": [
+     [
+      0.005
+     ]
+    ],
+    "rate_ratio_per_sd": {},
+    "negbin_size": 15.625000000000009
+   },
+   "hurricane_share": {
+    "coef": [
+     -1.1526795099383855
+    ],
+    "cov": [
+     [
+      0.027412280701754388
+     ]
+    ]
+   },
+   "major_share": {
+    "coef": [
+     -0.6007738604289301
+    ],
+    "cov": [
+     [
+      0.09108159392789374
+     ]
+    ]
+   }
+  },
+  {
+   "predictors": [
+    "oni"
+   ],
+   "loso_log_score": {
+    "poisson": -146.677,
+    "negbin": -147.449
+   },
+   "loso_share_log_score": {
+    "hurricane": -69.187,
+    "major": -26.541
+   },
+   "county_coverage_2018_2025": 0.7233,
+   "count": {
+    "coef": [
+     0.9620555070706618,
+     -0.10614955928494003
+    ],
+    "cov": [
+     [
+      0.005056389665398069,
+      0.0005465717745186413
+     ],
+     [
+      0.0005465717745186414,
+      0.005297791760096134
+     ]
+    ],
+    "rate_ratio_per_sd": {
+     "oni": 0.899
+    },
+    "negbin_size": 18.392675172734958
+   },
+   "hurricane_share": {
+    "coef": [
+     -1.162454199831451,
+     -0.08146246237661564
+    ],
+    "cov": [
+     [
+      0.028099062755032378,
+      0.004830944335935154
+     ],
+     [
+      0.004830944335935153,
+      0.03530943442431645
+     ]
+    ]
+   },
+   "major_share": {
+    "coef": [
+     -0.6293329398144003,
+     -0.16636643991342734
+    ],
+    "cov": [
+     [
+      0.09608275696540967,
+      0.02376605719828559
+     ],
+     [
+      0.023766057198285586,
+      0.12356656786432975
+     ]
+    ]
+   }
+  },
+  {
+   "predictors": [
+    "tna"
+   ],
+   "loso_log_score": {
+    "poisson": -147.98,
+    "negbin": -148.686
+   },
+   "loso_share_log_score": {
+    "hurricane": -68.457,
+    "major": -26.466
+   },
+   "county_coverage_2018_2025": 0.7233,
+   "count": {
+    "coef": [
+     0.9675671936528727,
+     0.005798866378480122
+    ],
+    "cov": [
+     [
+      0.005000168134675166,
+      -2.8944864249192437e-05
+     ],
+     [
+      -2.894486424919279e-05,
+      0.004982940999971529
+     ]
+    ],
+    "rate_ratio_per_sd": {
+     "tna": 1.006
+    },
+    "negbin_size": 15.633170032726296
+   },
+   "hurricane_share": {
+    "coef": [
+     -1.166280819562801,
+     0.22631777615770715
+    ],
+    "cov": [
+     [
+      0.0280353649615242,
+      -0.0033328846406637676
+     ],
+     [
+      -0.003332884640663767,
+      0.029342853309336964
+     ]
+    ]
+   },
+   "major_share": {
+    "coef": [
+     -0.6245655357433069,
+     0.12713467992320096
+    ],
+    "cov": [
+     [
+      0.09486710095134177,
+      -0.016458202299583204
+     ],
+     [
+      -0.0164582022995832,
+      0.07973300390411384
+     ]
+    ]
+   }
+  },
+  {
+   "predictors": [
+    "oni",
+    "tna"
+   ],
+   "loso_log_score": {
+    "poisson": -148.041,
+    "negbin": -148.679
+   },
+   "loso_share_log_score": {
+    "hurricane": -69.391,
+    "major": -27.595
+   },
+   "county_coverage_2018_2025": 0.7296,
+   "count": {
+    "coef": [
+     0.9619366440022648,
+     -0.1076241298537612,
+     0.01604520001375551
+    ],
+    "cov": [
+     [
+      0.005057499638848022,
+      0.0005529352242932379,
+      -7.806409247678914e-05
+     ],
+     [
+      0.0005529352242932379,
+      0.005332957166076022,
+      -0.0004709145169567406
+     ],
+     [
+      -7.806409247678887e-05,
+      -0.0004709145169567405,
+      0.005075060350313825
+     ]
+    ],
+    "rate_ratio_per_sd": {
+     "oni": 0.898,
+     "tna": 1.016
+    },
+    "negbin_size": 18.507163847791666
+   },
+   "hurricane_share": {
+    "coef": [
+     -1.177980441143892,
+     -0.09490063928491085,
+     0.23062468199880212
+    ],
+    "cov": [
+     [
+      0.028811934443693225,
+      0.005179355584577798,
+      -0.003598695217923816
+     ],
+     [
+      0.005179355584577798,
+      0.036218885657920086,
+      -0.0018211695857862605
+     ],
+     [
+      -0.0035986952179238117,
+      -0.0018211695857862592,
+      0.029420518571418433
+     ]
+    ]
+   },
+   "major_share": {
+    "coef": [
+     -0.6613583253533898,
+     -0.1903226050139872,
+     0.1484858436377181
+    ],
+    "cov": [
+     [
+      0.10142138102952672,
+      0.02731427776277534,
+      -0.0198922478896823
+     ],
+     [
+      0.027314277762775337,
+      0.12631448241344928,
+      -0.014413557339674752
+     ],
+     [
+      -0.0198922478896823,
+      -0.01441355733967475,
+      0.0822741464501061
+     ]
+    ]
+   }
+  }
+ ],
+ "selected": {
+  "storms": [
+   "long_run"
+  ],
+  "hurricane_share": [
+   "long_run"
+  ],
+  "major_share": [
+   "long_run"
+  ]
+ },
+ "method": "Poisson and negative-binomial regression of storms per season within 250 km of Georgia, and binomial regression of the hurricane and major-hurricane shares, on standardized Aug-Oct predictors. Each model is scored by leave-one-season-out log score against the intercept-only long_run model; a part uses predictors only when its out-of-sample score beats long_run. County coverage rescales the 2018-2025 long-run expected counts by the leave-one-season-out rate multipliers."
+}
