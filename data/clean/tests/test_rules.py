@@ -165,15 +165,12 @@ def test_every_appended_column_carries_status_and_rule(con):
     assert B.unprovenanced(con, "hazard_tracts") == ["extra"]
     assert B.unprovenanced(con, "power_dependent_counties") == []
     assert B.unprovenanced(con, "dialysis_centers") == []
-    statuses = {v for t in ("hazard_tracts", "power_dependent_counties", "dialysis_centers")
-                for (c,) in con.execute(f"SELECT column_name FROM (DESCRIBE {t})").fetchall() if c.endswith("_status")
-                and c not in B.SOURCE_COLUMNS[t]
-                for (v,) in con.execute(f"SELECT DISTINCT {c} FROM {t}").fetchall()}
-    assert statuses <= set(B.R.STATUSES)
-    rules = {v for t in ("hazard_tracts", "power_dependent_counties", "dialysis_centers")
-             for (c,) in con.execute(f"SELECT column_name FROM (DESCRIBE {t})").fetchall() if c.endswith("_rule")
-             for (v,) in con.execute(f"SELECT DISTINCT {c} FROM {t}").fetchall()}
-    assert rules <= set(B.R.RULES)
+    for t in ("hazard_tracts", "power_dependent_counties", "dialysis_centers"):
+        assert B.invalid_provenance(con, t) == {}
+    con.execute("UPDATE hazard_tracts SET evac_zone_status = 'guessed' WHERE geo_id = '13001000100'")
+    con.execute("UPDATE dialysis_centers SET coordinates_rule = 'made_up' WHERE ccn = '112500'")
+    assert B.invalid_provenance(con, "hazard_tracts") == {"evac_zone_status": ["guessed"]}
+    assert B.invalid_provenance(con, "dialysis_centers") == {"coordinates_rule": ["made_up"]}
 
 
 GAMAP = ["FACTYPE VARCHAR", "FACID VARCHAR", "NAME VARCHAR", "ADDRESS VARCHAR", "FAC_CITY VARCHAR", "FAC_ST VARCHAR",
@@ -235,6 +232,20 @@ def test_storm_match_status_and_history(con):
     assert st == {1: "external", 2: "imputed", 3: "unrecorded"}
     assert con.execute("SELECT storm_atcf_id, events, counties, deaths_direct, deaths_indirect, damage_property_usd "
                        "FROM storm_history").fetchall() == [("AL112017", 2, 1, 1, 1, 150.0)]
+
+
+def test_contraflow_points_get_county_and_zone(con):
+    table(con, "raw_contraflow", ["OBJECTID INTEGER", "Interstate VARCHAR", "Exit_Num VARCHAR", "CrossRoad VARCHAR",
+                                  "Type VARCHAR", "Comments VARCHAR", "lon DOUBLE", "lat DOUBLE"],
+          [[1, "I-16", "167", "MLK Blvd", "Exit", None, -82.0, 31.0],
+           [2, "I-16", "1", "I-75", "Exit", None, -84.0, 33.0]])
+    B.build_contraflow_intersections(con)
+    rows = con.execute("SELECT OBJECTID, county_fips, county_fips_status, evac_zone, evac_zone_status, record_status "
+                       "FROM contraflow_intersections ORDER BY OBJECTID").fetchall()
+    assert rows == [(1, "13003", "imputed", "A", "external", "external"),
+                    (2, "13001", "imputed", None, "external", "external")]
+    assert B.unprovenanced(con, "contraflow_intersections") == []
+    assert B.invalid_provenance(con, "contraflow_intersections") == {}
 
 
 SRC = Sources.from_env()

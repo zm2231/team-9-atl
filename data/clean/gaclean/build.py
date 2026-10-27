@@ -76,6 +76,20 @@ def unprovenanced(con, table: str) -> list[str]:
             and not {f"{PROVENANCE_GROUPS.get(c, c)}_status", f"{PROVENANCE_GROUPS.get(c, c)}_rule"} <= have]
 
 
+def invalid_provenance(con, table: str) -> dict[str, list]:
+    source = set(source_columns(con, table))
+    bad = {}
+    for (c,) in con.execute(f"SELECT column_name FROM (DESCRIBE {table})").fetchall():
+        if c in source or not c.endswith(("_status", "_rule")):
+            continue
+        allowed = R.STATUSES if c.endswith("_status") else tuple(R.RULES)
+        values = [v for (v,) in con.execute(f"SELECT DISTINCT {c} FROM {table} ORDER BY 1").fetchall()
+                  if v not in allowed]
+        if values:
+            bad[c] = values
+    return bad
+
+
 def lead(table: str, alias: str) -> str:
     return ", ".join(f'{alias}."{c}"' for c in BQ_COLUMNS[table])
 
@@ -450,6 +464,8 @@ def build_all(con) -> None:
     for table in (*TABLES, *HELD):
         missing = unprovenanced(con, table)
         assert not missing, f"{table}: columns without _status and _rule: {missing}"
+        bad = invalid_provenance(con, table)
+        assert not bad, f"{table}: unknown status or rule values: {bad}"
 
 
 def numbers(con) -> dict:
