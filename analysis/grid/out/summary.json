@@ -1,28 +1,58 @@
 {
+  "inputs": {
+    "eagle_i/ga_fl_storm_outage_summary.parquet": "f8e7795f95b6a57a854686d916892996d4a8b52f609e4400f87964a89a397c38",
+    "eia861/eia861_reliability_ga_fl.parquet": "82ac1b00169a686e7ef17c0cc18c8776a2c7ccbc7589daa4ad6ac3b20df509de",
+    "eia861/eia861_service_territory_ga_fl.parquet": "95c2d9cfe7541e12dd288a7339cff5ead58bb77be03de1daa6f97d483d23b048",
+    "oe417/oe417_ga_fl_weather_events.csv": "13d3cd8d470a82370f747bccca8450f7f07dea6d81883a43c1c35e1d5c9e689e",
+    "GA/power_dependent_counties/data.parquet": "ed2d07e9159b1d11576509c6b7fc0667e5694fa2ad5b0ef4587d65264cd48d1d"
+  },
   "tiers": [
     {
       "tier": "LOW",
       "counties": 50,
       "power_dependent_dme": 17545,
-      "counties_one_storm": 9
+      "counties_one_storm": 9,
+      "counties_suspect": 13
     },
     {
       "tier": "MEDIUM",
       "counties": 55,
       "power_dependent_dme": 17703,
-      "counties_one_storm": 18
+      "counties_one_storm": 18,
+      "counties_suspect": 0
     },
     {
       "tier": "HIGH",
       "counties": 21,
       "power_dependent_dme": 12369,
-      "counties_one_storm": 13
+      "counties_one_storm": 13,
+      "counties_suspect": 0
     },
     {
       "tier": "UNKNOWN",
       "counties": 33,
       "power_dependent_dme": 44950,
-      "counties_one_storm": 0
+      "counties_one_storm": 0,
+      "counties_suspect": 0
+    }
+  ],
+  "power_dependent_total": 92567,
+  "tier_status": [
+    {
+      "status": "derived",
+      "counties": 74
+    },
+    {
+      "status": "low_data",
+      "counties": 39
+    },
+    {
+      "status": "suspect",
+      "counties": 13
+    },
+    {
+      "status": "unrecorded",
+      "counties": 33
     }
   ],
   "sensitivity": {
@@ -103,6 +133,7 @@
       "n_storms_hit": 2,
       "storms_hit": "Idalia, Helene",
       "peak_share_worst": 0.73,
+      "peak_share_worst_status": "derived",
       "restore_90_hours_worst": 135.0,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 136.25,
@@ -115,6 +146,7 @@
       "n_storms_hit": 2,
       "storms_hit": "Michael, Helene",
       "peak_share_worst": 0.95,
+      "peak_share_worst_status": "derived",
       "restore_90_hours_worst": 162.25,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 248.0,
@@ -127,6 +159,7 @@
       "n_storms_hit": 3,
       "storms_hit": "Idalia, Debby, Helene",
       "peak_share_worst": 0.82,
+      "peak_share_worst_status": "derived",
       "restore_90_hours_worst": 259.5,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 257.25,
@@ -139,6 +172,7 @@
       "n_storms_hit": 1,
       "storms_hit": "Helene",
       "peak_share_worst": 1.0,
+      "peak_share_worst_status": "suspect",
       "restore_90_hours_worst": 143.0,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 258.25,
@@ -151,6 +185,7 @@
       "n_storms_hit": 2,
       "storms_hit": "Idalia, Helene",
       "peak_share_worst": 0.88,
+      "peak_share_worst_status": "derived",
       "restore_90_hours_worst": 83.75,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 92.25,
@@ -163,6 +198,7 @@
       "n_storms_hit": 4,
       "storms_hit": "Michael, Idalia, Debby, Helene",
       "peak_share_worst": 0.67,
+      "peak_share_worst_status": "derived",
       "restore_90_hours_worst": 437.5,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 335.0,
@@ -175,6 +211,7 @@
       "n_storms_hit": 4,
       "storms_hit": "Michael, Idalia, Debby, Helene",
       "peak_share_worst": 1.0,
+      "peak_share_worst_status": "suspect",
       "restore_90_hours_worst": 230.25,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 248.75,
@@ -187,6 +224,7 @@
       "n_storms_hit": 3,
       "storms_hit": "Michael, Idalia, Helene",
       "peak_share_worst": 0.9,
+      "peak_share_worst_status": "derived",
       "restore_90_hours_worst": 260.5,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 281.25,
@@ -199,6 +237,7 @@
       "n_storms_hit": 3,
       "storms_hit": "Michael, Idalia, Helene",
       "peak_share_worst": 0.87,
+      "peak_share_worst_status": "derived",
       "restore_90_hours_worst": 170.0,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 183.25,
@@ -211,6 +250,7 @@
       "n_storms_hit": 5,
       "storms_hit": "Michael, Idalia, Debby, Helene, Milton",
       "peak_share_worst": 0.82,
+      "peak_share_worst_status": "derived",
       "restore_90_hours_worst": 122.75,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 127.5,
@@ -223,6 +263,7 @@
       "n_storms_hit": 2,
       "storms_hit": "Debby, Helene",
       "peak_share_worst": 0.86,
+      "peak_share_worst_status": "derived",
       "restore_90_hours_worst": 153.0,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 145.0,
@@ -235,6 +276,7 @@
       "n_storms_hit": 2,
       "storms_hit": "Idalia, Helene",
       "peak_share_worst": 0.76,
+      "peak_share_worst_status": "derived",
       "restore_90_hours_worst": 278.5,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 274.0,
@@ -247,6 +289,7 @@
       "n_storms_hit": 1,
       "storms_hit": "Helene",
       "peak_share_worst": 0.73,
+      "peak_share_worst_status": "low_data",
       "restore_90_hours_worst": 90.75,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 91.0,
@@ -259,6 +302,7 @@
       "n_storms_hit": 4,
       "storms_hit": "Dorian, Idalia, Debby, Helene",
       "peak_share_worst": 1.0,
+      "peak_share_worst_status": "suspect",
       "restore_90_hours_worst": 249.25,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 274.0,
@@ -271,6 +315,7 @@
       "n_storms_hit": 2,
       "storms_hit": "Idalia, Helene",
       "peak_share_worst": 1.0,
+      "peak_share_worst_status": "suspect",
       "restore_90_hours_worst": 83.25,
       "worst_restore_storm": "Helene",
       "hours_above_10pct_worst": 116.0,
@@ -282,61 +327,71 @@
       "county": "Fulton",
       "fips_code": "13121",
       "power_dependent_dme": 5804,
-      "peak_share_max_2018plus": 0.064
+      "peak_share_max_2018plus": 0.064,
+      "baseline_tier": "HIGH"
     },
     {
       "county": "Cobb",
       "fips_code": "13067",
       "power_dependent_dme": 4652,
-      "peak_share_max_2018plus": 0.027
+      "peak_share_max_2018plus": 0.027,
+      "baseline_tier": "HIGH"
     },
     {
       "county": "Gwinnett",
       "fips_code": "13135",
       "power_dependent_dme": 4492,
-      "peak_share_max_2018plus": 0.078
+      "peak_share_max_2018plus": 0.078,
+      "baseline_tier": "HIGH"
     },
     {
       "county": "Cherokee",
       "fips_code": "13057",
       "power_dependent_dme": 2481,
-      "peak_share_max_2018plus": 0.033
+      "peak_share_max_2018plus": 0.033,
+      "baseline_tier": "HIGH"
     },
     {
       "county": "Henry",
       "fips_code": "13151",
       "power_dependent_dme": 1856,
-      "peak_share_max_2018plus": 0.075
+      "peak_share_max_2018plus": 0.075,
+      "baseline_tier": "HIGH"
     },
     {
       "county": "Muscogee",
       "fips_code": "13215",
       "power_dependent_dme": 1818,
-      "peak_share_max_2018plus": 0.068
+      "peak_share_max_2018plus": 0.068,
+      "baseline_tier": "MEDIUM"
     },
     {
       "county": "Carroll",
       "fips_code": "13045",
       "power_dependent_dme": 1773,
-      "peak_share_max_2018plus": 0.028
+      "peak_share_max_2018plus": 0.028,
+      "baseline_tier": "HIGH"
     },
     {
       "county": "Clayton",
       "fips_code": "13063",
       "power_dependent_dme": 1499,
-      "peak_share_max_2018plus": 0.066
+      "peak_share_max_2018plus": 0.066,
+      "baseline_tier": "HIGH"
     },
     {
       "county": "Douglas",
       "fips_code": "13097",
       "power_dependent_dme": 1349,
-      "peak_share_max_2018plus": 0.042
+      "peak_share_max_2018plus": 0.042,
+      "baseline_tier": "HIGH"
     },
     {
       "county": "Walton",
       "fips_code": "13297",
       "power_dependent_dme": 1310,
-      "peak_share_max_2018plus": 0.069
+      "peak_share_max_2018plus": 0.069,
+      "baseline_tier": "HIGH"
     }
   ],
   "unknown_max_share": {
@@ -349,58 +404,69 @@
       "storm": "Matthew",
       "counties_hit": 0,
       "helene_carryover": 0,
+      "helene_carryover_hit": 0,
       "share_capped": 0
     },
     {
       "storm": "Irma",
       "counties_hit": 0,
       "helene_carryover": 0,
+      "helene_carryover_hit": 0,
       "share_capped": 0
     },
     {
       "storm": "Michael",
       "counties_hit": 81,
       "helene_carryover": 0,
+      "helene_carryover_hit": 0,
       "share_capped": 0
     },
     {
       "storm": "Dorian",
       "counties_hit": 5,
       "helene_carryover": 0,
+      "helene_carryover_hit": 0,
       "share_capped": 0
     },
     {
       "storm": "Ian",
       "counties_hit": 9,
       "helene_carryover": 0,
+      "helene_carryover_hit": 0,
       "share_capped": 0
     },
     {
       "storm": "Idalia",
       "counties_hit": 44,
       "helene_carryover": 0,
+      "helene_carryover_hit": 0,
       "share_capped": 0
     },
     {
       "storm": "Debby",
       "counties_hit": 28,
       "helene_carryover": 0,
+      "helene_carryover_hit": 0,
       "share_capped": 0
     },
     {
       "storm": "Helene",
       "counties_hit": 109,
       "helene_carryover": 0,
+      "helene_carryover_hit": 0,
       "share_capped": 13
     },
     {
       "storm": "Milton",
       "counties_hit": 7,
-      "helene_carryover": 14,
+      "helene_carryover": 54,
+      "helene_carryover_hit": 14,
       "share_capped": 0
     }
   ],
   "eia": {
+    "ga_territory_utilities": 97,
+    "utilities_reporting_saidi": 31,
     "counties_with_saidi": 158,
     "counties_all_utilities_report": 53,
     "median_multiplier": 3.41,
@@ -429,6 +495,92 @@
       "counties_with_multiplier": 33
     }
   ],
+  "baseline_tiers": [
+    {
+      "tier": "LOW",
+      "counties": 52,
+      "power_dependent_dme": 17516,
+      "counties_storm_unknown": 3,
+      "power_dependent_storm_unknown": 687
+    },
+    {
+      "tier": "MEDIUM",
+      "counties": 53,
+      "power_dependent_dme": 15761,
+      "counties_storm_unknown": 5,
+      "power_dependent_storm_unknown": 3762
+    },
+    {
+      "tier": "HIGH",
+      "counties": 53,
+      "power_dependent_dme": 57341,
+      "counties_storm_unknown": 25,
+      "power_dependent_storm_unknown": 40501
+    },
+    {
+      "tier": "UNKNOWN",
+      "counties": 1,
+      "power_dependent_dme": 1949,
+      "counties_storm_unknown": 0,
+      "power_dependent_storm_unknown": null
+    }
+  ],
+  "baseline_vs_storm_tier": [
+    {
+      "tier": "HIGH",
+      "baseline": "HIGH",
+      "counties": 10
+    },
+    {
+      "tier": "HIGH",
+      "baseline": "LOW",
+      "counties": 2
+    },
+    {
+      "tier": "HIGH",
+      "baseline": "MEDIUM",
+      "counties": 9
+    },
+    {
+      "tier": "LOW",
+      "baseline": "HIGH",
+      "counties": 4
+    },
+    {
+      "tier": "LOW",
+      "baseline": "LOW",
+      "counties": 25
+    },
+    {
+      "tier": "LOW",
+      "baseline": "MEDIUM",
+      "counties": 20
+    },
+    {
+      "tier": "LOW",
+      "baseline": "UNKNOWN",
+      "counties": 1
+    },
+    {
+      "tier": "MEDIUM",
+      "baseline": "HIGH",
+      "counties": 14
+    },
+    {
+      "tier": "MEDIUM",
+      "baseline": "LOW",
+      "counties": 22
+    },
+    {
+      "tier": "MEDIUM",
+      "baseline": "MEDIUM",
+      "counties": 19
+    }
+  ],
+  "baseline_agreement": {
+    "tiered_both": 125,
+    "same_tier": 54
+  },
   "oe417_crosscheck": [
     {
       "storm": "Hermine",
@@ -480,23 +632,27 @@
     "milton_arrival_utc": "2024-10-10 00:00:00"
   },
   "rules": {
-    "eaglei_storm_window": "EAGLE-I county value for the named-storm window as computed in ga_fl_storm_outage_summary (15-minute county outages, window in local dates converted to UTC).",
-    "eaglei_share_capped": "peak_customers_out / EAGLE-I 2024 total customers, capped at 1. Status suspect where the uncapped share exceeds 1 (denominator below the attributed outages).",
+    "eaglei_storm_window": "EAGLE-I county value for the named-storm window as computed in ga_fl_storm_outage_summary (15-minute county outages, window in local dates converted to UTC). Status suspect on rows never used.",
+    "eaglei_share_capped": "peak_customers_out / EAGLE-I 2024 total customers, capped at 1. Status suspect where the uncapped share exceeds 1 (denominator below the attributed outages) and on rows never used.",
+    "eaglei_hours_above_10pct": "Hours with customers out >= 10% of EAGLE-I 2024 total customers. Status suspect where the peak share exceeds 1 (same too-small denominator) and on rows never used.",
     "eaglei_pre2018_excluded": "Storm before 2018: EAGLE-I has no data-quality index and known overcounts; kept, never used.",
-    "milton_helene_carryover": "Milton row whose peak precedes Milton's arrival (2024-10-10 00:00:00 UTC): the peak is Helene's outage still being restored; kept, never used.",
+    "milton_helene_carryover": "Milton row whose peak precedes Milton's arrival (2024-10-10 00:00:00 UTC): the Helene and Milton windows overlap, so the peak is Helene's outage still being restored; kept, never used.",
     "storm_hit": "Usable storm row (2018+, not Helene carryover) with capped peak share >= 0.1.",
     "storm_not_hit": "Usable storm row with capped peak share < 0.1: the storm did not test this county's grid.",
-    "hit_storm_median": "Median across the county's hit storms. low_data when only one storm hit.",
-    "hit_storm_worst": "Maximum across the county's hit storms. low_data when only one storm hit; suspect when it comes from a capped share.",
+    "hit_storm_count": "Number and list of the county's hit storms.",
+    "hit_storm_median": "Median across the county's hit storms. suspect when any hit storm's input is suspect; low_data when only one storm hit.",
+    "hit_storm_worst": "Maximum across the county's hit storms (and the storm it came from). suspect when the maximum comes from a suspect row; low_data when only one storm hit.",
     "no_hit_storm": "No 2018+ storm took 10% or more of the county's customers out: no measurement.",
     "usable_storm_max": "Maximum capped peak share across all usable storm rows (2018+, not Helene carryover), hit or not: the worst share of customers out the county has recorded since 2018.",
     "eia_customer_per_county_weight": "Mean over 2018-2024 utility-years with both IEEE SAIDI values, across utilities whose 2024 EIA-861 service territory includes the county. Each utility weighted by its mean customers / number of Georgia counties it serves (approximate customers per county, assuming an even spread). low_data when some serving utilities file no reliability data.",
     "eia_storm_multiplier": "Weighted SAIDI with major event days / weighted SAIDI without major event days.",
     "eia_no_reporting_utility": "No utility serving the county filed SAIDI in EIA-861 for the period.",
-    "eia_utility_count": "Utilities whose 2024 EIA-861 service territory lists the county.",
-    "tier_fixed_thresholds": "LOW: worst peak share >= 0.5 and worst hours to 90% restored >= 72. HIGH: worst peak share < 0.25 and worst hours to 90% restored < 24. MEDIUM: otherwise. UNKNOWN: no hit storm.",
+    "eia_utility_count": "Utilities whose 2024 EIA-861 service territory lists the county, and how many of them filed SAIDI.",
+    "eia_baseline_terciles": "Baseline only, no storm test. Composite = mean of percent ranks of weighted SAIDI with major event days and the storm multiplier among counties with both; top third LOW, bottom third HIGH. Utility-wide annual figures, not a county storm measurement.",
+    "tier_fixed_thresholds": "LOW: worst peak share >= 0.5 and worst hours to 90% restored >= 72. HIGH: worst peak share < 0.25 and worst hours to 90% restored < 24. MEDIUM: otherwise. UNKNOWN: no hit storm. suspect when the worst peak share is suspect.",
     "tier_terciles": "Composite = mean of percent ranks of worst peak share and worst hours to 90% restored among tiered counties; top third LOW, bottom third HIGH.",
     "tier_median_thresholds": "Fixed-threshold rule applied to the median across hit storms instead of the worst.",
+    "tier_stable_all_rules": "True when the fixed-threshold, tercile and median rules give the same tier.",
     "empower_snapshot": "power_dependent_dme from the team's c4data Georgia power_dependent_counties snapshot."
   }
 }
