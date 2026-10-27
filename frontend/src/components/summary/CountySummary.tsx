@@ -76,6 +76,16 @@ export function CountySummaryView({ county }: { county: County }) {
       <Figure label="Households with no vehicle" v={county.households_no_vehicle} />
       <Figure label="Residents aged 65+" v={county.share_65_plus} percent />
       <Figure label="Residents with a disability" v={county.share_disability} percent />
+      {county.power_dependent && (
+        <>
+          <h3>Power-dependent residents</h3>
+          <Figure label="Use power-dependent equipment" v={county.power_dependent} />
+          {county.oxygen && <Figure label="Oxygen users" v={county.oxygen} />}
+          {county.dialysis_patients && <Figure label="Dialysis patients" v={county.dialysis_patients} />}
+          {county.nursing_home_beds && <Figure label="Nursing-home beds" v={county.nursing_home_beds} />}
+          {county.assisted_living_beds && <Figure label="Assisted-living beds" v={county.assisted_living_beds} />}
+        </>
+      )}
     </div>
   );
 }
