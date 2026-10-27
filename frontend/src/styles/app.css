@@ -140,8 +140,12 @@ button {
 }
 /* Narrow windows: the side panel stacks below the map (research R12). */
 @media (max-width: 900px) {
+  .app {
+    height: auto;
+    min-height: 100vh;
+  }
   .layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     grid-auto-rows: minmax(420px, auto);
   }
   .side-resizer {
@@ -219,6 +223,12 @@ button {
   flex: 1;
   min-height: 0;
   position: relative;
+}
+@media (max-width: 900px) {
+  .map {
+    flex: none;
+    height: min(60vh, 420px);
+  }
 }
 .map svg {
   width: 100%;
@@ -372,6 +382,7 @@ button {
 }
 .legend__item {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 4px;
 }
