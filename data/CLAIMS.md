@@ -23,8 +23,8 @@ As of 2026-10-27. Every claim names its evidence. "Can say" means the evidence i
 |---|---|
 | Helene left 1,100,015 Georgia customers out at its peak (2024-09-27 13:15 UTC); Irma about 1.30 M | EAGLE-I 15-minute county data |
 | Outage share rises with modelled wind at the county: correlation 0.4 to 0.9 within the larger storms (Ian 0.89, Idalia 0.83, Sally 0.76, Zeta 0.75, Michael 0.59, Helene 0.43) | `features_v2.parquet` |
-| On 27 storms (2018 to 2025) across 226 GA and FL counties, predicting each storm with that storm held out, the model's mean error is 0.042 outage share, against 0.062 for always predicting the average | `loso_v2.json`, `ga_fl_27storms_em` |
-| The 10th to 90th percentile range contains 77% of held-out counties (target 80%); for 26 of 27 storms the statewide average falls inside the range | same |
+| On 27 storms (2018 to 2025) across 226 GA and FL counties, on g-grid's `county_storm_outages` labels (6,075 rows, 27 suspect rows dropped), predicting each storm with that storm held out, the model's mean error is 0.042 outage share, against 0.062 for always predicting the average | `outage_model_metrics.json` (engine lane) and an independent refit, `loso_grid.json`, agree to 0.001 |
+| The 10th to 90th percentile range contains 78% of held-out counties (target 80%), 75% on Helene, Idalia and Michael; for 26 of 27 storms the statewide average falls inside the range | same |
 | The spread between storms is estimated from the data (0.71 on the logit scale), not set by hand | same, `tau_storm` |
 
 | Cannot say | Say instead |
@@ -35,7 +35,20 @@ As of 2026-10-27. Every claim names its evidence. "Can say" means the evidence i
 | Anything about a direct Atlantic landfall on the Georgia coast | No trustworthy example exists (Matthew 2016 and Irma 2017 predate reliable county data). Flag such scenarios as outside the data |
 | Outage by date, season, utility hardening, soil moisture or tree cover | Not in the model; 27 storms cannot separate these |
 | Outages before 2018 | EAGLE-I county data before 2018 is unreliable; used for nothing |
-| Labels are final | Provisional labels built with g-grid's rules; agree with g-grid at r 0.89 to 1.0 on the 8 storms both cover. Replaced when g-grid extends `county_storm_outages` |
+
+### Season view and fix ranking
+
+| Can say | Evidence |
+|---|---|
+| 202 storms since 1950 came within 250 km of Georgia, 2.6 a year; the season view simulates 2,000 storms from them over 20,000 seasons | `evac_prod.scenario_season_county` (159 rows), season lane `build_season.py` |
+| In a 1-in-10 season, about 11,300 power-dependent Georgians are in counties losing power, and about 2,170 are left without a powered seat or a dialysis chair (base assumptions) | same |
+| The unknown that moves that 2,170 most is the share of power-dependent residents who would seek a shelter seat (1,212 to 4,154 between 10% and 40%), then unrecorded shelter generators (817 to 2,174). Storm rates, dialysis surge capacity, the model's major-storm bias and Florida inflow each move it by 300 or less | `evac_prod.scenario_fix_ranking` (6 rows) |
+
+| Cannot say | Say instead |
+|---|---|
+| "The season model matches recent history" | Back-test on 2018 to 2025: 71% of counties fall inside the model's 10th-90th range for storms causing at least 25% outage (target 80%, not met). Statewide the model expects 74 such county-storms (63 to 85) where 200 happened. 2018 to 2025 had 3.4 storms a year against 2.6 long-run, and the outage model under-predicts Helene and Michael. The season view understates a period like 2018 to 2025 |
+| "1-in-10 means a 10% chance this year" | It is the 90th percentile of 20,000 simulated seasons drawn from 1950 to 2026 storm rates, with no climate-trend adjustment |
+| County 1-in-10 figures add up to the statewide 1-in-10 | They do not: counties peak in different seasons (sum 2,805 vs statewide 2,174) |
 
 ## 3. People who depend on power and on treatment
 
