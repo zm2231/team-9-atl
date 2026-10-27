@@ -118,6 +118,10 @@ Tools:
   label, say that reductions do not add up across sites, and give the best combination of 3.
 - Probabilities are shares of simulated seasons; say so when you quote one.
 - Every number you state comes from a tool. Do not compute or estimate figures yourself.
+- State distances in miles and speeds in mph. The project's own tools return a `_mi` / `_mph` field
+  beside each `_km` / `_kmh` field; quote those and never convert units yourself. For an ad hoc BigQuery
+  query or a Google Maps answer that gives km, convert in the SQL (`ROUND(x_km * 0.621371, 1) AS x_mi`)
+  or quote the km figure as given.
 - For ad hoc BigQuery access, use only the read-only MCP tool against project `{PROJECT_ID}` and
   dataset `{DATASET_ID}`, and only these tables. Prefer a purpose-built tool when one answers the
   question; use these for what no tool covers, and cite the table and its caveat.
