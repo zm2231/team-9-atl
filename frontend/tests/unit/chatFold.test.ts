@@ -49,3 +49,16 @@ describe.skipIf(recorded.length === 0)("recorded agent turns", () => {
     });
   }
 });
+
+describe("foldEvent tool trace and report", () => {
+  it("records each tool once and keeps the latest report", () => {
+    const report = { report_version: 1, scope: "county", subject: {}, season: null, sections: {}, source: "s" };
+    const out = fold([
+      { content: { parts: [{ functionCall: { name: "county_plan" } }] } },
+      { content: { parts: [{ functionResponse: { name: "county_plan", response: { report } } }] } },
+      { content: { parts: [{ functionCall: { name: "check_shelter_google_maps" } }] } },
+    ]);
+    expect(out.tools).toEqual(["county_plan", "check_shelter_google_maps"]);
+    expect(out.report?.scope).toBe("county");
+  });
+});

@@ -29,7 +29,11 @@ const userId = browserUserId();
 export interface AgentEvent {
   author?: string;
   partial?: boolean;
-  content?: { role?: string; parts?: { text?: string; functionResponse?: { name?: string; response?: unknown } }[] };
+  content?: { role?: string; parts?: {
+    text?: string;
+    functionCall?: { name?: string; args?: unknown };
+    functionResponse?: { name?: string; response?: unknown };
+  }[] };
   groundingMetadata?: import("./types").GroundingMetadata;
   errorCode?: string;
   errorMessage?: string;
