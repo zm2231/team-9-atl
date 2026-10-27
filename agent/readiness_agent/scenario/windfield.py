@@ -2,8 +2,11 @@ import math
 from dataclasses import dataclass
 from itertools import pairwise
 
+import numpy as np
+
 EARTH_KM = 6371.0
 NM_KM = 1.852
+MIN_RMW_KM = 10.0
 
 
 @dataclass(frozen=True)
@@ -18,14 +21,17 @@ class TrackPoint:
 
 def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     p1, p2 = math.radians(lat1), math.radians(lat2)
-    a = math.sin((p2 - p1) / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2
+    a = (
+        math.sin((p2 - p1) / 2) ** 2
+        + math.cos(p1) * math.cos(p2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2
+    )
     return 2 * EARTH_KM * math.asin(min(1.0, math.sqrt(a)))
 
 
 def wind_at(p: TrackPoint, dist_km: float) -> float:
     if p.vmax_kt <= 0:
         return 0.0
-    rmw = max(p.rmw_km, 10.0)
+    rmw = max(p.rmw_km, MIN_RMW_KM)
     if dist_km <= rmw:
         return p.vmax_kt * dist_km / rmw
     if p.vmax_kt > 34 and p.r34_km > rmw:
@@ -61,6 +67,53 @@ def county_exposure(track: list[TrackPoint], lat: float, lon: float) -> dict[str
         "hours_64kt": h64,
         "min_dist_km": dmin,
         "first_34kt_hour": first34 if first34 is not None else float("nan"),
+    }
+
+
+def exposure(track: list[TrackPoint], lats: np.ndarray, lons: np.ndarray) -> dict[str, np.ndarray]:
+    lats = np.asarray(lats, float)
+    lons = np.asarray(lons, float)
+    if not track:
+        n = len(lats)
+        zeros = np.zeros(n)
+        return {
+            "peak_wind_kt": zeros, "hours_34kt": zeros, "hours_50kt": zeros,
+            "hours_64kt": zeros, "min_dist_km": np.full(n, np.inf),
+            "first_34kt_hour": np.full(n, np.nan),
+        }
+    pts = np.array([[p.hour, p.lat, p.lon, p.vmax_kt, p.rmw_km, p.r34_km] for p in track])
+    hour, plat, plon, vmax, rmw_raw, r34 = pts.T
+    p1 = np.radians(lats)[None, :]
+    p2 = np.radians(plat)[:, None]
+    dlon = np.radians(lons[None, :] - plon[:, None])
+    a = np.sin((p2 - p1) / 2) ** 2 + np.cos(p1) * np.cos(p2) * np.sin(dlon / 2) ** 2
+    d = 2 * EARTH_KM * np.arcsin(np.minimum(1.0, np.sqrt(a)))
+
+    rmw = np.maximum(rmw_raw, MIN_RMW_KM)[:, None]
+    vm = vmax[:, None]
+    shaped = (vmax > 34) & (r34 > np.maximum(rmw_raw, MIN_RMW_KM))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        x = np.where(
+            shaped,
+            np.log(np.where(shaped, vmax, 35.0) / 34.0)
+            / np.log(np.where(shaped, r34, 2.0) / np.maximum(rmw_raw, MIN_RMW_KM)),
+            0.5,
+        )[:, None]
+        outer = vm * (rmw / np.where(d > 0, d, 1.0)) ** x
+    w = np.where(d <= rmw, vm * d / rmw, outer)
+    w = np.where(vm <= 0, 0.0, w)
+
+    step = np.append(np.diff(hour), 0.0)[:, None]
+    over34 = w >= 34
+    first_idx = np.argmax(over34, axis=0)
+    any34 = over34.any(axis=0)
+    return {
+        "peak_wind_kt": w.max(axis=0),
+        "hours_34kt": (step * over34).sum(axis=0),
+        "hours_50kt": (step * (w >= 50)).sum(axis=0),
+        "hours_64kt": (step * (w >= 64)).sum(axis=0),
+        "min_dist_km": d.min(axis=0),
+        "first_34kt_hour": np.where(any34, hour[first_idx], np.nan),
     }
 
 
