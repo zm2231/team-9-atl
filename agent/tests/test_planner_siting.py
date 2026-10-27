@@ -1,3 +1,5 @@
+import json
+from types import SimpleNamespace
 from typing import Any
 
 import numpy as np
@@ -365,3 +367,111 @@ def test_generator_patterns_stay_distinct_beyond_63_shelters():
     rate = season.outlook_event_rates("long_run")
     _, params = season.sampled_seasons(ev, masks, rate, 500, season.SEED)
     assert len(np.unique(params["unrecorded_generators"])) > 400
+
+
+def test_county_fips_update_moves_the_site_grouping(monkeypatch):
+    track = {"type": "LineString", "coordinates": [[-81.5, 30.5], [-82.5, 32.5], [-83.5, 34.0]]}
+    context = SimpleNamespace(
+        user_content=SimpleNamespace(
+            parts=[
+                SimpleNamespace(
+                    text="CONTEXT v1 " + json.dumps({"scenario": {"track": track, "category": 3}})
+                )
+            ]
+        )
+    )
+    base = scenario_tools.run_scenario(tool_context=context)
+    rows = {r["county_fips"]: r for r in base["counties"]}
+    centres = data.sites()["dialysis_centers"]
+    site = next(d for d in centres if d["county_fips"] in rows)
+    target = next(f for f in rows if f != site["county_fips"])
+    monkeypatch.setattr(
+        scenario_tools,
+        "_fetch_site_updates",
+        lambda: [
+            row("a", site["ccn"], "county_fips", target, "2026-10-27T10:00:00", kind="dialysis")
+        ],
+    )
+    moved = {
+        r["county_fips"]: r for r in scenario_tools.run_scenario(tool_context=context)["counties"]
+    }
+    old, new = site["county_fips"], target
+    assert (
+        moved[old]["dialysis_patients"]["centres"] == rows[old]["dialysis_patients"]["centres"] - 1
+    )
+    assert (
+        moved[new]["dialysis_patients"]["centres"] == rows[new]["dialysis_patients"]["centres"] + 1
+    )
+    planner = site_updates.planner_inputs(
+        [row("a", site["ccn"], "county_fips", target, "2026-10-27T10:00:00", kind="dialysis")],
+        data.sites(),
+    )
+    ev, ignored, _ = season.site_inputs(
+        season.events(), dialysis_county_override=planner["dialysis_county_override"]
+    )
+    fips = [str(f) for f in ev["county_fips"]]
+    j = [str(x) for x in ev["dialysis_ccn"]].index(site["ccn"])
+    assert ignored == [] and ev["dialysis_county"][j] == fips.index(target)
+
+
+def test_name_update_is_applied():
+    shelter = data.sites()["medical_shelters"][0]
+    rows = [row("a", shelter["shelter_id"], "name", "Renamed Hall", "2026-10-27T10:00:00")]
+    sites = site_updates.effective_sites(
+        data.sites(), site_updates.planner_inputs(rows, data.sites())
+    )
+    got = next(s for s in sites["medical_shelters"] if s["shelter_id"] == shelter["shelter_id"])
+    assert got["name"] == "Renamed Hall" and "name" in got["planner_reported"]
+    assert data.sites()["medical_shelters"][0]["name"] == shelter["name"]
+
+
+def test_record_site_update_stores_no_free_text(monkeypatch):
+    calls = []
+    monkeypatch.setattr(scenario_tools, "_run_query", lambda sql, params: calls.append(params))
+    for kwargs in (
+        {"source": "call jane@example.org"},
+        {"source": "county_ema", "source_date": "912/555/0134"},
+        {"source": "12 Main Street"},
+    ):
+        r = scenario_tools.record_site_update(
+            "medical_shelter", UNRECORDED, "seats", "10", **kwargs
+        )
+        assert r["status"] == "invalid"
+    assert calls == []
+    ok = scenario_tools.record_site_update(
+        "medical_shelter", UNRECORDED, "seats", "10", source="county_ema", source_date="2026-10-27"
+    )
+    assert ok["status"] == "recorded"
+    note = next(p.value for p in calls[0] if p.name == "note")
+    assert note == "county_ema 2026-10-27"
+
+
+def test_unknown_county_fips_is_rejected_and_never_applied():
+    centre = data.sites()["dialysis_centers"][0]
+    r = scenario_tools.record_site_update("dialysis", centre["ccn"], "county_fips", "13999")
+    assert r["status"] == "invalid"
+    rows = [row("a", centre["ccn"], "county_fips", "13999", "2026-10-27T10:00:00", kind="dialysis")]
+    planner = site_updates.planner_inputs(rows, data.sites())
+    assert planner["changes"] == [] and planner["dialysis_county_override"] == {}
+
+
+def test_added_dialysis_county_is_consistent_across_consumers():
+    near_a, county_b = {"lat": 31.75, "lon": -82.35}, "13051"
+    rows = [
+        row("a", "new-dc", "lat", str(near_a["lat"]), "2026-10-27T10:00:00", kind="dialysis"),
+        row("b", "new-dc", "lon", str(near_a["lon"]), "2026-10-27T10:00:00", kind="dialysis"),
+        row("c", "new-dc", "stations", "12", "2026-10-27T10:00:00", kind="dialysis"),
+        row("d", "new-dc", "county_fips", county_b, "2026-10-27T10:00:00", kind="dialysis"),
+    ]
+    planner = site_updates.planner_inputs(rows, data.sites())
+    sites = site_updates.effective_sites(data.sites(), planner)
+    added = next(d for d in sites["dialysis_centers"] if d["ccn"] == "new-dc")
+    assert added["county_fips"] == county_b
+    ev, _, _ = season.site_inputs(season.events(), add_sites=planner["add_sites"])
+    fips = [str(f) for f in ev["county_fips"]]
+    j = [str(x) for x in ev["dialysis_ccn"]].index("new-dc")
+    assert ev["dialysis_county"][j] == fips.index(county_b)
+    unknown = season.new_site(
+        {"site_kind": "dialysis", **near_a, "stations": 5, "county_fips": "13999"}, 1
+    )
+    assert unknown is not None and unknown["county_fips"] is None

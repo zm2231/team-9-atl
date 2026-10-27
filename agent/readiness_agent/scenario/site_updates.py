@@ -1,9 +1,8 @@
 import copy
 import math
-import re
 from typing import Any
 
-from . import season
+from . import data, season
 
 SITE_KINDS = ("medical_shelter", "dialysis")
 FIELDS = ("generator", "seats", "stations", "open", "lat", "lon", "name", "county_fips")
@@ -16,7 +15,6 @@ REQUIRED_NEW = {
     "dialysis": ("lat", "lon", "stations"),
 }
 MAX_TEXT = 200
-FIPS = re.compile(r"^13\d{3}$")
 
 
 def _float(value: str, bounds: tuple[float, float]) -> str | None:
@@ -63,7 +61,10 @@ def validate(site_kind: Any, site_id: Any, field: Any, value: Any) -> tuple[str 
         out = _float(text, bounds)
         return (out, "") if out else (None, f"{field}: a number inside Georgia {bounds}")
     if field == "county_fips":
-        return (text, "") if FIPS.match(text) else (None, "county_fips: a Georgia FIPS like 13051")
+        known = {c["county_fips"] for c in data.counties()}
+        return (
+            (text, "") if text in known else (None, "county_fips: a Georgia county FIPS like 13051")
+        )
     if not text or len(text) > MAX_TEXT:
         return None, f"name: 1-{MAX_TEXT} characters"
     return text, ""
@@ -101,6 +102,8 @@ def planner_inputs(rows: list[dict], sites: dict) -> dict[str, Any]:
         "seats_override": {},
         "stations_override": {},
         "location_override": {},
+        "attribute_override": {},
+        "dialysis_county_override": {},
         "sites_off": [],
         "add_sites": [],
         "changes": [],
@@ -144,6 +147,10 @@ def planner_inputs(rows: list[dict], sites: dict) -> dict[str, Any]:
                     out["sites_off"].append(site_id)
             elif field in ("lat", "lon"):
                 out["location_override"].setdefault(site_id, {})[field] = float(value)
+            elif field in ("name", "county_fips"):
+                out["attribute_override"].setdefault(site_id, {})[field] = value
+                if field == "county_fips" and kind == "dialysis":
+                    out["dialysis_county_override"][site_id] = value
             out["changes"].append(
                 {
                     "site_kind": kind,
@@ -179,6 +186,9 @@ def effective_sites(sites: dict, planner: dict) -> dict:
     for sid, loc in planner.get("location_override", {}).items():
         if sid in by_id:
             by_id[sid].update(loc)
+    for sid, attrs in planner.get("attribute_override", {}).items():
+        if sid in by_id:
+            by_id[sid].update(attrs)
     for (sid, field), text in labels.items():
         if sid in by_id and field != "added_site":
             by_id[sid].setdefault("planner_reported", {})[field] = text
@@ -256,5 +266,23 @@ def season_kwargs(planner: dict, request: dict) -> dict[str, Any]:
             **request["stations_override"],
         },
         "location_override": planner.get("location_override") or None,
+        "dialysis_county_override": planner.get("dialysis_county_override") or None,
         "add_sites": [*planner.get("add_sites", []), *request["add_sites"]],
     }
+
+
+SOURCES = ("county_ema", "gema", "site_visit", "facility_call", "state_registry", "planner_review")
+
+
+def source_note(source: Any, source_date: Any) -> tuple[str | None, str]:
+    if source not in SOURCES:
+        return None, f"source must be one of {', '.join(SOURCES)}"
+    if source_date is None:
+        return source, ""
+    from datetime import date
+
+    try:
+        when = date.fromisoformat(str(source_date))
+    except ValueError:
+        return None, "source_date: YYYY-MM-DD"
+    return f"{source} {when.isoformat()}", ""

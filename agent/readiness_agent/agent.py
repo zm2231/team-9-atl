@@ -124,7 +124,8 @@ Tools:
   assume_generator. Report the baseline, the result with the switches, and the difference.
 - When a planner states a fact about a site (a generator confirmed, seats changed, a site closed
   or added), call record_site_update once per field. Later results show it as planner-reported
-  next to the registry value; say both.
+  next to the registry value; say both. Give its source (county_ema, gema, site_visit,
+  facility_call, state_registry or planner_review) and source_date; it stores no free text.
 - For where a new or upgraded medical shelter would help most, call recommend_sites. Quote its
   label, say that reductions do not add up across sites, and give the best combination of 3.
 - Probabilities are shares of simulated seasons; say so when you quote one.
