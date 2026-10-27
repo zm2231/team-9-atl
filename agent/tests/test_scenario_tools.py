@@ -164,12 +164,12 @@ def test_outlook_notes_state_backtest_honestly():
 def test_county_plan_marks_failed_sections_not_determined(monkeypatch):
     from google.api_core.exceptions import Forbidden
 
-    from readiness_agent import evacuation_tools, scenario_tools
+    from readiness_agent import scenario_tools
 
     def fail(*_a, **_k):
         raise Forbidden("denied")
 
-    monkeypatch.setattr(evacuation_tools, "build_readiness_brief", fail)
+    monkeypatch.setattr(scenario_tools, "_readiness_brief", fail)
     monkeypatch.setattr(scenario_tools, "_run_query", fail)
     plan = scenario_tools.county_plan("13127")
     assert plan["readiness_brief"]["status"] == "not_determined"

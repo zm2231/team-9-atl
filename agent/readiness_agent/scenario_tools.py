@@ -483,6 +483,12 @@ def _geo_ids(value: Any) -> list[str]:
     return []
 
 
+def _readiness_brief(county_fips: str) -> dict[str, Any]:
+    from .readiness_brief import build_readiness_brief
+
+    return build_readiness_brief(county_fips)
+
+
 def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
     """One call that assembles a county's season readiness plan: the readiness brief (who cannot leave, where they would go, what to fix, what we could not tell), how often the power goes out under the chosen outlook and the long run, people lacking shelter and needing transport in a typical and a 1-in-10 season, what confirming every unrecorded medical-shelter generator would change, and an audit of the brief's ranked tracts against the state. Sections that cannot be filled are marked not_determined. Write the plan from these sections only, and verify the top shelters live with Google Maps.
 
@@ -490,7 +496,6 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
     """
     from google.cloud import bigquery
 
-    from .evacuation_tools import build_readiness_brief
     from .scenario import data, season
 
     if not isinstance(county_fips, str) or not county_fips.startswith("13"):
@@ -505,7 +510,7 @@ def county_plan(county_fips: str, outlook: str = "long_run") -> dict[str, Any]:
         return next(c for c in run["counties"] if c["county_fips"] == county_fips)
 
     def brief():
-        return {"brief": build_readiness_brief(state="GA", county_fips=county_fips)}
+        return {"brief": _readiness_brief(county_fips)}
 
     def outage():
         rows = {}
