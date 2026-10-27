@@ -32,4 +32,12 @@ describe("ReportView", () => {
     expect(screen.getByTestId("report-counties").querySelectorAll("tbody tr").length).toBeGreaterThan(0);
     expect(screen.getAllByText("middle").length).toBeGreaterThan(1);
   });
+
+  it("lists what the model could not tell and spells out the support label", () => {
+    render(<ReportView report={runs as unknown as Report} />);
+    expect(
+      screen.getByText("Outage is modelled from wind exposure; local tree and line conditions are not known."),
+    ).toBeTruthy();
+    expect(screen.queryByText(/_labeled_support/)).toBeNull();
+  });
 });

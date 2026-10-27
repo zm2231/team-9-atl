@@ -50,6 +50,27 @@ function FigureValue({ f }: { f: ReportFigure }) {
   );
 }
 
+const SUPPORT: Record<string, string> = {
+  within_labeled_support: "inside the range of storms with outage records",
+  outside_labeled_support: "outside the range of storms with outage records",
+};
+
+function readableNote(note: string): string {
+  return note.replace(/\b(within|outside)_labeled_support\b/g, (m) => SUPPORT[m] ?? m);
+}
+
+function TextItems({ items }: { items: unknown[] }) {
+  const lines = items.filter((i): i is string => typeof i === "string");
+  if (!lines.length) return null;
+  return (
+    <ul className="report__list">
+      {lines.map((line) => (
+        <li key={line}>{line}</li>
+      ))}
+    </ul>
+  );
+}
+
 interface CountyOutage {
   county_fips: string;
   county_name: string;
@@ -130,7 +151,8 @@ export default function ReportView({ report }: { report: Report }) {
                 </div>
               ))}
               {key === "power_outage" && <TopCounties items={s.items} />}
-              {s.note && <div className="status">{s.note}</div>}
+              <TextItems items={s.items} />
+              {s.note && <div className="status">{readableNote(s.note)}</div>}
             </>
           )}
         </div>
