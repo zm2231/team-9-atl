@@ -8,12 +8,16 @@ The drawn track and category come from the `CONTEXT v1` part of the user's messa
 
 | Input | Type | Required | Default | Notes |
 |---|---|---|---|---|
-| drawn track | GeoJSON LineString | no | from `CONTEXT v1` `scenario.track` | Used when present |
-| `category` | int 0-5 | no | `CONTEXT v1` `scenario.category`, else 3 | 0 = tropical storm |
-| `origin` | `gulf`, `florida_peninsula`, `atlantic_ga`, `overland_west`, `carolinas` | no | classified from the track's entry point | Without a drawn track, past tracks from this origin are used |
-| `landfall_lat`, `landfall_lon` | float | no | none | Shifts the past tracks to this point |
+| drawn track | GeoJSON LineString | no | from `CONTEXT v1` `scenario.track` | When present, the storm follows it |
+| `lat`, `lon` | float | no | none | Where the storm is at the moment being explored. Without a drawn track, the tool finds past storms that passed within 300 km of this point |
+| `heading_deg` | float | no | none | Direction of travel; matched past storms are within 45 degrees of it |
+| `date` | ISO date | no | today's month | Matched past storms are within a month of it |
+| `intensity_kt` | float | no | none | Storm strength at that point; matched past storms are within 20 kt of it and keep their own later strength |
+| `category` | int 0-5 | no | `CONTEXT v1` `scenario.category` | For a drawn track, sets the storm's strength. For matched storms, an optional override that rescales them |
 | `county_fips` | string | no | `CONTEXT v1` `county_fips` | The selected county; turns on the receiving-site section |
 | `case` | `low`, `base`, `high` | no | `base` | Traffic and relocation assumptions |
+
+A one-off scenario is conditional: it uses only the past storms that were at a similar place, heading, time of year and strength, and reports what share of them went on to reach Georgia. The season view for a county (`season_county_risk`) is unconditional: it uses every storm since 1950 that came within 250 km of Georgia, weighted by how often each kind occurs.
 
 The model is fixed (27 storms, 2018-2025) and the random seed is fixed, so the same inputs always give the same numbers.
 
@@ -23,7 +27,8 @@ The model is fixed (27 storms, 2018-2025) and the random seed is fixed, so the s
 
 | Field | Meaning |
 |---|---|
-| `source` | `drawn_track` or `past_tracks` |
+| `source` | `drawn_track` or `matched_past_storms` |
+| `match` | For matched storms: how many matched, and the share that came within 100 km of Georgia |
 | `origin`, `category` | As used |
 | `past_storms_used` | Names and years of the past tracks behind the range, e.g. `Michael 2018` |
 | `support` | `within_labeled_support`, or `outside_labeled_support` when no past storm from this origin reached this intensity with trustworthy outage data (every Atlantic-coast hurricane today) |
