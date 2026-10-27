@@ -204,3 +204,42 @@ def test_as_of_date_handles_leap_years():
     days = season.storm_day_of_year()
     cut = season._day_of_year("2026-09-15")
     assert season.season_remaining_share("2024-09-15") == round(float((days > cut).mean()), 4)
+
+
+def _subset(ev: dict, keep: np.ndarray) -> dict:
+    n = len(ev["category"])
+    return {k: v[keep] if getattr(v, "shape", (0,))[:1] == (n,) else v for k, v in ev.items()}
+
+
+def test_builder_rates_follow_the_event_subset_given():
+    from readiness_agent.scenario.build import build_season
+
+    ev = season.events()
+    hist = _subset(ev, ~ev["event_synthetic"])
+    observed = {str(f): 1 for f in ev["county_fips"]}
+    for part in (hist, ev):
+        lam = build_season.county_lambda(part, "long_run")
+        assert lam.shape == (159,)
+        bt = build_season.severity_backtest(part, observed, 0.7)
+        assert 0 <= bt["severity_share_inside"] <= 1
+
+
+def test_severity_backtest_ignores_event_order():
+    from readiness_agent.scenario.build import build_season
+
+    ev = season.events()
+    observed = {str(f): 1 for f in ev["county_fips"]}
+    order = np.random.default_rng(1).permutation(len(ev["category"]))
+    shuffled = _subset(ev, order)
+    a = build_season.severity_backtest(ev, observed, 0.7)
+    b = build_season.severity_backtest(shuffled, observed, 0.7)
+    assert a["severity_share_inside"] == b["severity_share_inside"]
+    assert a["severity_statewide"] == b["severity_statewide"]
+
+
+def test_as_of_after_last_storm_gives_an_empty_season():
+    r = season.run_season(as_of_date="2026-12-31")
+    assert r["storms_per_year"] == 0 and r["as_of"]["share_of_season_remaining"] == 0
+    assert r["statewide"]["lacking_shelter"]["total"]["one_in_10"] == 0
+    assert r["statewide"]["probability"]["p_lacking_shelter_any"] == 0
+    assert season.siting_base(as_of_date="2026-12-31")["before"]["state_1in10"] == 0

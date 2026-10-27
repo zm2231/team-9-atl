@@ -164,8 +164,13 @@ def season_remaining_share(as_of_date: Any) -> float:
     return round(float((days > _day_of_year(as_of_date)).mean()), 4)
 
 
-def outlook_event_rates(outlook: str, custom: Any = None, as_of_date: Any = None) -> np.ndarray:
-    ev = events()
+def outlook_event_rates(
+    outlook: str,
+    custom: Any = None,
+    as_of_date: Any = None,
+    ev: dict[str, np.ndarray] | None = None,
+) -> np.ndarray:
+    ev = events() if ev is None else ev
     if outlook == CUSTOM:
         c = _check_custom(custom)
         rate = event_rates("long_run", ev["storm_season"], ev["storm_of_event"])
@@ -200,6 +205,8 @@ def allocate(demand: np.ndarray, capacity: np.ndarray, reach: np.ndarray) -> np.
 
 def season_draws(rate: np.ndarray, rng: np.random.Generator, n: int) -> dict[str, np.ndarray]:
     lam = float(rate.sum())
+    if lam <= 0:
+        return {"k": np.zeros(n, int), "picks": np.zeros(0, int), "starts": np.zeros(0, int)}
     k = rng.poisson(lam, size=n)
     picks = rng.choice(len(rate), size=int(k.sum()), p=rate / lam)
     return {"k": k, "picks": picks, "starts": (np.cumsum(k) - k)[k > 0]}

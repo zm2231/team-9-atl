@@ -21,9 +21,19 @@ SEED = season.SEED
 EVENTS_HISTORICAL = 4
 EVENTS_SYNTHETIC = 12
 EVENT_KEYS = (
-    "pd_affected", "displaced", "out25", "down50", "category", "storm_of_event", "event_year",
-    "event_synthetic", "event_outside_support", "event_shift_km", "event_category_change",
-    "event_speed_factor", "event_size_factor",
+    "pd_affected",
+    "displaced",
+    "out25",
+    "down50",
+    "category",
+    "storm_of_event",
+    "event_year",
+    "event_synthetic",
+    "event_outside_support",
+    "event_shift_km",
+    "event_category_change",
+    "event_speed_factor",
+    "event_size_factor",
 )
 WORST_EVENTS = 50
 TOP_COUNTIES = 10
@@ -220,7 +230,9 @@ def season_quantiles(ev: dict, outlook: str = "long_run") -> dict:
     rate = season.event_rates(outlook, ev["storm_season"], ev["storm_of_event"])
     seasons = worst_per_season(
         {k: values[k] for k in ("pd_affected", "lacking_shelter")},
-        rate, np.random.default_rng(SEED), N_SEASONS_TABLE,
+        rate,
+        np.random.default_rng(SEED),
+        N_SEASONS_TABLE,
     )
     q = (0.5, 0.9, 0.99)
 
@@ -232,9 +244,12 @@ def season_quantiles(ev: dict, outlook: str = "long_run") -> dict:
     return {
         "statewide": {k: block(v.sum(axis=1)) for k, v in seasons.items()},
         "top_counties": [
-            {"county_fips": str(ev["county_fips"][i]), "county_name": str(ev["county_name"][i]),
-             "lacking_shelter": block(lacking[:, i]),
-             "power_dependent_affected": block(seasons["pd_affected"][:, i])}
+            {
+                "county_fips": str(ev["county_fips"][i]),
+                "county_name": str(ev["county_name"][i]),
+                "lacking_shelter": block(lacking[:, i]),
+                "power_dependent_affected": block(seasons["pd_affected"][:, i]),
+            }
             for i in top
         ],
     }
@@ -297,20 +312,22 @@ def worst_rows(ctx: dict) -> list[dict]:
     rows = []
     for rank, i in enumerate(order, 1):
         worst = int(np.argmax(values["pd_affected"][i]))
-        rows.append({
-            "rank": rank,
-            "parent_storm": str(ev["storm_name"][ev["storm_of_event"][i]]),
-            "shift_km": round(float(ev["event_shift_km"][i]), 1),
-            "category_change": int(ev["event_category_change"][i]),
-            "speed_factor": round(float(ev["event_speed_factor"][i]), 2),
-            "size_factor": round(float(ev["event_size_factor"][i]), 2),
-            "category_near_georgia": int(ev["category"][i]),
-            "outside_support": bool(ev["event_outside_support"][i]),
-            "power_dependent_affected": round(float(affected[i])),
-            "lacking_shelter": round(float(lacking[i])),
-            "worst_county_fips": str(ev["county_fips"][worst]),
-            "worst_county_name": str(ev["county_name"][worst]),
-        })
+        rows.append(
+            {
+                "rank": rank,
+                "parent_storm": str(ev["storm_name"][ev["storm_of_event"][i]]),
+                "shift_km": round(float(ev["event_shift_km"][i]), 1),
+                "category_change": int(ev["event_category_change"][i]),
+                "speed_factor": round(float(ev["event_speed_factor"][i]), 2),
+                "size_factor": round(float(ev["event_size_factor"][i]), 2),
+                "category_near_georgia": int(ev["category"][i]),
+                "outside_support": bool(ev["event_outside_support"][i]),
+                "power_dependent_affected": round(float(affected[i])),
+                "lacking_shelter": round(float(lacking[i])),
+                "worst_county_fips": str(ev["county_fips"][worst]),
+                "worst_county_name": str(ev["county_name"][worst]),
+            }
+        )
     return rows
 
 
@@ -333,7 +350,7 @@ WORST_SCHEMA = [
 def statewide_lacking(ev: dict, outlook: str = "long_run", **params) -> np.ndarray:
     params.setdefault("relocation_share", season.RELOCATION_SHARE["base"])
     values = {"x": season.per_event(ev, **params)["lacking_shelter"]}
-    rate = season.outlook_event_rates(outlook)
+    rate = season.outlook_event_rates(outlook, ev=ev)
     seasons = worst_per_season(values, rate, np.random.default_rng(SEED), N_SEASONS_TABLE)
     return seasons["x"].sum(1)
 
@@ -425,19 +442,20 @@ def season_p_rows(outlook: str) -> list[dict]:
 
 def severity_backtest(ev: dict, observed: dict[str, int], long_run_share: float) -> dict:
     years = list(range(BACKTEST_YEARS[0], BACKTEST_YEARS[1] + 1))
-    base = season.outlook_event_rates("long_run")
+    base = season.outlook_event_rates("long_run", ev=ev)
     cat = ev["category"]
-    storm_cat = np.zeros(len(ev["storm_season"]), int)
-    storm_cat[ev["storm_of_event"]] = cat
+    year_of_event = ev["storm_season"][ev["storm_of_event"]]
+    replay = ~ev["event_synthetic"] if "event_synthetic" in ev else np.ones(len(cat), bool)
     out25 = ev["out25"].astype(np.float64)
     count_only, severity = np.zeros(out25.shape[1]), np.zeros(out25.shape[1])
     for y in years:
-        mine = ev["storm_season"] == y
-        n = int(mine.sum())
-        if n == 0:
+        n = int((ev["storm_season"] == y).sum())
+        mine = (year_of_event == y) & replay
+        if n == 0 or base[mine].sum() <= 0:
             continue
-        h = float((storm_cat[mine] >= 1).mean())
-        m = float((storm_cat[mine] >= 3).mean())
+        w = base[mine]
+        h = float(w[cat[mine] >= 1].sum() / w.sum())
+        m = float(w[cat[mine] >= 3].sum() / w.sum())
         count_only += (base * n / base.sum()) @ out25
         heavy = season.reweight(base, cat, h, m)
         severity += (heavy * n / heavy.sum()) @ out25
@@ -447,8 +465,9 @@ def severity_backtest(ev: dict, observed: dict[str, int], long_run_share: float)
     better = s["share_inside"] > c["share_inside"]
     return {
         "method": "hindsight upper bound: each year uses its own observed count of storms near "
-        "Georgia (count only), or its count plus its observed Cat 1+ and Cat 3+ shares "
-        "(severity). No past forecasts are used, so this bounds what a perfect outlook could add.",
+        "Georgia (count only), or its count plus the Cat 1+ and Cat 3+ shares of its storms' "
+        "historical replays (severity). No past forecasts are used, so this bounds what a "
+        "perfect outlook could add.",
         "count_only_share_inside": c["share_inside"],
         "severity_share_inside": s["share_inside"],
         "count_only_statewide": c["statewide"],
@@ -463,7 +482,7 @@ def severity_backtest(ev: dict, observed: dict[str, int], long_run_share: float)
 
 
 def county_lambda(ev: dict, outlook: str) -> np.ndarray:
-    rate = season.outlook_event_rates(outlook)
+    rate = season.outlook_event_rates(outlook, ev=ev)
     return rate @ ev["out25"].astype(np.float64)
 
 
@@ -589,7 +608,7 @@ def flat(r: dict) -> dict:
 
 def season_rows(ev: dict, outlook: str) -> list[dict]:
     r = season.run_season(outlook, n_seasons=N_SEASONS_TABLE)
-    rate = season.outlook_event_rates(outlook)
+    rate = season.outlook_event_rates(outlook, ev=ev)
     d = worst_per_season(
         {"d": ev["displaced"]}, rate, np.random.default_rng(SEED), N_SEASONS_TABLE
     )["d"]
